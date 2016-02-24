@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.kotcrab.vis.ui.VisUI
 import com.kotcrab.vis.ui.widget.VisTable
+import com.kotcrab.xgbc.ui.DebuggerWindow
 
 /** @author Kotcrab */
 class XGBC : ApplicationAdapter() {
@@ -25,7 +26,7 @@ class XGBC : ApplicationAdapter() {
 
         emulator = Emulator(Gdx.files.internal("rom/tetris.gb"));
 
-        stage.addActor(DisassemblerWindow(emulator))
+        stage.addActor(DebuggerWindow(emulator))
     }
 
     override fun resize(width: Int, height: Int) {

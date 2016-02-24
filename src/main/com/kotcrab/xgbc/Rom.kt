@@ -41,7 +41,7 @@ class Rom(romFile: FileHandle) {
             0x52 -> size = 72 * 16 * 1024 //72 banks
             0x53 -> size = 80 * 16 * 1024
             0x54 -> size = 96 * 16 * 1024
-            else -> throw IllegalStateException("Unknown ROM size")
+            else -> throw EmulatorException("Unknown ROM size")
         }
         size
     }
@@ -54,15 +54,19 @@ class Rom(romFile: FileHandle) {
             0x2 -> size = 8 * 1024
             0x3 -> size = 32 * 1024
             0x4 -> size = 128 * 1024
-            else -> throw IllegalStateException("Unknown RAM size")
+            else -> throw EmulatorException("Unknown RAM size")
         }
         size
     }
 
+    val destCode: Int by lazy {
+        read(0x014A).toInt();
+    }
+
     fun read(addr: Int): Byte {
-        if (addr <= 0x7FFF)
+        if (addr < 0x8000)
             return rom[addr];
 
-        throw IllegalStateException("Unsupported address: " + addr);
+        throw EmulatorException("Address out of range: " + addr);
     }
 }

@@ -21,10 +21,13 @@ enum class CartridgeType(val type: Byte) {
     ROM_MBC5(0x19),
     ROM_MBC5_RAM(0x1A),
     ROM_MBC5_RAM_BATT(0x1B),
-    ROM_MBC5_RUBMEL(0x1C),
-    ROM_MBC5_RUBMEL_SRAM(0x1D),
-    ROM_MBC5_RUBMEL_SRAM_BATT(0x1E),
-    POCKET_CAMERA(0x1F);
+    ROM_MBC5_RUMBLE(0x1C),
+    ROM_MBC5_RUMBLE_SRAM(0x1D),
+    ROM_MBC5_RUMBLE_SRAM_BATT(0x1E),
+    POCKET_CAMERA(0x1F),
+    BANDAI_TAMA5(0xFD.toByte()),
+    HUDSON_HUC3(0xFE.toByte()),
+    HUDSON_HUC1(0xFF.toByte());
 }
 
 fun cartridgeTypeFromByte(type: Byte): CartridgeType {
@@ -32,5 +35,5 @@ fun cartridgeTypeFromByte(type: Byte): CartridgeType {
         if (enumType.type == type) return enumType;
     }
 
-    throw IllegalStateException("Unsupported cartridge type: " + type)
+    throw EmulatorException("Unsupported cartridge type: " + type)
 }

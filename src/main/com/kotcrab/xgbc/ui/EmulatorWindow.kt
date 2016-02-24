@@ -1,4 +1,4 @@
-package com.kotcrab.xgbc
+package com.kotcrab.xgbc.ui
 
 import com.kotcrab.vis.ui.widget.VisWindow
 
