@@ -10,6 +10,7 @@ import com.kotcrab.vis.ui.widget.tabbedpane.Tab
 import com.kotcrab.vis.ui.widget.tabbedpane.TabbedPane
 import com.kotcrab.vis.ui.widget.tabbedpane.TabbedPaneAdapter
 import com.kotcrab.xgbc.Emulator
+import com.kotcrab.xgbc.Instr
 import com.kotcrab.xgbc.toHex
 
 /** @author Kotcrab */
@@ -48,13 +49,13 @@ class CartridgeInfoTab(val emulator: Emulator) : Tab(false, false) {
     init {
         table.left().top()
         table.defaults().left()
-        table.add(VisLabel("Title: " + emulator.rom.title)).row()
-        table.add(VisLabel("GameBoy Color: " + emulator.rom.gameBoyColor)).row()
-        table.add(VisLabel("Super GameBoy: " + emulator.rom.superGameBoy)).row()
-        table.add(VisLabel("Cartridge Type: " + emulator.rom.cartridgeType)).row()
-        table.add(VisLabel("ROM Size: " + FileUtils.readableFileSize(emulator.rom.romSize.toLong()))).row()
-        table.add(VisLabel("RAM Size: " + FileUtils.readableFileSize(emulator.rom.ramSize.toLong()))).row()
-        table.add(VisLabel("Destination code: " + emulator.rom.destCode)).row()
+        table.add(VisLabel("Title: ${emulator.rom.title}")).row()
+        table.add(VisLabel("GameBoy Color: ${emulator.rom.gameBoyColor}")).row()
+        table.add(VisLabel("Super GameBoy: ${emulator.rom.superGameBoy}")).row()
+        table.add(VisLabel("Cartridge Type: ${emulator.rom.cartridgeType}")).row()
+        table.add(VisLabel("ROM Size: ${FileUtils.readableFileSize(emulator.rom.romSize.toLong())}")).row()
+        table.add(VisLabel("RAM Size: ${FileUtils.readableFileSize(emulator.rom.ramSize.toLong())}")).row()
+        table.add(VisLabel("Destination code: ${emulator.rom.destCode}")).row()
     }
 
     override fun getContentTable(): Table? {
@@ -118,14 +119,28 @@ class OpcodesTab(val emulator: Emulator) : Tab(false, false) {
 
         var addr = 0x0150;
         while (addr < 0x0300) {
-            val opcode = emulator.read(addr)
-            val instr = emulator.cpu.op[opcode.toInt() and 0xFF]
+            var opcode = emulator.read(addr)
+            var opcodeInt = opcode.toInt() and 0xFF;
+
+            var instr: Instr?;
+            if (opcodeInt == 0xCB) {
+                opcode = emulator.read(addr + 1)
+                opcodeInt = opcode.toInt() and 0xFF;
+                instr = emulator.cpu.extOp[opcodeInt]
+                println(addr)
+            } else {
+                instr = emulator.cpu.op[opcodeInt]
+            }
+
             if (instr == null) {
                 table.add("Unsupported opcode: ${toHex(opcode)} at ${toHex(addr)}")
                 addr += 1;
             } else {
-                var evaluatedName = instr.name.replace("a16", toHex(emulator.read16(addr + 1)));
-                evaluatedName = evaluatedName.replace("d16", toHex(emulator.read16(addr + 1)))
+                var evaluatedName = instr.name.replace("d16", toHex(emulator.read16(addr + 1)));
+                evaluatedName = evaluatedName.replace("a16", toHex(emulator.read16(addr + 1)))
+                evaluatedName = evaluatedName.replace("d8", toHex(emulator.read(addr + 1)))
+                evaluatedName = evaluatedName.replace("a8", toHex(emulator.read(addr + 1)))
+                evaluatedName = evaluatedName.replace("r8", toHex(emulator.read(addr + 1)))
 
                 if (evaluatedName.equals(instr.name))
                     table.add("${toHex(addr)}: ${instr.name}")

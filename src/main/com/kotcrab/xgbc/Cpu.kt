@@ -18,13 +18,14 @@ class Cpu(private val emulator: Emulator) {
     var l: Byte = 0
 
     val op = arrayOfNulls<Instr>(256)
+    val extOp = arrayOfNulls<Instr>(256)
 
     init {
-        op[0x00] = Instr(1, 4, "NOP", {})
-        op[0x01] = Instr(3, 12, "LD BC, d16", {})
-        op[0x02] = Instr(1, 8, "LD (BC), A", {})
-        op[0xC3] = Instr(3, 16, "JP a16", {})
+        fillOpCodes(op)
+        fillExtOpCodes(extOp)
     }
 }
 
-class Instr(val len: Int, val cycles: Int, val name: String, val op: () -> Any?)
+open class Instr(val len: Int, val cycles: Int, val name: String, val op: (addr: Int) -> Any?)
+class CondInstr(len: Int, cycles: Int, val cyclesIfActionNotTaken: Int, name: String, op: (addr: Int) -> Boolean)
+: Instr(len, cycles, name, op)

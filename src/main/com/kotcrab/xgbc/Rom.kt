@@ -30,7 +30,7 @@ class Rom(romFile: FileHandle) {
 
     val romSize: Int by lazy {
         var size = 0;
-        when (read(0x148).toInt()) {
+        when (readInt(0x148)) {
             0x0 -> size = 32 * 1024
             0x1 -> size = 64 * 1024
             0x2 -> size = 128 * 1024
@@ -48,7 +48,7 @@ class Rom(romFile: FileHandle) {
 
     val ramSize: Int by lazy {
         var size = 0;
-        when (read(0x149).toInt()) {
+        when (readInt(0x149)) {
             0x0 -> size = 0
             0x1 -> size = 2 * 1024
             0x2 -> size = 8 * 1024
@@ -60,7 +60,7 @@ class Rom(romFile: FileHandle) {
     }
 
     val destCode: Int by lazy {
-        read(0x014A).toInt();
+        readInt(0x014A);
     }
 
     fun read(addr: Int): Byte {
@@ -68,5 +68,9 @@ class Rom(romFile: FileHandle) {
             return rom[addr];
 
         throw EmulatorException("Address out of range: " + addr);
+    }
+
+    fun readInt(addr: Int): Int {
+        return read(addr).toInt() and 0xFF
     }
 }

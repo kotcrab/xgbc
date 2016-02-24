@@ -26,10 +26,5 @@ class Emulator(romFile: FileHandle) {
     }
 }
 
-fun toHex(addr: Int): String {
-    return String.format("%04X", addr)
-}
-
-fun toHex(addr: Byte): String {
-    return String.format("%02X", addr)
-}
+fun toHex(addr: Int) = String.format("%04X", addr)
+fun toHex(addr: Byte) = String.format("%02X", addr)
