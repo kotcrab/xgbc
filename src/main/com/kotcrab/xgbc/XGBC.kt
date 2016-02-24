@@ -2,6 +2,8 @@ package com.kotcrab.xgbc
 
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.ScreenViewport
@@ -44,4 +46,10 @@ class XGBC : ApplicationAdapter() {
         VisUI.dispose()
         stage.dispose()
     }
+}
+
+fun main(args: Array<String>) {
+    val config = Lwjgl3ApplicationConfiguration()
+    config.setWindowedMode(1280, 720)
+    Lwjgl3Application(XGBC(), config)
 }
