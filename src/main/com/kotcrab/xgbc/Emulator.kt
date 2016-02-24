@@ -15,6 +15,56 @@ class Emulator(romFile: FileHandle) {
     /** Interrupt Enable */
     var ie: Byte = 0
 
+    init {
+        reset();
+    }
+
+    private fun reset() {
+        ram.fill(0);
+        vram.fill(0);
+        oam.fill(0)
+        internalRam.fill(0)
+        ie = 0;
+
+        cpu.sp = 0xFFFE;
+        cpu.pc = 0x0100
+        cpu.writeReg16(Cpu.REG_AF, 0x01B0)
+        cpu.writeReg16(Cpu.REG_BC, 0x0013)
+        cpu.writeReg16(Cpu.REG_DE, 0x00D8)
+        cpu.writeReg16(Cpu.REG_HL, 0x014D)
+        write(0xFF05, 0x00) //TIMA
+        write(0xFF06, 0x00) //TMA
+        write(0xFF07, 0x00) //TAC
+        write(0xFF10, 0x80) //NR10
+        write(0xFF11, 0xBF) //NR11
+        write(0xFF12, 0xF3) //NR12
+        write(0xFF14, 0xBF) //NR14
+        write(0xFF16, 0x3F) //NR21
+        write(0xFF17, 0x00) //NR22
+        write(0xFF19, 0xBF) //NR24
+        write(0xFF1A, 0x7F) //NR30
+        write(0xFF1B, 0xFF) //NR31
+        write(0xFF1C, 0x9F) //NR32
+        write(0xFF1E, 0xBF) //NR33
+        write(0xFF20, 0xFF) //NR41
+        write(0xFF21, 0x00) //NR42
+        write(0xFF22, 0x00) //NR43
+        write(0xFF23, 0xBF) //NR30
+        write(0xFF24, 0x77) //NR50
+        write(0xFF25, 0xF3) //NR51
+        write(0xFF26, 0xF1) //NR52 (F1-GB, F0-SGB)
+        write(0xFF40, 0x91) //LCDC
+        write(0xFF42, 0x00) //SCY
+        write(0xFF43, 0x00) //SCX
+        write(0xFF45, 0x00) //LYC
+        write(0xFF47, 0xFC) //BGP
+        write(0xFF48, 0xFF) //OBP0
+        write(0xFF49, 0xFF) //OBP1
+        write(0xFF4A, 0x00) //WY
+        write(0xFF4B, 0x00) //WX
+        write(0xFFFF, 0x00) //IE
+    }
+
     fun read(addr: Int): Byte {
         when (addr) {
             in 0x0000..0x8000 - 1 -> return rom.read(addr);
@@ -24,9 +74,9 @@ class Emulator(romFile: FileHandle) {
             in 0xE000..0xFE00 - 1 -> return ram[addr - 0xE000]; //ram echo
             in 0xFE00..0xFEA0 - 1 -> return oam[addr - 0xFE00];
             in 0xFEA0..0xFF80 - 1 -> throw EmulatorException("IO not implemented. Address: " + addr);
-            in 0xFE80..0xFFFF - 1 -> return internalRam[addr - 0xFE80]
+            in 0xFF80..0xFFFF - 1 -> return internalRam[addr - 0xFE80]
             0xFFFF -> return ie;
-            else -> throw EmulatorException("Unsupported address: " + addr)
+            else -> throw EmulatorException("Unsupported read address: " + toHex(addr))
         }
     }
 
@@ -39,6 +89,18 @@ class Emulator(romFile: FileHandle) {
         val hs = readInt(addr + 1)
 
         return ((hs shl 8) + ls)
+    }
+
+    fun write(addr: Int, value: Byte) {
+        when (addr) {
+            in 0xFF80..0xFFFF - 1 -> internalRam[addr - 0xFE80] = value;
+            0xFFFF -> ie = value;
+//            else -> throw EmulatorException("Unsupported write address: " + toHex(addr))
+        }
+    }
+
+    fun write(addr: Int, value: Int) {
+        write(addr, value.toByte())
     }
 }
 
