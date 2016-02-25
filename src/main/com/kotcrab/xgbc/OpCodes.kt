@@ -2,7 +2,9 @@ package com.kotcrab.xgbc
 
 /** @author Kotcrab */
 
-fun generateOpCodes(proc: OpCodesProcessor, op: Array<Instr?>) {
+fun generateOpCodes(emu: Emulator, proc: OpCodesProcessor, op: Array<Instr?>) {
+    val cpu = emu.cpu;
+
     op[0x00] = Instr(1, 4, "NOP", {})
     op[0x01] = Instr(3, 12, "LD BC, d16", {})
     op[0x02] = Instr(1, 8, "LD (BC), A", { proc.ld8RegToReg16Addr(Cpu.REG_BC, Cpu.REG_A) })
@@ -229,7 +231,7 @@ fun generateOpCodes(proc: OpCodesProcessor, op: Array<Instr?>) {
     op[0xDF] = Instr(1, 16, "RST 18H", {})
     op[0xE0] = Instr(2, 12, "LDH (a8), A", {})
     op[0xE1] = Instr(1, 12, "POP HL", {})
-    op[0xE2] = Instr(2, 8, "LD (C), A", {})
+    op[0xE2] = Instr(2, 8, "LD (C), A", { proc.ld8RegToAddr(0xFF00 + cpu.readReg(Cpu.REG_C), Cpu.REG_A) })
     op[0xE3] = null
     op[0xE4] = null
     op[0xE5] = Instr(1, 16, "PUSH HL", {})
@@ -245,7 +247,7 @@ fun generateOpCodes(proc: OpCodesProcessor, op: Array<Instr?>) {
     op[0xEF] = Instr(1, 16, "RST 28H", {})
     op[0xF0] = Instr(2, 12, "LDH A, (a8)", {})
     op[0xF1] = Instr(1, 12, "POP AF", {})
-    op[0xF2] = Instr(2, 8, "LD A, (C)", {})
+    op[0xF2] = Instr(2, 8, "LD A, (C)", { proc.ld8AddrToReg(Cpu.REG_A, 0xFF00 + cpu.readReg(Cpu.REG_C)) })
     op[0xF3] = Instr(1, 4, "DI", {})
     op[0xF4] = null
     op[0xF5] = Instr(1, 16, "PUSH AF", {})

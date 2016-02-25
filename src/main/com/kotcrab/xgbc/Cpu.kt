@@ -28,7 +28,7 @@ class Cpu(private val emulator: Emulator) {
     private val opProc = OpCodesProcessor(emulator)
 
     init {
-        generateOpCodes(opProc, op)
+        generateOpCodes(emulator, opProc, op)
         generateExtOpCodes(opProc, extOp)
     }
 
