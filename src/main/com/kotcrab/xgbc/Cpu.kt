@@ -20,14 +20,16 @@ class Cpu(private val emulator: Emulator) {
 
     var sp: Int = 0 //stack pointer
     var pc: Int = 0 //program counter
-    val regs: ByteArray = ByteArray(8)
+    private val regs: ByteArray = ByteArray(8)
 
     val op = arrayOfNulls<Instr>(256)
     val extOp = arrayOfNulls<Instr>(256)
 
+    private val opProc = OpCodesProcessor(emulator)
+
     init {
-        fillOpCodes(op)
-        fillExtOpCodes(extOp)
+        generateOpCodes(opProc, op)
+        generateExtOpCodes(opProc, extOp)
     }
 
     fun readReg(reg: Int): Byte {
@@ -54,10 +56,10 @@ class Cpu(private val emulator: Emulator) {
 open class Instr(val len: Int,
                  val cycles: Int,
                  val name: String,
-                 val op: (addr: Int) -> Any?)
+                 val op: (emulator: Emulator) -> Any?)
 
 class CondInstr(len: Int,
                 cycles: Int,
                 val cyclesIfActionNotTaken: Int,
                 name: String,
-                op: (addr: Int) -> Boolean) : Instr(len, cycles, name, op)
+                op: (emulator: Emulator) -> Boolean) : Instr(len, cycles, name, op)

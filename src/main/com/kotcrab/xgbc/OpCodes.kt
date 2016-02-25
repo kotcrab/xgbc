@@ -2,14 +2,14 @@ package com.kotcrab.xgbc
 
 /** @author Kotcrab */
 
-fun fillOpCodes(op: Array<Instr?>) {
+fun generateOpCodes(proc: OpCodesProcessor, op: Array<Instr?>) {
     op[0x00] = Instr(1, 4, "NOP", {})
     op[0x01] = Instr(3, 12, "LD BC, d16", {})
     op[0x02] = Instr(1, 8, "LD (BC), A", {})
     op[0x03] = Instr(1, 8, "INC BC", {})
     op[0x04] = Instr(1, 4, "INC B", {})
     op[0x05] = Instr(1, 4, "DEC B", {})
-    op[0x06] = Instr(2, 8, "LD B, d8", {})
+    op[0x06] = Instr(2, 8, "LD B, d8", { proc.ld(Cpu.REG_B) })
     op[0x07] = Instr(1, 4, "RLCA", {})
     op[0x08] = Instr(3, 20, "LD (a16), SP", {})
     op[0x09] = Instr(1, 8, "ADD HL, BC", {})
@@ -17,7 +17,7 @@ fun fillOpCodes(op: Array<Instr?>) {
     op[0x0B] = Instr(1, 8, "DEC BC", {})
     op[0x0C] = Instr(1, 4, "INC C", {})
     op[0x0D] = Instr(1, 4, "DEC C", {})
-    op[0x0E] = Instr(2, 8, "LD C, d8", {})
+    op[0x0E] = Instr(2, 8, "LD C, d8", { proc.ld(Cpu.REG_C) })
     op[0x0F] = Instr(1, 4, "RRCA", {})
     op[0x10] = Instr(2, 4, "STOP 0", {})
     op[0x11] = Instr(3, 12, "LD DE, d16", {})
@@ -25,7 +25,7 @@ fun fillOpCodes(op: Array<Instr?>) {
     op[0x13] = Instr(1, 8, "INC DE", {})
     op[0x14] = Instr(1, 4, "INC D", {})
     op[0x15] = Instr(1, 4, "DEC D", {})
-    op[0x16] = Instr(2, 8, "LD D, d8", {})
+    op[0x16] = Instr(2, 8, "LD D, d8", { proc.ld(Cpu.REG_D) })
     op[0x17] = Instr(1, 4, "RLA", {})
     op[0x18] = Instr(2, 12, "JR r8", {})
     op[0x19] = Instr(1, 8, "ADD HL, DE", {})
@@ -33,7 +33,7 @@ fun fillOpCodes(op: Array<Instr?>) {
     op[0x1B] = Instr(1, 8, "DEC DE", {})
     op[0x1C] = Instr(1, 4, "INC E", {})
     op[0x1D] = Instr(1, 4, "DEC E", {})
-    op[0x1E] = Instr(2, 8, "LD E, d8", {})
+    op[0x1E] = Instr(2, 8, "LD E, d8", { proc.ld(Cpu.REG_E) })
     op[0x1F] = Instr(1, 4, "RRA", {})
     op[0x20] = CondInstr(2, 12, 8, "JR NZ, r8", { false })
     op[0x21] = Instr(3, 12, "LD HL, d16", {})
@@ -41,7 +41,7 @@ fun fillOpCodes(op: Array<Instr?>) {
     op[0x23] = Instr(1, 8, "INC HL", {})
     op[0x24] = Instr(1, 4, "INC H", {})
     op[0x25] = Instr(1, 4, "DEC H", {})
-    op[0x26] = Instr(2, 8, "LD H, d8", {})
+    op[0x26] = Instr(2, 8, "LD H, d8", { proc.ld(Cpu.REG_H) })
     op[0x27] = Instr(1, 4, "DAA", {})
     op[0x28] = CondInstr(2, 12, 8, "JR Z, r8", { false })
     op[0x29] = Instr(1, 8, "ADD HL, HL", {})
@@ -49,7 +49,7 @@ fun fillOpCodes(op: Array<Instr?>) {
     op[0x2B] = Instr(1, 8, "DEC HL", {})
     op[0x2C] = Instr(1, 4, "INC L", {})
     op[0x2D] = Instr(1, 4, "DEC L", {})
-    op[0x2E] = Instr(2, 8, "LD L, d8", {})
+    op[0x2E] = Instr(2, 8, "LD L, d8", { proc.ld(Cpu.REG_L) })
     op[0x2F] = Instr(1, 4, "CPL", {})
     op[0x30] = CondInstr(2, 12, 8, "JR NC, r8", { false })
     op[0x31] = Instr(3, 12, "LD SP, d16", {})
@@ -261,7 +261,7 @@ fun fillOpCodes(op: Array<Instr?>) {
     op[0xFF] = Instr(1, 16, "RST 38H", {})
 }
 
-fun fillExtOpCodes(op: Array<Instr?>) {
+fun generateExtOpCodes(opProc: OpCodesProcessor, op: Array<Instr?>) {
     op[0x00] = Instr(2, 8, "RLC B", {})
     op[0x01] = Instr(2, 8, "RLC C", {})
     op[0x02] = Instr(2, 8, "RLC D", {})
