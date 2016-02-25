@@ -241,7 +241,7 @@ fun generateOpCodes(emu: Emulator, proc: OpCodesProcessor, op: Array<Instr?>) {
     op[0xDD] = null
     op[0xDE] = Instr(2, 8, "SBC A, d8", {})
     op[0xDF] = Instr(1, 16, "RST 18H", {})
-    op[0xE0] = Instr(2, 12, "LDH (a8), A", {})
+    op[0xE0] = Instr(2, 12, "LDH (a8), A", { proc.ld8RegToAddr(0xFF00 + emu.read(cpu.pc + 1), Cpu.REG_A) })
     op[0xE1] = Instr(1, 12, "POP HL", {})
     op[0xE2] = Instr(2, 8, "LD (C), A", { proc.ld8RegToAddr(0xFF00 + cpu.readReg(Cpu.REG_C), Cpu.REG_A) })
     op[0xE3] = null
@@ -257,7 +257,7 @@ fun generateOpCodes(emu: Emulator, proc: OpCodesProcessor, op: Array<Instr?>) {
     op[0xED] = null
     op[0xEE] = Instr(2, 8, "XOR d8", {})
     op[0xEF] = Instr(1, 16, "RST 28H", {})
-    op[0xF0] = Instr(2, 12, "LDH A, (a8)", {})
+    op[0xF0] = Instr(2, 12, "LDH A, (a8)", { proc.ld8AddrToReg(Cpu.REG_A, 0xFF00 + emu.read(cpu.pc + 1)) })
     op[0xF1] = Instr(1, 12, "POP AF", {})
     op[0xF2] = Instr(2, 8, "LD A, (C)", { proc.ld8AddrToReg(Cpu.REG_A, 0xFF00 + cpu.readReg(Cpu.REG_C)) })
     op[0xF3] = Instr(1, 4, "DI", {})
