@@ -16,6 +16,11 @@ class Cpu(private val emulator: Emulator) {
         const val REG_BC = 2
         const val REG_DE = 4
         const val REG_HL = 6
+
+        const val FLAG_Z = 7;
+        const val FLAG_N = 6;
+        const val FLAG_H = 5;
+        const val FLAG_C = 4;
     }
 
     var sp: Int = 0 //stack pointer
@@ -50,6 +55,24 @@ class Cpu(private val emulator: Emulator) {
     fun writeReg16(reg: Int, value: Int) {
         writeReg(reg, (value ushr 8).toByte())
         writeReg(reg + 1, (value).toByte())
+    }
+
+    fun setFlag(flag: Int) {
+        var flagReg = readReg(REG_F).toInt() and 0xFF;
+        flagReg or (1 shl flag);
+        writeReg(REG_F, flagReg.toByte())
+    }
+
+    fun clearFlag(flag: Int) {
+        var flagReg = readReg(REG_F).toInt() and 0xFF;
+        flagReg and (1 shl flag).inv();
+        writeReg(REG_F, flagReg.toByte())
+    }
+
+    fun toggleFlag(flag: Int) {
+        var flagReg = readReg(REG_F).toInt() and 0xFF;
+        flagReg xor (1 shl flag);
+        writeReg(REG_F, flagReg.toByte())
     }
 }
 
