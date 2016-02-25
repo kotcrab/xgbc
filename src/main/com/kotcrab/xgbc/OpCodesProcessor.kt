@@ -47,4 +47,17 @@ class OpCodesProcessor(private val emulator: Emulator) {
         val toAddr = emulator.read16(cpu.pc + 1);
         ld8RegToAddr(toAddr, reg);
     }
+
+    // 16 bit ALU
+
+    /** Decrements reg16 */
+    fun dec16(reg16: Int) {
+        val value = cpu.readReg16(reg16);
+        cpu.writeReg16(reg16, value - 1);
+    }
+
+    fun inc16(reg16: Int) {
+        val value = cpu.readReg16(reg16);
+        cpu.writeReg16(reg16, value + 1);
+    }
 }
