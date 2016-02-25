@@ -24,7 +24,7 @@ class DebuggerWindow(val emulator: Emulator) : VisWindow("Debugger") {
 
         tabbedPane.addListener(object : TabbedPaneAdapter() {
             override fun switchedTab(tab: Tab?) {
-                if (tab == null) return;
+                if (tab == null) return
                 tabbedPaneContent.clearChildren()
                 tabbedPaneContent.add(tab.contentTable).left().top().grow()
             }
@@ -83,7 +83,7 @@ class MemoryTab(val emulator: Emulator) : Tab(false, false) {
 
         var first = true
         for (addr in 0x0000..0x100F) {
-            val line = addr % 0x10 == 0;
+            val line = addr % 0x10 == 0
             if (line) {
                 if (first == false) table.row()
                 table.add(toHex(addr))
@@ -117,15 +117,15 @@ class OpcodesTab(val emulator: Emulator) : Tab(false, false) {
         table.left().top()
         table.defaults().left()
 
-        var addr = 0x0150;
+        var addr = 0x0150
         while (addr < 0x0300) {
             var opcode = emulator.read(addr)
-            var opcodeInt = opcode.toInt() and 0xFF;
+            var opcodeInt = opcode.toInt() and 0xFF
 
-            var instr: Instr?;
+            var instr: Instr?
             if (opcodeInt == 0xCB) {
                 opcode = emulator.read(addr + 1)
-                opcodeInt = opcode.toInt() and 0xFF;
+                opcodeInt = opcode.toInt() and 0xFF
                 instr = emulator.cpu.extOp[opcodeInt]
                 println(addr)
             } else {
@@ -134,9 +134,9 @@ class OpcodesTab(val emulator: Emulator) : Tab(false, false) {
 
             if (instr == null) {
                 table.add("Unsupported opcode: ${toHex(opcode)} at ${toHex(addr)}")
-                addr += 1;
+                addr += 1
             } else {
-                var evaluatedName = instr.name.replace("d16", toHex(emulator.read16(addr + 1)));
+                var evaluatedName = instr.name.replace("d16", toHex(emulator.read16(addr + 1)))
                 evaluatedName = evaluatedName.replace("a16", toHex(emulator.read16(addr + 1)))
                 evaluatedName = evaluatedName.replace("d8", toHex(emulator.read(addr + 1)))
                 evaluatedName = evaluatedName.replace("a8", toHex(emulator.read(addr + 1)))
@@ -146,7 +146,7 @@ class OpcodesTab(val emulator: Emulator) : Tab(false, false) {
                     table.add("${toHex(addr)}: ${instr.name}")
                 else
                     table.add("${toHex(addr)}: $evaluatedName [${instr.name}]")
-                addr += instr.len;
+                addr += instr.len
             }
             table.row()
         }

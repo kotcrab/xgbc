@@ -18,7 +18,7 @@ class XGBC : ApplicationAdapter() {
 
     override fun create() {
         VisUI.load()
-        stage = Stage(ScreenViewport());
+        stage = Stage(ScreenViewport())
         val root = VisTable()
         root.setFillParent(true)
 
@@ -26,19 +26,19 @@ class XGBC : ApplicationAdapter() {
 
         Gdx.input.inputProcessor = stage
 
-        emulator = Emulator(Gdx.files.internal("rom/tetris.gb"));
+        emulator = Emulator(Gdx.files.internal("rom/tetris.gb"))
 
         stage.addActor(DebuggerWindow(emulator))
     }
 
     override fun resize(width: Int, height: Int) {
-        if (width == 0 && height == 0) return;
-        stage.viewport.update(width, height, true);
+        if (width == 0 && height == 0) return
+        stage.viewport.update(width, height, true)
     }
 
     override fun render() {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        stage.act(Math.min(Gdx.graphics.deltaTime, 1 / 30f));
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+        stage.act(Math.min(Gdx.graphics.deltaTime, 1 / 30f))
         stage.draw()
     }
 

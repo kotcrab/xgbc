@@ -31,11 +31,11 @@ class Cpu(private val emulator: Emulator) {
     }
 
     fun readReg(reg: Int): Byte {
-        return regs[reg];
+        return regs[reg]
     }
 
     fun writeReg(reg: Int, value: Byte) {
-        regs[reg] = value;
+        regs[reg] = value
     }
 
     fun readReg16(reg: Int): Int {

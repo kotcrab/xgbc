@@ -6,6 +6,7 @@ import com.badlogic.gdx.files.FileHandle
 class Emulator(romFile: FileHandle) {
     val rom = Rom(romFile)
     val cpu = Cpu(this)
+    val io = IO()
 
     val ram: ByteArray = ByteArray(0x2000)
     val vram: ByteArray = ByteArray(0x2000)
@@ -16,17 +17,18 @@ class Emulator(romFile: FileHandle) {
     var ie: Byte = 0
 
     init {
-        reset();
+        reset()
     }
 
     private fun reset() {
-        ram.fill(0);
-        vram.fill(0);
+        ram.fill(0)
+        vram.fill(0)
         oam.fill(0)
         internalRam.fill(0)
-        ie = 0;
+        io.reset()
+        ie = 0
 
-        cpu.sp = 0xFFFE;
+        cpu.sp = 0xFFFE
         cpu.pc = 0x0100
         cpu.writeReg16(Cpu.REG_AF, 0x01B0)
         cpu.writeReg16(Cpu.REG_BC, 0x0013)
@@ -67,21 +69,23 @@ class Emulator(romFile: FileHandle) {
 
     fun read(addr: Int): Byte {
         when (addr) {
-            in 0x0000..0x8000 - 1 -> return rom.read(addr);
-            in 0x8000..0xA000 - 1 -> return vram[addr - 0x8000];
-            in 0xA000..0xC000 - 1 -> throw EmulatorException("Switchable RAM bank not implemented. Address: " + addr);
-            in 0xC000..0xE000 - 1 -> return ram[addr - 0xC000];
-            in 0xE000..0xFE00 - 1 -> return ram[addr - 0xE000]; //ram echo
-            in 0xFE00..0xFEA0 - 1 -> return oam[addr - 0xFE00];
-            in 0xFEA0..0xFF80 - 1 -> throw EmulatorException("IO not implemented. Address: " + addr);
+            in 0x0000..0x8000 - 1 -> return rom.read(addr)
+            in 0x8000..0xA000 - 1 -> return vram[addr - 0x8000]
+            in 0xA000..0xC000 - 1 -> throw EmulatorException("Switchable RAM bank not implemented. Address: " + addr)
+            in 0xC000..0xE000 - 1 -> return ram[addr - 0xC000]
+            in 0xE000..0xFE00 - 1 -> return ram[addr - 0xE000] //ram echo
+            in 0xFE00..0xFEA0 - 1 -> return oam[addr - 0xFE00]
+            in 0xFEA0..0xFF00 - 1 -> throw EmulatorException("Read attempt from unusable, empty IO memory")
+            in 0xFF00..0xFF4C - 1 -> return io.read(addr - 0xFF00)
+            in 0xFF4C..0xFF80 - 1 -> throw EmulatorException("Read attempt from unusable, empty IO memory")
             in 0xFF80..0xFFFF - 1 -> return internalRam[addr - 0xFE80]
-            0xFFFF -> return ie;
-            else -> throw EmulatorException("Unsupported read address: " + toHex(addr))
+            0xFFFF -> return ie
+            else -> throw EmulatorException("Read address out of range: " + toHex(addr))
         }
     }
 
     fun readInt(addr: Int): Int {
-        return read(addr).toInt() and 0xFF;
+        return read(addr).toInt() and 0xFF
     }
 
     fun read16(addr: Int): Int {
@@ -93,9 +97,18 @@ class Emulator(romFile: FileHandle) {
 
     fun write(addr: Int, value: Byte) {
         when (addr) {
-            in 0xFF80..0xFFFF - 1 -> internalRam[addr - 0xFE80] = value;
-            0xFFFF -> ie = value;
-//            else -> throw EmulatorException("Unsupported write address: " + toHex(addr))
+            in 0x0000..0x8000 - 1 -> rom.write(addr, value)
+            in 0x8000..0xA000 - 1 -> vram[addr - 0x8000] = value
+            in 0xA000..0xC000 - 1 -> throw EmulatorException("Switchable RAM bank not implemented. Address: " + addr)
+            in 0xC000..0xE000 - 1 -> ram[addr - 0xC000] = value
+            in 0xE000..0xFE00 - 1 -> ram[addr - 0xE000] = value //ram echo
+            in 0xFE00..0xFEA0 - 1 -> oam[addr - 0xFE00] = value
+            in 0xFEA0..0xFF00 - 1 -> throw EmulatorException("Write attempt to unusable, empty IO memory")
+            in 0xFF00..0xFF4C - 1 -> io.write(addr - 0xFF00, value)
+            in 0xFF4C..0xFF80 - 1 -> throw EmulatorException("Write attempt to unusable, empty IO memory")
+            in 0xFF80..0xFFFF - 1 -> internalRam[addr - 0xFE80] = value
+            0xFFFF -> ie = value
+            else -> throw EmulatorException("Write address out of range: " + toHex(addr))
         }
     }
 

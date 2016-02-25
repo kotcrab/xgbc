@@ -4,13 +4,13 @@ import com.badlogic.gdx.files.FileHandle
 
 /** @author Kotcrab */
 class Rom(romFile: FileHandle) {
-    val rom: ByteArray = romFile.readBytes();
+    val rom: ByteArray = romFile.readBytes()
 
     val title: String by lazy {
         val builder = StringBuilder()
         for (addr in 0x0134..0x0142) {
-            val byte = read(addr);
-            if (byte.equals(0)) break;
+            val byte = read(addr)
+            if (byte.equals(0)) break
             builder.append(byte.toChar())
         }
         builder.toString()
@@ -21,15 +21,15 @@ class Rom(romFile: FileHandle) {
     }
 
     val superGameBoy: Boolean by lazy {
-        read(0x146).equals(0x03);
+        read(0x146).equals(0x03)
     }
 
     val cartridgeType: CartridgeType by lazy {
-        cartridgeTypeFromByte(read(0x147));
+        cartridgeTypeFromByte(read(0x147))
     }
 
     val romSize: Int by lazy {
-        var size = 0;
+        var size = 0
         when (readInt(0x148)) {
             0x0 -> size = 32 * 1024
             0x1 -> size = 64 * 1024
@@ -47,7 +47,7 @@ class Rom(romFile: FileHandle) {
     }
 
     val ramSize: Int by lazy {
-        var size = 0;
+        var size = 0
         when (readInt(0x149)) {
             0x0 -> size = 0
             0x1 -> size = 2 * 1024
@@ -60,17 +60,21 @@ class Rom(romFile: FileHandle) {
     }
 
     val destCode: Int by lazy {
-        readInt(0x014A);
+        readInt(0x014A)
     }
 
     fun read(addr: Int): Byte {
         if (addr < 0x8000)
-            return rom[addr];
+            return rom[addr]
 
-        throw EmulatorException("Address out of range: " + addr);
+        throw EmulatorException("Address out of range: " + addr)
     }
 
     fun readInt(addr: Int): Int {
         return read(addr).toInt() and 0xFF
+    }
+
+    fun write(addr: Int, value: Byte) {
+        throw EmulatorException("Illegal ROM write. MBC not implemented.")
     }
 }

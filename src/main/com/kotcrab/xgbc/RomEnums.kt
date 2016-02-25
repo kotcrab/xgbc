@@ -27,12 +27,12 @@ enum class CartridgeType(val type: Byte) {
     POCKET_CAMERA(0x1F),
     BANDAI_TAMA5(0xFD.toByte()),
     HUDSON_HUC3(0xFE.toByte()),
-    HUDSON_HUC1(0xFF.toByte());
+    HUDSON_HUC1(0xFF.toByte())
 }
 
 fun cartridgeTypeFromByte(type: Byte): CartridgeType {
     for (enumType in CartridgeType.values()) {
-        if (enumType.type == type) return enumType;
+        if (enumType.type == type) return enumType
     }
 
     throw EmulatorException("Unsupported cartridge type: " + type)
