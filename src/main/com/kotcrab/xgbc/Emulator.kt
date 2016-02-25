@@ -95,15 +95,6 @@ class Emulator(romFile: FileHandle) {
         return ((hs shl 8) + ls)
     }
 
-    /** Reads memory single address ahead of program counter */
-    fun readNextPc(): Byte {
-        return readPc(1)
-    }
-
-    fun readPc(pcOffset: Int): Byte {
-        return read(cpu.pc + pcOffset)
-    }
-
     fun write(addr: Int, value: Byte) {
         when (addr) {
             in 0x0000..0x8000 - 1 -> rom.write(addr, value)

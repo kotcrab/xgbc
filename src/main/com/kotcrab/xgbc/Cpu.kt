@@ -56,10 +56,10 @@ class Cpu(private val emulator: Emulator) {
 open class Instr(val len: Int,
                  val cycles: Int,
                  val name: String,
-                 val op: (emulator: Emulator) -> Any?)
+                 val op: () -> Any?)
 
 class CondInstr(len: Int,
                 cycles: Int,
                 val cyclesIfActionNotTaken: Int,
                 name: String,
-                op: (emulator: Emulator) -> Boolean) : Instr(len, cycles, name, op)
+                op: () -> Boolean) : Instr(len, cycles, name, op)
