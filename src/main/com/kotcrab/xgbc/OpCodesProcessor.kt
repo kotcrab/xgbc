@@ -68,9 +68,8 @@ class OpCodesProcessor(private val emulator: Emulator) {
         val regA = cpu.readRegInt(Cpu.REG_A)
         val result = regA + value
 
-        if (result == 0) cpu.setFlag(Cpu.FLAG_Z)
+        if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
         cpu.resetFlag(Cpu.FLAG_N)
-
         if ((regA and 0xF) + (value and 0xF) and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
         if ((regA and 0xFF) + (value and 0xFF) and 0x100 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
     }
@@ -91,9 +90,8 @@ class OpCodesProcessor(private val emulator: Emulator) {
         val regA = cpu.readRegInt(Cpu.REG_A)
         val result = regA - value
 
-        if (result == 0) cpu.setFlag(Cpu.FLAG_Z)
+        if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
         cpu.setFlag(Cpu.FLAG_N)
-
         if ((regA and 0xF) - (value and 0xF) and 0x10 != 0) cpu.resetFlag(Cpu.FLAG_H) else cpu.setFlag(Cpu.FLAG_H)
         if ((regA and 0xFF) - (value and 0xFF) and 0x100 != 0) cpu.resetFlag(Cpu.FLAG_C) else cpu.setFlag(Cpu.FLAG_C)
     }
@@ -108,6 +106,48 @@ class OpCodesProcessor(private val emulator: Emulator) {
 
     fun sbcReg(reg: Int) {
         sbc(cpu.readRegInt(reg) + if (cpu.isFlagSet(Cpu.FLAG_C)) 1 else 0)
+    }
+
+    fun and(value: Int) {
+        val regA = cpu.readRegInt(Cpu.REG_A)
+        val result = regA and value;
+        if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        cpu.resetFlag(Cpu.FLAG_N)
+        cpu.setFlag(Cpu.FLAG_H)
+        cpu.resetFlag(Cpu.FLAG_C)
+        cpu.writeReg(Cpu.REG_A, result.toByte())
+    }
+
+    fun andReg(reg: Int) {
+        and(cpu.readRegInt(reg))
+    }
+
+    fun or(value: Int) {
+        val regA = cpu.readRegInt(Cpu.REG_A)
+        val result = regA or value;
+        if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        cpu.resetFlag(Cpu.FLAG_N)
+        cpu.resetFlag(Cpu.FLAG_H)
+        cpu.resetFlag(Cpu.FLAG_C)
+        cpu.writeReg(Cpu.REG_A, result.toByte())
+    }
+
+    fun orReg(reg: Int) {
+        or(cpu.readRegInt(reg))
+    }
+
+    fun xor(value: Int) {
+        val regA = cpu.readRegInt(Cpu.REG_A)
+        val result = regA xor value;
+        if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        cpu.resetFlag(Cpu.FLAG_N)
+        cpu.resetFlag(Cpu.FLAG_H)
+        cpu.resetFlag(Cpu.FLAG_C)
+        cpu.writeReg(Cpu.REG_A, result.toByte())
+    }
+
+    fun xorReg(reg: Int) {
+        xor(cpu.readRegInt(reg))
     }
 
     // 16 bit ALU
