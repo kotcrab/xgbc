@@ -81,6 +81,11 @@ open class Instr(val len: Int,
                  val name: String,
                  val op: () -> Any?)
 
+class VoidInstr(len: Int,
+                cycles: Int,
+                name: String,
+                op: () -> Unit) : Instr(len, cycles, name, op)
+
 class CondInstr(len: Int,
                 cycles: Int,
                 val cyclesIfActionNotTaken: Int,

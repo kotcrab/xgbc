@@ -4,6 +4,8 @@ package com.kotcrab.xgbc
 class OpCodesProcessor(private val emulator: Emulator) {
     private val cpu = emulator.cpu
 
+    // 8 bit load operations
+
     /** Copies value from cpu's reg2 into reg1. */
     fun ld8RegToReg(reg1: Int, reg2: Int) {
         cpu.writeReg(reg1, cpu.readReg(reg2))
@@ -37,15 +39,27 @@ class OpCodesProcessor(private val emulator: Emulator) {
     }
 
     /** Loads 8 bit value from immediate address into reg */
-    fun ld8Imm16AddrToReg(reg: Int) {
+    fun ld8ImmAddrToReg(reg: Int) {
         val fromAddr = emulator.read16(cpu.pc + 1);
         ld8AddrToReg(reg, fromAddr)
     }
 
     /** Saves 8 bit value from reg into immediate address */
-    fun ld8RegToImm16Addr(reg: Int) {
+    fun ld8RegToImmAddr(reg: Int) {
         val toAddr = emulator.read16(cpu.pc + 1);
         ld8RegToAddr(toAddr, reg);
+    }
+
+    // 16 bit load operations
+
+    fun ld16ValueToReg16(reg16: Int, value: Int) {
+        cpu.writeReg16(reg16, value)
+    }
+
+    // Immediate 16 bit operations
+
+    fun ld16ImmValueToReg(reg16: Int) {
+        ld16ValueToReg16(reg16, emulator.read16(cpu.pc + 1))
     }
 
     // 16 bit ALU

@@ -6,14 +6,14 @@ fun generateOpCodes(emu: Emulator, proc: OpCodesProcessor, op: Array<Instr?>) {
     val cpu = emu.cpu;
 
     op[0x00] = Instr(1, 4, "NOP", {})
-    op[0x01] = Instr(3, 12, "LD BC, d16", {})
+    op[0x01] = Instr(3, 12, "LD BC, d16", { proc.ld16ImmValueToReg(Cpu.REG_BC) })
     op[0x02] = Instr(1, 8, "LD (BC), A", { proc.ld8RegToReg16Addr(Cpu.REG_BC, Cpu.REG_A) })
     op[0x03] = Instr(1, 8, "INC BC", {})
     op[0x04] = Instr(1, 4, "INC B", {})
     op[0x05] = Instr(1, 4, "DEC B", {})
     op[0x06] = Instr(2, 8, "LD B, d8", { proc.ld8ImmValueToReg(Cpu.REG_B) })
     op[0x07] = Instr(1, 4, "RLCA", {})
-    op[0x08] = Instr(3, 20, "LD (a16), SP", {})
+    op[0x08] = Instr(3, 20, "LD (a16), SP", { emu.write16(emu.read16(cpu.pc + 1), cpu.sp) })
     op[0x09] = Instr(1, 8, "ADD HL, BC", {})
     op[0x0A] = Instr(1, 8, "LD A, (BC)", { proc.ld8Reg16AddrToReg(Cpu.REG_A, Cpu.REG_BC) })
     op[0x0B] = Instr(1, 8, "DEC BC", {})
@@ -22,7 +22,7 @@ fun generateOpCodes(emu: Emulator, proc: OpCodesProcessor, op: Array<Instr?>) {
     op[0x0E] = Instr(2, 8, "LD C, d8", { proc.ld8ImmValueToReg(Cpu.REG_C) })
     op[0x0F] = Instr(1, 4, "RRCA", {})
     op[0x10] = Instr(2, 4, "STOP 0", {})
-    op[0x11] = Instr(3, 12, "LD DE, d16", {})
+    op[0x11] = Instr(3, 12, "LD DE, d16", { proc.ld16ImmValueToReg(Cpu.REG_DE) })
     op[0x12] = Instr(1, 8, "LD (DE), A", { proc.ld8RegToReg16Addr(Cpu.REG_DE, Cpu.REG_A) })
     op[0x13] = Instr(1, 8, "INC DE", {})
     op[0x14] = Instr(1, 4, "INC D", {})
@@ -38,7 +38,7 @@ fun generateOpCodes(emu: Emulator, proc: OpCodesProcessor, op: Array<Instr?>) {
     op[0x1E] = Instr(2, 8, "LD E, d8", { proc.ld8ImmValueToReg(Cpu.REG_E) })
     op[0x1F] = Instr(1, 4, "RRA", {})
     op[0x20] = CondInstr(2, 12, 8, "JR NZ, r8", { false })
-    op[0x21] = Instr(3, 12, "LD HL, d16", {})
+    op[0x21] = Instr(3, 12, "LD HL, d16", { proc.ld16ImmValueToReg(Cpu.REG_HL) })
     op[0x22] = Instr(1, 8, "LD (HL+), A", {
         proc.ld8RegToReg16Addr(Cpu.REG_HL, Cpu.REG_A)
         proc.inc16(Cpu.REG_HL)
@@ -60,7 +60,7 @@ fun generateOpCodes(emu: Emulator, proc: OpCodesProcessor, op: Array<Instr?>) {
     op[0x2E] = Instr(2, 8, "LD L, d8", { proc.ld8ImmValueToReg(Cpu.REG_L) })
     op[0x2F] = Instr(1, 4, "CPL", {})
     op[0x30] = CondInstr(2, 12, 8, "JR NC, r8", { false })
-    op[0x31] = Instr(3, 12, "LD SP, d16", {})
+    op[0x31] = VoidInstr(3, 12, "LD SP, d16", { cpu.sp = emu.read16(cpu.pc + 1) })
     op[0x32] = Instr(1, 8, "LD (HL-), A", {
         proc.ld8RegToReg16Addr(Cpu.REG_HL, Cpu.REG_A)
         proc.dec16(Cpu.REG_HL)
@@ -251,7 +251,7 @@ fun generateOpCodes(emu: Emulator, proc: OpCodesProcessor, op: Array<Instr?>) {
     op[0xE7] = Instr(1, 16, "RST 20H", {})
     op[0xE8] = Instr(2, 16, "ADD SP, r8", {})
     op[0xE9] = Instr(1, 4, "JP (HL)", {})
-    op[0xEA] = Instr(3, 16, "LD (a16), A", { proc.ld8RegToImm16Addr(Cpu.REG_A) })
+    op[0xEA] = Instr(3, 16, "LD (a16), A", { proc.ld8RegToImmAddr(Cpu.REG_A) })
     op[0xEB] = null
     op[0xEC] = null
     op[0xED] = null
@@ -265,9 +265,26 @@ fun generateOpCodes(emu: Emulator, proc: OpCodesProcessor, op: Array<Instr?>) {
     op[0xF5] = Instr(1, 16, "PUSH AF", {})
     op[0xF6] = Instr(2, 8, "OR d8", {})
     op[0xF7] = Instr(1, 16, "RST 30H", {})
-    op[0xF8] = Instr(2, 12, "LD HL, SP+r8", {})
+    op[0xF8] = VoidInstr(2, 12, "LD HL, SP+r8", {
+        cpu.clearFlag(Cpu.FLAG_Z)
+        cpu.clearFlag(Cpu.FLAG_N)
+
+        val value = emu.readInt(cpu.pc + 1);
+
+        if ((cpu.sp and 0xF) + (value and 0xF) > 0xF)
+            cpu.clearFlag(Cpu.FLAG_H)
+        else
+            cpu.setFlag(Cpu.FLAG_H)
+
+        if ( cpu.sp + value > 0xFFFF )
+            cpu.setFlag(Cpu.FLAG_C);
+        else
+            cpu.clearFlag(Cpu.FLAG_C);
+
+        cpu.writeReg16(Cpu.REG_HL, value);
+    })
     op[0xF9] = Instr(1, 8, "LD SP, HL", {})
-    op[0xFA] = Instr(3, 16, "LD A, (a16)", { proc.ld8Imm16AddrToReg(Cpu.REG_A) })
+    op[0xFA] = Instr(3, 16, "LD A, (a16)", { proc.ld8ImmAddrToReg(Cpu.REG_A) })
     op[0xFB] = Instr(1, 4, "EI", {})
     op[0xFC] = null
     op[0xFD] = null

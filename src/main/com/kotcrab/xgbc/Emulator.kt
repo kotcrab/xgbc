@@ -115,6 +115,11 @@ class Emulator(romFile: FileHandle) {
     fun write(addr: Int, value: Int) {
         write(addr, value.toByte())
     }
+
+    fun write16(addr: Int, value: Int) {
+        write(addr, value)
+        write(addr + 1, value ushr 8)
+    }
 }
 
 fun toHex(addr: Int) = String.format("%04X", addr)
