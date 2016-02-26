@@ -72,6 +72,8 @@ class OpCodesProcessor(private val emulator: Emulator) {
         cpu.resetFlag(Cpu.FLAG_N)
         if ((regA and 0xF) + (value and 0xF) and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
         if ((regA and 0xFF) + (value and 0xFF) and 0x100 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
+
+        cpu.writeReg(Cpu.REG_A, result.toByte())
     }
 
     fun addReg(reg: Int) {
@@ -94,6 +96,8 @@ class OpCodesProcessor(private val emulator: Emulator) {
         cpu.setFlag(Cpu.FLAG_N)
         if ((regA and 0xF) - (value and 0xF) and 0x10 != 0) cpu.resetFlag(Cpu.FLAG_H) else cpu.setFlag(Cpu.FLAG_H)
         if ((regA and 0xFF) - (value and 0xFF) and 0x100 != 0) cpu.resetFlag(Cpu.FLAG_C) else cpu.setFlag(Cpu.FLAG_C)
+
+        cpu.writeReg(Cpu.REG_A, result.toByte())
     }
 
     fun subReg(reg: Int) {
@@ -115,6 +119,7 @@ class OpCodesProcessor(private val emulator: Emulator) {
         cpu.resetFlag(Cpu.FLAG_N)
         cpu.setFlag(Cpu.FLAG_H)
         cpu.resetFlag(Cpu.FLAG_C)
+
         cpu.writeReg(Cpu.REG_A, result.toByte())
     }
 
@@ -129,6 +134,7 @@ class OpCodesProcessor(private val emulator: Emulator) {
         cpu.resetFlag(Cpu.FLAG_N)
         cpu.resetFlag(Cpu.FLAG_H)
         cpu.resetFlag(Cpu.FLAG_C)
+
         cpu.writeReg(Cpu.REG_A, result.toByte())
     }
 
@@ -143,11 +149,26 @@ class OpCodesProcessor(private val emulator: Emulator) {
         cpu.resetFlag(Cpu.FLAG_N)
         cpu.resetFlag(Cpu.FLAG_H)
         cpu.resetFlag(Cpu.FLAG_C)
+
         cpu.writeReg(Cpu.REG_A, result.toByte())
     }
 
     fun xorReg(reg: Int) {
         xor(cpu.readRegInt(reg))
+    }
+
+    fun cp(value: Int) {
+        val regA = cpu.readRegInt(Cpu.REG_A)
+        val result = regA - value
+
+        if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        cpu.setFlag(Cpu.FLAG_N)
+        if ((regA and 0xF) - (value and 0xF) and 0x10 != 0) cpu.resetFlag(Cpu.FLAG_H) else cpu.setFlag(Cpu.FLAG_H)
+        if (regA < value) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
+    }
+
+    fun cpReg(reg: Int) {
+        cp(cpu.readRegInt(reg))
     }
 
     // 16 bit ALU
