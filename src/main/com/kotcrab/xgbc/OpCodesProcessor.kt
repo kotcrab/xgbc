@@ -71,15 +71,8 @@ class OpCodesProcessor(private val emulator: Emulator) {
         if (result == 0) cpu.setFlag(Cpu.FLAG_Z)
         cpu.resetFlag(Cpu.FLAG_N)
 
-        if ((regA and 0xF) + (value and 0xF) and 0x10 == 0)
-            cpu.resetFlag(Cpu.FLAG_H)
-        else
-            cpu.setFlag(Cpu.FLAG_H)
-
-        if ((regA and 0xFF) + (value and 0xFF) and 0x100 == 0)
-            cpu.resetFlag(Cpu.FLAG_C)
-        else
-            cpu.setFlag(Cpu.FLAG_C)
+        if ((regA and 0xF) + (value and 0xF) and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
+        if ((regA and 0xFF) + (value and 0xFF) and 0x100 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
     }
 
     fun addReg(reg: Int) {
@@ -92,6 +85,29 @@ class OpCodesProcessor(private val emulator: Emulator) {
 
     fun adcReg(reg: Int) {
         add(cpu.readRegInt(reg) + if (cpu.isFlagSet(Cpu.FLAG_C)) 1 else 0)
+    }
+
+    fun sub(value: Int) {
+        val regA = cpu.readRegInt(Cpu.REG_A)
+        val result = regA - value
+
+        if (result == 0) cpu.setFlag(Cpu.FLAG_Z)
+        cpu.setFlag(Cpu.FLAG_N)
+
+        if ((regA and 0xF) - (value and 0xF) and 0x10 != 0) cpu.resetFlag(Cpu.FLAG_H) else cpu.setFlag(Cpu.FLAG_H)
+        if ((regA and 0xFF) - (value and 0xFF) and 0x100 != 0) cpu.resetFlag(Cpu.FLAG_C) else cpu.setFlag(Cpu.FLAG_C)
+    }
+
+    fun subReg(reg: Int) {
+        sub(cpu.readRegInt(reg));
+    }
+
+    fun sbc(value: Int) {
+        sbc(value + if (cpu.isFlagSet(Cpu.FLAG_C)) 1 else 0)
+    }
+
+    fun sbcReg(reg: Int) {
+        sbc(cpu.readRegInt(reg) + if (cpu.isFlagSet(Cpu.FLAG_C)) 1 else 0)
     }
 
     // 16 bit ALU
