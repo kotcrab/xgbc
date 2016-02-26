@@ -74,4 +74,16 @@ class OpCodesProcessor(private val emulator: Emulator) {
         val value = cpu.readReg16(reg16);
         cpu.writeReg16(reg16, value + 1);
     }
+
+    // Stack pointer push and pop
+
+    fun push(reg16: Int) {
+        cpu.sp = cpu.sp - 2
+        emulator.write16(cpu.sp, cpu.readReg16(reg16))
+    }
+
+    fun pop(reg16: Int) {
+        cpu.writeReg16(reg16, emulator.read16(cpu.sp))
+        cpu.sp = cpu.sp + 2
+    }
 }
