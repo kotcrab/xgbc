@@ -171,6 +171,52 @@ class OpCodesProcessor(private val emulator: Emulator) {
         cp(cpu.readRegInt(reg))
     }
 
+    fun inc(reg: Int) {
+        val regValue = cpu.readRegInt(reg)
+        val result = regValue + 1
+
+        if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        cpu.resetFlag(Cpu.FLAG_N)
+        if ((regValue and 0xF) + (1 and 0xF) and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
+
+        cpu.writeReg(reg, result.toByte())
+    }
+
+    fun incHL() {
+        val addr = cpu.readReg16(Cpu.REG_HL);
+        val value = emulator.readInt(addr)
+        val result = value + 1
+
+        if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        cpu.resetFlag(Cpu.FLAG_N)
+        if ((value and 0xF) + (1 and 0xF) and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
+
+        emulator.write(addr, result.toByte())
+    }
+
+    fun dec(reg: Int) {
+        val regValue = cpu.readRegInt(reg)
+        val result = regValue - 1
+
+        if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        cpu.setFlag(Cpu.FLAG_N)
+        if ((regValue and 0xF) + (-1 and 0xF) and 0x10 != 0) cpu.resetFlag(Cpu.FLAG_H) else cpu.setFlag(Cpu.FLAG_H)
+
+        cpu.writeReg(reg, result.toByte())
+    }
+
+    fun decHL() {
+        val addr = cpu.readReg16(Cpu.REG_HL);
+        val value = emulator.readInt(addr)
+        val result = value - 1
+
+        if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        cpu.setFlag(Cpu.FLAG_N)
+        if ((value and 0xF) + (-1 and 0xF) and 0x10 != 0) cpu.resetFlag(Cpu.FLAG_H) else cpu.setFlag(Cpu.FLAG_H)
+
+        emulator.write(addr, result.toByte())
+    }
+
     // 16 bit ALU
 
     /** Decrements reg16 */
