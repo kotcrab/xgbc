@@ -62,6 +62,38 @@ class OpCodesProcessor(private val emulator: Emulator) {
         ld16ValueToReg16(reg16, emulator.read16(cpu.pc + 1))
     }
 
+    // 8 bit ALU
+
+    fun add(value: Int) {
+        val regA = cpu.readRegInt(Cpu.REG_A)
+        val result = regA + value
+
+        if (result == 0) cpu.setFlag(Cpu.FLAG_Z)
+        cpu.resetFlag(Cpu.FLAG_N)
+
+        if ((regA and 0xF) + (value and 0xF) and 0x10 == 0)
+            cpu.resetFlag(Cpu.FLAG_H)
+        else
+            cpu.setFlag(Cpu.FLAG_H)
+
+        if ((regA and 0xFF) + (value and 0xFF) and 0x100 == 0)
+            cpu.resetFlag(Cpu.FLAG_C)
+        else
+            cpu.setFlag(Cpu.FLAG_C)
+    }
+
+    fun addReg(reg: Int) {
+        add(cpu.readRegInt(reg));
+    }
+
+    fun adc(value: Int) {
+        add(value + if (cpu.isFlagSet(Cpu.FLAG_C)) 1 else 0)
+    }
+
+    fun adcReg(reg: Int) {
+        add(cpu.readRegInt(reg) + if (cpu.isFlagSet(Cpu.FLAG_C)) 1 else 0)
+    }
+
     // 16 bit ALU
 
     /** Decrements reg16 */
@@ -70,6 +102,7 @@ class OpCodesProcessor(private val emulator: Emulator) {
         cpu.writeReg16(reg16, value - 1);
     }
 
+    /** Increments reg16 */
     fun inc16(reg16: Int) {
         val value = cpu.readReg16(reg16);
         cpu.writeReg16(reg16, value + 1);

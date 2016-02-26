@@ -17,10 +17,10 @@ class Cpu(private val emulator: Emulator) {
         const val REG_DE = 4
         const val REG_HL = 6
 
-        const val FLAG_Z = 7;
-        const val FLAG_N = 6;
-        const val FLAG_H = 5;
-        const val FLAG_C = 4;
+        const val FLAG_Z = 7
+        const val FLAG_N = 6
+        const val FLAG_H = 5
+        const val FLAG_C = 4
     }
 
     var sp: Int = 0 //stack pointer
@@ -41,13 +41,17 @@ class Cpu(private val emulator: Emulator) {
         return regs[reg]
     }
 
+    fun readRegInt(reg: Int): Int {
+        return readReg(reg).toInt() and 0xFF
+    }
+
     fun writeReg(reg: Int, value: Byte) {
         regs[reg] = value
     }
 
     fun readReg16(reg: Int): Int {
-        val r1 = readReg(reg).toInt() and 0xFF
-        val r2 = readReg(reg + 1).toInt() and 0xFF
+        val r1 = readRegInt(reg)
+        val r2 = readRegInt(reg + 1)
 
         return ((r1 shl 8) + r2)
     }
@@ -58,21 +62,26 @@ class Cpu(private val emulator: Emulator) {
     }
 
     fun setFlag(flag: Int) {
-        var flagReg = readReg(REG_F).toInt() and 0xFF;
+        var flagReg = readRegInt(REG_F)
         flagReg or (1 shl flag);
         writeReg(REG_F, flagReg.toByte())
     }
 
-    fun clearFlag(flag: Int) {
-        var flagReg = readReg(REG_F).toInt() and 0xFF;
+    fun resetFlag(flag: Int) {
+        var flagReg = readRegInt(REG_F)
         flagReg and (1 shl flag).inv();
         writeReg(REG_F, flagReg.toByte())
     }
 
     fun toggleFlag(flag: Int) {
-        var flagReg = readReg(REG_F).toInt() and 0xFF;
+        var flagReg = readRegInt(REG_F)
         flagReg xor (1 shl flag);
         writeReg(REG_F, flagReg.toByte())
+    }
+
+    fun isFlagSet(flag: Int): Boolean {
+        var flagReg = readRegInt(REG_F)
+        return flagReg and (1 shl flag) != 0
     }
 }
 
