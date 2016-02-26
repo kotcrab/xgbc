@@ -68,7 +68,7 @@ fun generateOpCodes(emu: Emulator, proc: OpCodesProcessor, op: Array<Instr?>) {
     op[0x33] = Instr(1, 8, "INC SP", {})
     op[0x34] = Instr(1, 12, "INC (HL)", {})
     op[0x35] = Instr(1, 12, "DEC (HL)", {})
-    op[0x36] = Instr(2, 12, "LD (HL), d8", {})
+    op[0x36] = VoidInstr(2, 12, "LD (HL), d8", { emu.write(cpu.readReg16(Cpu.REG_HL), emu.read(cpu.pc + 1)) })
     op[0x37] = Instr(1, 4, "SCF", {})
     op[0x38] = CondInstr(2, 12, 8, "JR C, r8", { false })
     op[0x39] = Instr(1, 8, "ADD HL, SP", {})
@@ -283,7 +283,7 @@ fun generateOpCodes(emu: Emulator, proc: OpCodesProcessor, op: Array<Instr?>) {
 
         cpu.writeReg16(Cpu.REG_HL, value);
     })
-    op[0xF9] = Instr(1, 8, "LD SP, HL", {})
+    op[0xF9] = VoidInstr(1, 8, "LD SP, HL", { cpu.sp = cpu.readReg16(Cpu.REG_HL) })
     op[0xFA] = Instr(3, 16, "LD A, (a16)", { proc.ld8ImmAddrToReg(Cpu.REG_A) })
     op[0xFB] = Instr(1, 4, "EI", {})
     op[0xFC] = null
