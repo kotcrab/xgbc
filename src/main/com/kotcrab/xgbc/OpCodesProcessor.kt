@@ -219,6 +219,29 @@ class OpCodesProcessor(private val emulator: Emulator) {
 
     // 16 bit ALU
 
+    fun addHL(reg16: Int) {
+        val regHL = cpu.readReg16(Cpu.REG_HL)
+        val reg = cpu.readRegInt(reg16)
+        val result = regHL + reg
+
+        cpu.resetFlag(Cpu.FLAG_N)
+        if ((regHL and 0xF) + (reg and 0xF) and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
+        if ((regHL and 0xFF) + (reg and 0xFF) and 0x100 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
+
+        cpu.writeReg16(Cpu.REG_HL, result)
+    }
+
+    fun addHLSP() {
+        val regHL = cpu.readReg16(Cpu.REG_HL)
+        val result = regHL + cpu.sp
+
+        cpu.resetFlag(Cpu.FLAG_N)
+        if ((regHL and 0xF) + (cpu.sp and 0xF) and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
+        if ((regHL and 0xFF) + (cpu.sp and 0xFF) and 0x100 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
+
+        cpu.writeReg16(Cpu.REG_HL, result)
+    }
+
     /** Decrements reg16 */
     fun dec16(reg16: Int) {
         val value = cpu.readReg16(reg16);
