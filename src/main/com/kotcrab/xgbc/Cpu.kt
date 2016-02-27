@@ -35,7 +35,7 @@ class Cpu(private val emulator: Emulator) {
     init {
         opProc = OpCodesProcessor(emulator, this)
         generateOpCodes(emulator, this, opProc, op)
-        generateExtOpCodes(opProc, extOp)
+        generateExtOpCodes(emulator, this, opProc, extOp)
     }
 
     fun readReg(reg: Int): Byte {

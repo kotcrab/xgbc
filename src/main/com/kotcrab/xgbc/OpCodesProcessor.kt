@@ -277,6 +277,20 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
 
     // Others
 
+    fun swap(b: Byte): Byte {
+        val value = b.toInt() and 0xFF
+        val result = ((value and 0x0F shl 4) or (value and 0xF0 shr 4));
+        if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        cpu.resetFlag(Cpu.FLAG_N)
+        cpu.resetFlag(Cpu.FLAG_H)
+        cpu.resetFlag(Cpu.FLAG_C)
+        return result.toByte()
+    }
+
+    fun swapReg(reg: Int) {
+        cpu.writeReg(reg, swap(cpu.readReg(reg)))
+    }
+
     fun daa() {
         var regA = cpu.readRegInt(Cpu.REG_A)
 
@@ -298,6 +312,24 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         if (regA == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
 
         cpu.writeReg(Cpu.REG_A, regA.toByte());
+    }
+
+    fun cpl() {
+        cpu.writeReg(Cpu.REG_A, cpu.readRegInt(Cpu.REG_A).inv().toByte())
+        cpu.setFlag(Cpu.FLAG_N)
+        cpu.setFlag(Cpu.FLAG_H)
+    }
+
+    fun ccf() {
+        cpu.resetFlag(Cpu.FLAG_N)
+        cpu.resetFlag(Cpu.FLAG_H)
+        cpu.toggleFlag(Cpu.FLAG_C)
+    }
+
+    fun scf() {
+        cpu.resetFlag(Cpu.FLAG_N)
+        cpu.resetFlag(Cpu.FLAG_H)
+        cpu.setFlag(Cpu.FLAG_C)
     }
 
     // Jumps

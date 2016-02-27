@@ -56,7 +56,7 @@ fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<I
     op[0x2C] = Instr(1, 4, "INC L", { proc.inc(Cpu.REG_L) })
     op[0x2D] = Instr(1, 4, "DEC L", { proc.dec(Cpu.REG_L) })
     op[0x2E] = Instr(2, 8, "LD L, d8", { proc.ld8ImmValueToReg(Cpu.REG_L) })
-    op[0x2F] = Instr(1, 4, "CPL", {})
+    op[0x2F] = Instr(1, 4, "CPL", { proc.cpl() })
     op[0x30] = Instr(2, 12, "JR NC, r8", { proc.jrNC() })
     op[0x31] = VoidInstr(3, 12, "LD SP, d16", { cpu.sp = emu.read16(cpu.pc + 1) })
     op[0x32] = Instr(1, 8, "LD (HL-), A", {
@@ -67,7 +67,7 @@ fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<I
     op[0x34] = Instr(1, 12, "INC (HL)", { proc.incHL() })
     op[0x35] = Instr(1, 12, "DEC (HL)", { proc.decHL() })
     op[0x36] = VoidInstr(2, 12, "LD (HL), d8", { emu.write(cpu.readReg16(Cpu.REG_HL), emu.read(cpu.pc + 1)) })
-    op[0x37] = Instr(1, 4, "SCF", {})
+    op[0x37] = Instr(1, 4, "SCF", {proc.scf()})
     op[0x38] = Instr(2, 12, "JR C, r8", { proc.jrC() })
     op[0x39] = Instr(1, 8, "ADD HL, SP", { proc.addHLSP() })
     op[0x3A] = Instr(1, 8, "LD A, (HL-)", {
@@ -78,7 +78,7 @@ fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<I
     op[0x3C] = Instr(1, 4, "INC A", { proc.inc(Cpu.REG_A) })
     op[0x3D] = Instr(1, 4, "DEC A", { proc.dec(Cpu.REG_A) })
     op[0x3E] = Instr(2, 8, "LD A, d8", { proc.ld8ImmValueToReg(Cpu.REG_A) })
-    op[0x3F] = Instr(1, 4, "CCF", {})
+    op[0x3F] = Instr(1, 4, "CCF", { proc.ccf() })
     op[0x40] = Instr(1, 4, "LD B, B", { proc.ld8RegToReg(Cpu.REG_B, Cpu.REG_B) })
     op[0x41] = Instr(1, 4, "LD B, C", { proc.ld8RegToReg(Cpu.REG_B, Cpu.REG_C) })
     op[0x42] = Instr(1, 4, "LD B, D", { proc.ld8RegToReg(Cpu.REG_B, Cpu.REG_D) })
@@ -293,7 +293,7 @@ fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<I
     op[0xFF] = JmpInstr(1, 16, "RST 38H", { proc.rst(0x38) })
 }
 
-fun generateExtOpCodes(opProc: OpCodesProcessor, op: Array<Instr?>) {
+fun generateExtOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<Instr?>) {
     op[0x00] = Instr(2, 8, "RLC B", {})
     op[0x01] = Instr(2, 8, "RLC C", {})
     op[0x02] = Instr(2, 8, "RLC D", {})
@@ -342,14 +342,17 @@ fun generateExtOpCodes(opProc: OpCodesProcessor, op: Array<Instr?>) {
     op[0x2D] = Instr(2, 8, "SRA L", {})
     op[0x2E] = Instr(2, 16, "SRA (HL)", {})
     op[0x2F] = Instr(2, 8, "SRA A", {})
-    op[0x30] = Instr(2, 8, "SWAP B", {})
-    op[0x31] = Instr(2, 8, "SWAP C", {})
-    op[0x32] = Instr(2, 8, "SWAP D", {})
-    op[0x33] = Instr(2, 8, "SWAP E", {})
-    op[0x34] = Instr(2, 8, "SWAP H", {})
-    op[0x35] = Instr(2, 8, "SWAP L", {})
-    op[0x36] = Instr(2, 16, "SWAP (HL)", {})
-    op[0x37] = Instr(2, 8, "SWAP A", {})
+    op[0x30] = Instr(2, 8, "SWAP B", { proc.swapReg(Cpu.REG_B) })
+    op[0x31] = Instr(2, 8, "SWAP C", { proc.swapReg(Cpu.REG_C) })
+    op[0x32] = Instr(2, 8, "SWAP D", { proc.swapReg(Cpu.REG_D) })
+    op[0x33] = Instr(2, 8, "SWAP E", { proc.swapReg(Cpu.REG_E) })
+    op[0x34] = Instr(2, 8, "SWAP H", { proc.swapReg(Cpu.REG_H) })
+    op[0x35] = Instr(2, 8, "SWAP L", { proc.swapReg(Cpu.REG_L) })
+    op[0x36] = Instr(2, 16, "SWAP (HL)", {
+        val addr = cpu.readReg16(Cpu.REG_HL);
+        emu.write(addr, proc.swap(emu.read(addr)))
+    })
+    op[0x37] = Instr(2, 8, "SWAP A", { proc.swapReg(Cpu.REG_A) })
     op[0x38] = Instr(2, 8, "SRL B", {})
     op[0x39] = Instr(2, 8, "SRL C", {})
     op[0x3A] = Instr(2, 8, "SRL D", {})
