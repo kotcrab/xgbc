@@ -265,4 +265,31 @@ class OpCodesProcessor(private val emulator: Emulator) {
         cpu.writeReg16(reg16, emulator.read16(cpu.sp))
         cpu.sp = cpu.sp + 2
     }
+
+    // Others
+
+    fun daa() {
+        var regA = cpu.readRegInt(Cpu.REG_A)
+
+        if (cpu.isFlagSet(Cpu.FLAG_N)) {
+            if (cpu.isFlagSet(Cpu.FLAG_H) || (regA and 0xF) > 9) regA += 0x06;
+            if (cpu.isFlagSet(Cpu.FLAG_C) || regA > 0x9F) regA += 0x60
+        } else {
+            if (cpu.isFlagSet(Cpu.FLAG_H)) regA = (regA - 6) and 0xFF;
+            if (cpu.isFlagSet(Cpu.FLAG_C)) regA -= 0x60;
+        }
+
+        cpu.resetFlag(Cpu.FLAG_H)
+        if ((regA and 0x100) == 0x100) cpu.setFlag(Cpu.FLAG_C)
+        else
+            cpu.setFlag(Cpu.FLAG_C)
+
+        regA = regA and 0xFF;
+
+        if (regA == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+
+        cpu.writeReg(Cpu.REG_A, regA.toByte());
+
+
+    }
 }

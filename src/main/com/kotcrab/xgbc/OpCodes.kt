@@ -47,7 +47,7 @@ fun generateOpCodes(emu: Emulator, proc: OpCodesProcessor, op: Array<Instr?>) {
     op[0x24] = Instr(1, 4, "INC H", { proc.inc(Cpu.REG_H) })
     op[0x25] = Instr(1, 4, "DEC H", { proc.dec(Cpu.REG_H) })
     op[0x26] = Instr(2, 8, "LD H, d8", { proc.ld8ImmValueToReg(Cpu.REG_H) })
-    op[0x27] = Instr(1, 4, "DAA", {})
+    op[0x27] = Instr(1, 4, "DAA", { proc.daa() })
     op[0x28] = CondInstr(2, 12, 8, "JR Z, r8", { false })
     op[0x29] = Instr(1, 8, "ADD HL, HL", { proc.addHL(Cpu.REG_HL) })
     op[0x2A] = Instr(1, 8, "LD A, (HL+)", {

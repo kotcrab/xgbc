@@ -67,6 +67,10 @@ class Emulator(romFile: FileHandle) {
         write(0xFFFF, 0x00) //IE
     }
 
+    fun update() {
+        cpu.update()
+    }
+
     fun read(addr: Int): Byte {
         when (addr) {
             in 0x0000..0x8000 - 1 -> return rom.read(addr)

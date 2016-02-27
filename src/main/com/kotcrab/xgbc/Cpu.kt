@@ -63,25 +63,40 @@ class Cpu(private val emulator: Emulator) {
 
     fun setFlag(flag: Int) {
         var flagReg = readRegInt(REG_F)
-        flagReg or (1 shl flag);
+        flagReg = flagReg or (1 shl flag);
         writeReg(REG_F, flagReg.toByte())
     }
 
     fun resetFlag(flag: Int) {
         var flagReg = readRegInt(REG_F)
-        flagReg and (1 shl flag).inv();
+        flagReg = flagReg and (1 shl flag).inv();
         writeReg(REG_F, flagReg.toByte())
     }
 
     fun toggleFlag(flag: Int) {
         var flagReg = readRegInt(REG_F)
-        flagReg xor (1 shl flag);
+        flagReg = flagReg xor (1 shl flag);
         writeReg(REG_F, flagReg.toByte())
     }
 
     fun isFlagSet(flag: Int): Boolean {
         var flagReg = readRegInt(REG_F)
         return flagReg and (1 shl flag) != 0
+    }
+
+    fun update() {
+        var opcode = emulator.readInt(pc)
+
+        var instr: Instr?
+        if (opcode == 0xCB) {
+            instr = emulator.cpu.extOp[opcode]
+        } else {
+            instr = emulator.cpu.op[opcode]
+        }
+
+        if (instr == null) throw EmulatorException("Illegal opcode: {$opcode}")
+
+        instr.op.invoke();
     }
 }
 

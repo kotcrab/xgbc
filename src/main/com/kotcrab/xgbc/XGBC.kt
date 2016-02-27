@@ -40,6 +40,8 @@ class XGBC : ApplicationAdapter() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         stage.act(Math.min(Gdx.graphics.deltaTime, 1 / 30f))
         stage.draw()
+
+        emulator.update()
     }
 
     override fun dispose() {
