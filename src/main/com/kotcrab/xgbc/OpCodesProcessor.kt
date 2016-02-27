@@ -254,12 +254,23 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
 
     // Stack pointer push and pop
 
-    fun push(reg16: Int) {
+    fun push(addr: Int) {
+        cpu.sp = cpu.sp - 2
+        emulator.write16(cpu.sp, addr)
+    }
+
+    fun pop(): Int {
+        val addr = emulator.read16(cpu.sp)
+        cpu.sp = cpu.sp + 2
+        return addr;
+    }
+
+    fun pushReg(reg16: Int) {
         cpu.sp = cpu.sp - 2
         emulator.write16(cpu.sp, cpu.readReg16(reg16))
     }
 
-    fun pop(reg16: Int) {
+    fun popReg(reg16: Int) {
         cpu.writeReg16(reg16, emulator.read16(cpu.sp))
         cpu.sp = cpu.sp + 2
     }
@@ -364,6 +375,97 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     fun jrC(): Boolean {
         if (cpu.isFlagSet(Cpu.FLAG_C)) {
             return jr()
+        } else
+            return false
+    }
+
+    // Calls
+
+    fun call(): Boolean {
+        push(emulator.read16(cpu.pc) + 3) //each call instructions is 3 bytes long
+        jp()
+        return true;
+    }
+
+    fun callNZ(): Boolean {
+        if (cpu.isFlagSet(Cpu.FLAG_Z) == false) {
+            return call()
+        } else {
+            return false
+        }
+    }
+
+    fun callZ(): Boolean {
+        if (cpu.isFlagSet(Cpu.FLAG_Z)) {
+            return call()
+        } else {
+            return false
+        }
+    }
+
+    fun callNC(): Boolean {
+        if (cpu.isFlagSet(Cpu.FLAG_C) == false) {
+            return call()
+        } else {
+            return false
+        }
+    }
+
+    fun callC(): Boolean {
+        if (cpu.isFlagSet(Cpu.FLAG_C)) {
+            return call()
+        } else
+            return false
+    }
+
+    // Restarts
+
+    fun rst(addr: Int): Boolean {
+        push(cpu.pc)
+        cpu.pc = addr
+        return true
+    }
+
+    // Returns
+
+    fun ret(): Boolean {
+        cpu.pc = pop()
+        return true
+    }
+
+    fun reti(): Boolean {
+        cpu.pc = pop()
+        //TODO: enable interrupts
+        return true
+    }
+
+    fun retNZ(): Boolean {
+        if (cpu.isFlagSet(Cpu.FLAG_Z) == false) {
+            return ret()
+        } else {
+            return false
+        }
+    }
+
+    fun retZ(): Boolean {
+        if (cpu.isFlagSet(Cpu.FLAG_Z)) {
+            return ret()
+        } else {
+            return false
+        }
+    }
+
+    fun retNC(): Boolean {
+        if (cpu.isFlagSet(Cpu.FLAG_C) == false) {
+            return ret()
+        } else {
+            return false
+        }
+    }
+
+    fun retC(): Boolean {
+        if (cpu.isFlagSet(Cpu.FLAG_C)) {
+            return ret()
         } else
             return false
     }
