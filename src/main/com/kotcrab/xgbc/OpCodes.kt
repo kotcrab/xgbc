@@ -2,9 +2,7 @@ package com.kotcrab.xgbc
 
 /** @author Kotcrab */
 
-fun generateOpCodes(emu: Emulator, proc: OpCodesProcessor, op: Array<Instr?>) {
-    val cpu = emu.cpu;
-
+fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<Instr?>) {
     op[0x00] = Instr(1, 4, "NOP", {})
     op[0x01] = Instr(3, 12, "LD BC, d16", { proc.ld16ImmValueToReg(Cpu.REG_BC) })
     op[0x02] = Instr(1, 8, "LD (BC), A", { proc.ld8RegToReg16Addr(Cpu.REG_BC, Cpu.REG_A) })
@@ -29,7 +27,7 @@ fun generateOpCodes(emu: Emulator, proc: OpCodesProcessor, op: Array<Instr?>) {
     op[0x15] = Instr(1, 4, "DEC D", { proc.dec(Cpu.REG_D) })
     op[0x16] = Instr(2, 8, "LD D, d8", { proc.ld8ImmValueToReg(Cpu.REG_D) })
     op[0x17] = Instr(1, 4, "RLA", {})
-    op[0x18] = Instr(2, 12, "JR r8", {})
+    op[0x18] = JmpInstr(2, 12, "JR r8", { proc.jr() })
     op[0x19] = Instr(1, 8, "ADD HL, DE", { proc.addHL(Cpu.REG_DE) })
     op[0x1A] = Instr(1, 8, "LD A, (DE)", { proc.ld8Reg16AddrToReg(Cpu.REG_A, Cpu.REG_DE) })
     op[0x1B] = Instr(1, 8, "DEC DE", { proc.dec16(Cpu.REG_DE) })
@@ -37,7 +35,7 @@ fun generateOpCodes(emu: Emulator, proc: OpCodesProcessor, op: Array<Instr?>) {
     op[0x1D] = Instr(1, 4, "DEC E", { proc.dec(Cpu.REG_E) })
     op[0x1E] = Instr(2, 8, "LD E, d8", { proc.ld8ImmValueToReg(Cpu.REG_E) })
     op[0x1F] = Instr(1, 4, "RRA", {})
-    op[0x20] = CondInstr(2, 12, 8, "JR NZ, r8", { false })
+    op[0x20] = Instr(2, 12, "JR NZ, r8", { proc.jrNZ() })
     op[0x21] = Instr(3, 12, "LD HL, d16", { proc.ld16ImmValueToReg(Cpu.REG_HL) })
     op[0x22] = Instr(1, 8, "LD (HL+), A", {
         proc.ld8RegToReg16Addr(Cpu.REG_HL, Cpu.REG_A)
@@ -48,7 +46,7 @@ fun generateOpCodes(emu: Emulator, proc: OpCodesProcessor, op: Array<Instr?>) {
     op[0x25] = Instr(1, 4, "DEC H", { proc.dec(Cpu.REG_H) })
     op[0x26] = Instr(2, 8, "LD H, d8", { proc.ld8ImmValueToReg(Cpu.REG_H) })
     op[0x27] = Instr(1, 4, "DAA", { proc.daa() })
-    op[0x28] = CondInstr(2, 12, 8, "JR Z, r8", { false })
+    op[0x28] = Instr(2, 12, "JR Z, r8", { proc.jrZ() })
     op[0x29] = Instr(1, 8, "ADD HL, HL", { proc.addHL(Cpu.REG_HL) })
     op[0x2A] = Instr(1, 8, "LD A, (HL+)", {
         proc.ld8Reg16AddrToReg(Cpu.REG_A, Cpu.REG_HL)
@@ -59,7 +57,7 @@ fun generateOpCodes(emu: Emulator, proc: OpCodesProcessor, op: Array<Instr?>) {
     op[0x2D] = Instr(1, 4, "DEC L", { proc.dec(Cpu.REG_L) })
     op[0x2E] = Instr(2, 8, "LD L, d8", { proc.ld8ImmValueToReg(Cpu.REG_L) })
     op[0x2F] = Instr(1, 4, "CPL", {})
-    op[0x30] = CondInstr(2, 12, 8, "JR NC, r8", { false })
+    op[0x30] = Instr(2, 12, "JR NC, r8", { proc.jrNC() })
     op[0x31] = VoidInstr(3, 12, "LD SP, d16", { cpu.sp = emu.read16(cpu.pc + 1) })
     op[0x32] = Instr(1, 8, "LD (HL-), A", {
         proc.ld8RegToReg16Addr(Cpu.REG_HL, Cpu.REG_A)
@@ -70,7 +68,7 @@ fun generateOpCodes(emu: Emulator, proc: OpCodesProcessor, op: Array<Instr?>) {
     op[0x35] = Instr(1, 12, "DEC (HL)", { proc.decHL() })
     op[0x36] = VoidInstr(2, 12, "LD (HL), d8", { emu.write(cpu.readReg16(Cpu.REG_HL), emu.read(cpu.pc + 1)) })
     op[0x37] = Instr(1, 4, "SCF", {})
-    op[0x38] = CondInstr(2, 12, 8, "JR C, r8", { false })
+    op[0x38] = Instr(2, 12, "JR C, r8", { proc.jrC() })
     op[0x39] = Instr(1, 8, "ADD HL, SP", { proc.addHLSP() })
     op[0x3A] = Instr(1, 8, "LD A, (HL-)", {
         proc.ld8Reg16AddrToReg(Cpu.REG_A, Cpu.REG_HL)
@@ -209,35 +207,35 @@ fun generateOpCodes(emu: Emulator, proc: OpCodesProcessor, op: Array<Instr?>) {
     op[0xBD] = Instr(1, 4, "CP L", { proc.cpReg(Cpu.REG_L) })
     op[0xBE] = Instr(1, 8, "CP (HL)", { proc.cp(emu.readInt(cpu.readReg16(Cpu.REG_HL))) })
     op[0xBF] = Instr(1, 4, "CP A", { proc.cpReg(Cpu.REG_A) })
-    op[0xC0] = CondInstr(1, 20, 8, "RET NZ", { false })
+    op[0xC0] = Instr(1, 20, "RET NZ", { })
     op[0xC1] = Instr(1, 12, "POP BC", { proc.pop(Cpu.REG_BC) })
-    op[0xC2] = CondInstr(3, 16, 12, "JP NZ, a16", { false })
-    op[0xC3] = Instr(3, 16, "JP a16", {})
-    op[0xC4] = CondInstr(3, 24, 12, "CALL NZ, a16", { false })
+    op[0xC2] = JmpInstr(3, 16, "JP NZ, a16", { proc.jpNZ() })
+    op[0xC3] = JmpInstr(3, 16, "JP a16", { proc.jp() })
+    op[0xC4] = Instr(3, 24, "CALL NZ, a16", { })
     op[0xC5] = Instr(1, 16, "PUSH BC", { proc.push(Cpu.REG_BC) })
     op[0xC6] = Instr(2, 8, "ADD A, d8", { proc.add(emu.readInt(cpu.pc + 1)) })
     op[0xC7] = Instr(1, 16, "RST 00H", {})
-    op[0xC8] = CondInstr(1, 20, 8, "RET Z", { false })
+    op[0xC8] = Instr(1, 20, "RET Z", { })
     op[0xC9] = Instr(1, 16, "RET", {})
-    op[0xCA] = CondInstr(3, 16, 12, "JP Z, a16", { false })
+    op[0xCA] = JmpInstr(3, 16, "JP Z, a16", { proc.jpZ() })
     op[0xCB] = Instr(1, 4, "PREFIX CB", {})
-    op[0xCC] = CondInstr(3, 24, 12, "CALL Z, a16", { false })
+    op[0xCC] = Instr(3, 24, "CALL Z, a16", { })
     op[0xCD] = Instr(3, 24, "CALL a16", {})
     op[0xCE] = Instr(2, 8, "ADC A, d8", { proc.adc(emu.readInt(cpu.pc + 1)) })
     op[0xCF] = Instr(1, 16, "RST 08H", {})
-    op[0xD0] = CondInstr(1, 20, 8, "RET NC", { false })
+    op[0xD0] = Instr(1, 20, "RET NC", { })
     op[0xD1] = Instr(1, 12, "POP DE", { proc.pop(Cpu.REG_DE) })
-    op[0xD2] = CondInstr(3, 16, 12, "JP NC, a16", { false })
+    op[0xD2] = JmpInstr(3, 16, "JP NC, a16", { proc.jpNC() })
     op[0xD3] = null
-    op[0xD4] = CondInstr(3, 24, 12, "CALL NC, a16", { false })
+    op[0xD4] = Instr(3, 24, "CALL NC, a16", { })
     op[0xD5] = Instr(1, 16, "PUSH DE", { proc.push(Cpu.REG_DE) })
     op[0xD6] = Instr(2, 8, "SUB d8", { proc.sub(emu.readInt(cpu.pc + 1)) })
     op[0xD7] = Instr(1, 16, "RST 10H", {})
-    op[0xD8] = CondInstr(1, 20, 8, "RET C", { false })
+    op[0xD8] = Instr(1, 20, "RET C", { })
     op[0xD9] = Instr(1, 16, "RETI", {})
-    op[0xDA] = CondInstr(3, 16, 12, "JP C, a16", { false })
+    op[0xDA] = JmpInstr(3, 16, "JP C, a16", { proc.jpC() })
     op[0xDB] = null
-    op[0xDC] = CondInstr(3, 24, 12, "CALL C, a16", { false })
+    op[0xDC] = Instr(3, 24, "CALL C, a16", { })
     op[0xDD] = null
     op[0xDE] = Instr(2, 8, "SBC A, d8", { proc.sbc(emu.readInt(cpu.pc + 1)) })
     op[0xDF] = Instr(1, 16, "RST 18H", {})
@@ -260,7 +258,7 @@ fun generateOpCodes(emu: Emulator, proc: OpCodesProcessor, op: Array<Instr?>) {
 
         cpu.sp = cpu.sp + value
     })
-    op[0xE9] = Instr(1, 4, "JP (HL)", {})
+    op[0xE9] = JmpInstr(1, 4, "JP (HL)", { proc.jpHL() })
     op[0xEA] = Instr(3, 16, "LD (a16), A", { proc.ld8RegToImmAddr(Cpu.REG_A) })
     op[0xEB] = null
     op[0xEC] = null

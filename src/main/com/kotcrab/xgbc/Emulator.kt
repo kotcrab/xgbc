@@ -107,9 +107,9 @@ class Emulator(romFile: FileHandle) {
             in 0xC000..0xE000 - 1 -> ram[addr - 0xC000] = value
             in 0xE000..0xFE00 - 1 -> ram[addr - 0xE000] = value //ram echo
             in 0xFE00..0xFEA0 - 1 -> oam[addr - 0xFE00] = value
-            in 0xFEA0..0xFF00 - 1 -> throw EmulatorException("Write attempt to unusable, empty IO memory")
+            in 0xFEA0..0xFF00 - 1 -> return//throw EmulatorException("Write attempt to unusable, empty IO memory")
             in 0xFF00..0xFF4C - 1 -> io.write(addr - 0xFF00, value)
-            in 0xFF4C..0xFF80 - 1 -> throw EmulatorException("Write attempt to unusable, empty IO memory")
+            in 0xFF4C..0xFF80 - 1 -> return//throw EmulatorException("Write attempt to unusable, empty IO memory")
             in 0xFF80..0xFFFF - 1 -> internalRam[addr - 0xFE80] = value
             0xFFFF -> ie = value
             else -> throw EmulatorException("Write address out of range: " + toHex(addr))

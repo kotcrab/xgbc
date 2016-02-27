@@ -1,9 +1,7 @@
 package com.kotcrab.xgbc
 
 /** @author Kotcrab */
-class OpCodesProcessor(private val emulator: Emulator) {
-    private val cpu = emulator.cpu
-
+class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     // 8 bit load operations
 
     /** Copies value from cpu's reg2 into reg1. */
@@ -272,11 +270,11 @@ class OpCodesProcessor(private val emulator: Emulator) {
         var regA = cpu.readRegInt(Cpu.REG_A)
 
         if (cpu.isFlagSet(Cpu.FLAG_N)) {
-            if (cpu.isFlagSet(Cpu.FLAG_H) || (regA and 0xF) > 9) regA += 0x06;
+            if (cpu.isFlagSet(Cpu.FLAG_H) || (regA and 0xF) > 9) regA += 0x06
             if (cpu.isFlagSet(Cpu.FLAG_C) || regA > 0x9F) regA += 0x60
         } else {
-            if (cpu.isFlagSet(Cpu.FLAG_H)) regA = (regA - 6) and 0xFF;
-            if (cpu.isFlagSet(Cpu.FLAG_C)) regA -= 0x60;
+            if (cpu.isFlagSet(Cpu.FLAG_H)) regA = (regA - 6) and 0xFF
+            if (cpu.isFlagSet(Cpu.FLAG_C)) regA -= 0x60
         }
 
         cpu.resetFlag(Cpu.FLAG_H)
@@ -289,7 +287,84 @@ class OpCodesProcessor(private val emulator: Emulator) {
         if (regA == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
 
         cpu.writeReg(Cpu.REG_A, regA.toByte());
+    }
 
+    // Jumps
 
+    fun jp(): Boolean {
+        cpu.pc = emulator.read16(cpu.pc + 1)
+        return true
+    }
+
+    fun jpHL(): Boolean {
+        cpu.pc = cpu.readReg16(Cpu.REG_HL)
+        return true;
+    }
+
+    fun jpNZ(): Boolean {
+        if (cpu.isFlagSet(Cpu.FLAG_Z) == false) {
+            return jp()
+        } else {
+            return false
+        }
+    }
+
+    fun jpZ(): Boolean {
+        if (cpu.isFlagSet(Cpu.FLAG_Z)) {
+            return jp()
+        } else {
+            return false;
+        }
+    }
+
+    fun jpNC(): Boolean {
+        if (cpu.isFlagSet(Cpu.FLAG_C) == false) {
+            return jp()
+        } else {
+            return false
+        }
+    }
+
+    fun jpC(): Boolean {
+        if (cpu.isFlagSet(Cpu.FLAG_C)) {
+            return jp()
+        } else
+            return false
+    }
+
+    fun jr(): Boolean {
+        cpu.pc = emulator.read(cpu.pc + 1) + cpu.pc
+        return true;
+    }
+
+    fun jrNZ(): Boolean {
+        if (cpu.isFlagSet(Cpu.FLAG_Z) == false) {
+            return jr()
+        } else {
+            return false
+        }
+    }
+
+    fun jrZ(): Boolean {
+        if (cpu.isFlagSet(Cpu.FLAG_Z)) {
+            return jr()
+        } else {
+            return false;
+        }
+    }
+
+    fun jrNC(): Boolean {
+        if (cpu.isFlagSet(Cpu.FLAG_C) == false) {
+            return jr()
+        } else {
+            return false
+        }
+    }
+
+    fun jrC(): Boolean {
+        if (cpu.isFlagSet(Cpu.FLAG_C)) {
+            return jr()
+        } else
+            return false
     }
 }

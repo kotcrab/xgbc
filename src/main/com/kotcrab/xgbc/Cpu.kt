@@ -30,10 +30,11 @@ class Cpu(private val emulator: Emulator) {
     val op = arrayOfNulls<Instr>(256)
     val extOp = arrayOfNulls<Instr>(256)
 
-    private val opProc = OpCodesProcessor(emulator)
+    private lateinit var opProc: OpCodesProcessor;
 
     init {
-        generateOpCodes(emulator, opProc, op)
+        opProc = OpCodesProcessor(emulator, this)
+        generateOpCodes(emulator, this, opProc, op)
         generateExtOpCodes(opProc, extOp)
     }
 
@@ -94,24 +95,32 @@ class Cpu(private val emulator: Emulator) {
             instr = emulator.cpu.op[opcode]
         }
 
-        if (instr == null) throw EmulatorException("Illegal opcode: {$opcode}")
+        if (instr == null) throw EmulatorException("Illegal opcode: ${toHex(opcode.toByte())} at ${toHex(pc)}")
 
-        instr.op.invoke();
+        if (instr is JmpInstr) {
+            val result = instr.op.invoke()
+            if (result == false) pc += instr.len;
+        } else {
+            instr.op.invoke();
+            pc += instr.len
+        }
     }
 }
 
 open class Instr(val len: Int,
                  val cycles: Int,
                  val name: String,
-                 val op: () -> Any?)
+                 val op: () -> Any?) {
+}
 
 class VoidInstr(len: Int,
                 cycles: Int,
                 name: String,
                 op: () -> Unit) : Instr(len, cycles, name, op)
 
-class CondInstr(len: Int,
-                cycles: Int,
-                val cyclesIfActionNotTaken: Int,
-                name: String,
-                op: () -> Boolean) : Instr(len, cycles, name, op)
+class JmpInstr(len: Int,
+               cycles: Int,
+               name: String,
+               op: () -> Boolean) : Instr(len, cycles, name, op) {
+
+}

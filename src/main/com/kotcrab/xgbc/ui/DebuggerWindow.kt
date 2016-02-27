@@ -127,7 +127,6 @@ class OpcodesTab(val emulator: Emulator) : Tab(false, false) {
                 opcode = emulator.read(addr + 1)
                 opcodeInt = opcode.toInt() and 0xFF
                 instr = emulator.cpu.extOp[opcodeInt]
-                println(addr)
             } else {
                 instr = emulator.cpu.op[opcodeInt]
             }

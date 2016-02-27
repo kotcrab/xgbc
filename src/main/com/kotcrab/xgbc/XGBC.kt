@@ -26,7 +26,7 @@ class XGBC : ApplicationAdapter() {
 
         Gdx.input.inputProcessor = stage
 
-        emulator = Emulator(Gdx.files.internal("rom/tetris.gb"))
+        emulator = Emulator(Gdx.files.internal("rom/test/cpu_instrs.gb"))
 
         stage.addActor(DebuggerWindow(emulator))
     }
