@@ -501,4 +501,74 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         } else
             return false
     }
+
+    // Rotates and shifts
+
+    fun rlc(byte: Byte): Byte {
+        val result = byte.rotateLeft(1)
+
+        if (result.toInt() and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        cpu.resetFlag(Cpu.FLAG_N)
+        cpu.resetFlag(Cpu.FLAG_H)
+        cpu.setFlagState(Cpu.FLAG_C, byte.isBitSet(7))
+        return result;
+    }
+
+    fun rrc(byte: Byte): Byte {
+        val result = byte.rotateRight(1)
+
+        if (result.toInt() and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        cpu.resetFlag(Cpu.FLAG_N)
+        cpu.resetFlag(Cpu.FLAG_H)
+        cpu.setFlagState(Cpu.FLAG_C, byte.isBitSet(0))
+        return result;
+    }
+
+    fun rl(byte: Byte): Byte {
+        var result = (byte.toInt() and 0xFF) shl 1;
+
+        result = result and cpu.isFlagSet(Cpu.FLAG_C).toInt();
+        result.rotateLeft(1, 9)
+
+        if (result.toInt() and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        cpu.resetFlag(Cpu.FLAG_N)
+        cpu.resetFlag(Cpu.FLAG_H)
+        cpu.setFlagState(Cpu.FLAG_C, byte.isBitSet(7))
+        return result.toByte();
+    }
+
+    fun rr(byte: Byte): Byte {
+        var result = (byte.toInt() and 0xFF) shl 1;
+
+        result = result and cpu.isFlagSet(Cpu.FLAG_C).toInt();
+        result.rotateRight(1, 9)
+
+        if (result.toInt() and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        cpu.resetFlag(Cpu.FLAG_N)
+        cpu.resetFlag(Cpu.FLAG_H)
+        cpu.setFlagState(Cpu.FLAG_C, byte.isBitSet(0))
+        return result.toByte();
+    }
+
+    fun rlcReg(reg: Int) {
+        val value = cpu.readReg(reg)
+        cpu.writeReg(reg, rlc(value))
+    }
+
+    fun rrcReg(reg: Int) {
+        val value = cpu.readReg(reg)
+        cpu.writeReg(reg, rrc(value))
+    }
+
+    fun rrReg(reg: Int) {
+        val value = cpu.readReg(reg)
+        cpu.writeReg(reg, rr(value))
+    }
+
+    fun rlReg(reg: Int) {
+        val value = cpu.readReg(reg)
+        cpu.writeReg(reg, rl(value))
+    }
+
+
 }
