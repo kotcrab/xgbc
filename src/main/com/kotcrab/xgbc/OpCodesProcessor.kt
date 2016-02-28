@@ -570,5 +570,82 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         cpu.writeReg(reg, rl(value))
     }
 
+    fun sla(byte: Byte): Byte {
+        var result = (byte.toInt() and 0xFF) shl 1;
+
+        if (result.toInt() and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        cpu.resetFlag(Cpu.FLAG_N)
+        cpu.resetFlag(Cpu.FLAG_H)
+        cpu.setFlagState(Cpu.FLAG_C, byte.isBitSet(7))
+
+        return result.toByte();
+    }
+
+    fun srl(byte: Byte): Byte {
+        var result = (byte.toInt() and 0xFF) shr 1;
+
+        if (result.toInt() and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        cpu.resetFlag(Cpu.FLAG_N)
+        cpu.resetFlag(Cpu.FLAG_H)
+        cpu.setFlagState(Cpu.FLAG_C, byte.isBitSet(0))
+
+        return result.toByte();
+    }
+
+    fun sra(byte: Byte): Byte {
+        var result = (byte.toInt() and 0xFF) ushr 1;
+
+        if (result.toInt() and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        cpu.resetFlag(Cpu.FLAG_N)
+        cpu.resetFlag(Cpu.FLAG_H)
+        cpu.setFlagState(Cpu.FLAG_C, byte.isBitSet(0))
+
+        return result.toByte();
+    }
+
+    fun slaReg(reg: Int) {
+        val value = cpu.readReg(reg)
+        cpu.writeReg(reg, sla(value))
+    }
+
+    fun srlReg(reg: Int) {
+        val value = cpu.readReg(reg)
+        cpu.writeReg(reg, srl(value))
+    }
+
+    fun sraReg(reg: Int) {
+        val value = cpu.readReg(reg)
+        cpu.writeReg(reg, sra(value))
+    }
+
+    // Bit operations
+
+    fun bit(bit: Int, byte: Byte) {
+        cpu.setFlagState(Cpu.FLAG_Z, byte.isBitSet(bit) == false)
+        cpu.resetFlag(Cpu.FLAG_N)
+        cpu.setFlag(Cpu.FLAG_H)
+    }
+
+    fun set(bit: Int, byte: Byte): Byte {
+        return byte.setBit(bit)
+    }
+
+    fun res(bit: Int, byte: Byte): Byte {
+        return byte.resetBit(bit)
+    }
+
+    fun bitReg(bit: Int, reg: Int) {
+       bit(bit, cpu.readReg(reg))
+    }
+
+    fun setReg(bit: Int, reg: Int) {
+        val value = cpu.readReg(reg)
+        cpu.writeReg(reg, set(bit, value))
+    }
+
+    fun resReg(bit: Int, reg: Int) {
+        val value = cpu.readReg(reg)
+        cpu.writeReg(reg, res(bit, value))
+    }
 
 }
