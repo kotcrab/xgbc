@@ -80,6 +80,12 @@ class Cpu(private val emulator: Emulator) {
         writeReg(REG_F, flagReg.toByte())
     }
 
+    fun setFlagState(flag: Int, flagState: Boolean) {
+        if ((flagState && isFlagSet(flag) == false) || (flagState == false && isFlagSet(flag))) {
+            toggleFlag(flag)
+        }
+    }
+
     fun isFlagSet(flag: Int): Boolean {
         var flagReg = readRegInt(REG_F)
         return flagReg and (1 shl flag) != 0
