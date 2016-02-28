@@ -1,3 +1,3 @@
 # xgbc
 
-Trying to make GameBoy emulator
+Trying to make Game Boy emulator
