@@ -1,12 +1,18 @@
 package com.kotcrab.xgbc
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.kotcrab.xgbc.io.IO
 
 /** @author Kotcrab */
 class Emulator(romFile: FileHandle) {
+    companion object {
+        val CLOCK = 4096 * 100
+    }
+
     val rom = Rom(romFile)
     val cpu = Cpu(this)
-    val io = IO()
+    val io = IO(this)
 
     val ram: ByteArray = ByteArray(0x2000)
     val vram: ByteArray = ByteArray(0x2000)
@@ -34,6 +40,7 @@ class Emulator(romFile: FileHandle) {
         cpu.writeReg16(Cpu.REG_BC, 0x0013)
         cpu.writeReg16(Cpu.REG_DE, 0x00D8)
         cpu.writeReg16(Cpu.REG_HL, 0x014D)
+//        write(0xFF02, 0x01) //SC
         write(0xFF05, 0x00) //TIMA
         write(0xFF06, 0x00) //TMA
         write(0xFF07, 0x00) //TAC
@@ -68,7 +75,16 @@ class Emulator(romFile: FileHandle) {
     }
 
     fun update() {
-        cpu.update()
+        val cycles = CLOCK * Gdx.graphics.deltaTime
+
+        while (true) {
+            cpu.tick()
+            io.tick()
+            if (cpu.cycle > cycles) {
+                cpu.cycle = 0
+                break
+            }
+        }
     }
 
     fun read(addr: Int): Byte {

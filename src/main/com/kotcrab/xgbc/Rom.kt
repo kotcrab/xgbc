@@ -75,6 +75,6 @@ class Rom(romFile: FileHandle) {
     }
 
     fun write(addr: Int, value: Byte) {
-        //throw EmulatorException("Illegal ROM write. MBC not implemented.")
+        throw EmulatorException("Illegal ROM write. MBC not implemented.")
     }
 }

@@ -25,11 +25,13 @@ class Cpu(private val emulator: Emulator) {
 
     var sp: Int = 0 //stack pointer
     var pc: Int = 0 //program counter
+    var cycle: Int = 0
     private val regs: ByteArray = ByteArray(8)
     var ime = false
 
     val op = arrayOfNulls<Instr>(256)
     val extOp = arrayOfNulls<Instr>(256)
+
 
     private lateinit var opProc: OpCodesProcessor;
 
@@ -92,7 +94,7 @@ class Cpu(private val emulator: Emulator) {
         return flagReg and (1 shl flag) != 0
     }
 
-    fun update() {
+    fun tick() {
         var opcode = emulator.readInt(pc)
 
         var instr: Instr?
@@ -111,6 +113,8 @@ class Cpu(private val emulator: Emulator) {
             instr.op.invoke();
             pc += instr.len
         }
+
+        cycle += instr.cycles
     }
 }
 
