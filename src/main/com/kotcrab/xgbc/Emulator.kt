@@ -10,8 +10,8 @@ class Emulator(romFile: FileHandle) {
 
     val ram: ByteArray = ByteArray(0x2000)
     val vram: ByteArray = ByteArray(0x2000)
-    val oam: ByteArray = ByteArray(0x80)
-    val internalRam: ByteArray = ByteArray(0xA0)
+    val oam: ByteArray = ByteArray(0xA0)
+    val internalRam: ByteArray = ByteArray(0x7F)
 
     /** Interrupt Enable */
     var ie: Byte = 0
@@ -79,10 +79,10 @@ class Emulator(romFile: FileHandle) {
             in 0xC000..0xE000 - 1 -> return ram[addr - 0xC000]
             in 0xE000..0xFE00 - 1 -> return ram[addr - 0xE000] //ram echo
             in 0xFE00..0xFEA0 - 1 -> return oam[addr - 0xFE00]
-            in 0xFEA0..0xFF00 - 1 -> throw EmulatorException("Read attempt from unusable, empty IO memory")
+            in 0xFEA0..0xFF00 - 1 -> return 0//throw EmulatorException("Read attempt from unusable, empty IO memory")
             in 0xFF00..0xFF4C - 1 -> return io.read(addr - 0xFF00)
-            in 0xFF4C..0xFF80 - 1 -> throw EmulatorException("Read attempt from unusable, empty IO memory")
-            in 0xFF80..0xFFFF - 1 -> return internalRam[addr - 0xFE80]
+            in 0xFF4C..0xFF80 - 1 -> return 0//throw EmulatorException("Read attempt from unusable, empty IO memory")
+            in 0xFF80..0xFFFF - 1 -> return internalRam[addr - 0xFF80]
             0xFFFF -> return ie
             else -> throw EmulatorException("Read address out of range: " + toHex(addr))
         }
@@ -110,7 +110,7 @@ class Emulator(romFile: FileHandle) {
             in 0xFEA0..0xFF00 - 1 -> return//throw EmulatorException("Write attempt to unusable, empty IO memory")
             in 0xFF00..0xFF4C - 1 -> io.write(addr - 0xFF00, value)
             in 0xFF4C..0xFF80 - 1 -> return//throw EmulatorException("Write attempt to unusable, empty IO memory")
-            in 0xFF80..0xFFFF - 1 -> internalRam[addr - 0xFE80] = value
+            in 0xFF80..0xFFFF - 1 -> internalRam[addr - 0xFF80] = value
             0xFFFF -> ie = value
             else -> throw EmulatorException("Write address out of range: " + toHex(addr))
         }
@@ -131,7 +131,7 @@ fun toHex(addr: Byte) = String.format("%02X", addr)
 
 fun Byte.rotateRight(dist: Int): Byte = (((this.toInt() and 0xFF) ushr  dist) or (this.toInt() and 0xFF) shl  (8 - dist)).toByte()
 fun Byte.rotateLeft(dist: Int): Byte = (((this.toInt() and 0xFF) shl dist) or (this.toInt() and 0xFF) ushr (8 - dist)).toByte()
-fun Byte.isBitSet(flag: Int): Boolean = (this.toInt() and 0xFF) and (1 shl flag) != 0
+fun Byte.isBitSet(bit: Int): Boolean = (this.toInt() and 0xFF) and (1 shl bit) != 0
 fun Byte.setBit(bit: Int): Byte = (this.toInt() and 0xFF or (1 shl bit)).toByte()
 fun Byte.resetBit(bit: Int): Byte = (this.toInt() and 0xFF and (1 shl bit).inv()).toByte()
 
