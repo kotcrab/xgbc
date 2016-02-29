@@ -26,6 +26,7 @@ class Cpu(private val emulator: Emulator) {
     var sp: Int = 0 //stack pointer
     var pc: Int = 0 //program counter
     private val regs: ByteArray = ByteArray(8)
+    var ime = false
 
     val op = arrayOfNulls<Instr>(256)
     val extOp = arrayOfNulls<Instr>(256)

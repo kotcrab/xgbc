@@ -467,7 +467,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
 
     fun reti(): Boolean {
         cpu.pc = pop()
-        //TODO: enable interrupts
+        cpu.ime = true
         return true
     }
 
