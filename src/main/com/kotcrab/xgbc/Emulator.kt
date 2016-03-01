@@ -7,7 +7,8 @@ import com.kotcrab.xgbc.io.IO
 /** @author Kotcrab */
 class Emulator(romFile: FileHandle) {
     companion object {
-        val CLOCK = 4096 * 100
+        val CLOCK = 4096 * 15
+//        val CLOCK = 1
     }
 
     val rom = Rom(romFile)
@@ -40,7 +41,6 @@ class Emulator(romFile: FileHandle) {
         cpu.writeReg16(Cpu.REG_BC, 0x0013)
         cpu.writeReg16(Cpu.REG_DE, 0x00D8)
         cpu.writeReg16(Cpu.REG_HL, 0x014D)
-//        write(0xFF02, 0x01) //SC
         write(0xFF05, 0x00) //TIMA
         write(0xFF06, 0x00) //TMA
         write(0xFF07, 0x00) //TAC
@@ -89,14 +89,14 @@ class Emulator(romFile: FileHandle) {
 
     fun read(addr: Int): Byte {
         when (addr) {
-            in 0x0000..0x8000 - 1 -> return rom.read(addr)
+            in 0x0000..0x8000 - 1 -> return rom.mbc.read(addr)
             in 0x8000..0xA000 - 1 -> return vram[addr - 0x8000]
-            in 0xA000..0xC000 - 1 -> throw EmulatorException("Switchable RAM bank not implemented. Address: " + addr)
+            in 0xA000..0xC000 - 1 -> return rom.mbc.read(addr)
             in 0xC000..0xE000 - 1 -> return ram[addr - 0xC000]
             in 0xE000..0xFE00 - 1 -> return ram[addr - 0xE000] //ram echo
             in 0xFE00..0xFEA0 - 1 -> return oam[addr - 0xFE00]
             in 0xFEA0..0xFF00 - 1 -> return 0//throw EmulatorException("Read attempt from unusable, empty IO memory")
-            in 0xFF00..0xFF4C - 1 -> return io.read(addr - 0xFF00)
+            in 0xFF00..0xFF4C - 1 -> return io.read(addr)
             in 0xFF4C..0xFF80 - 1 -> return 0//throw EmulatorException("Read attempt from unusable, empty IO memory")
             in 0xFF80..0xFFFF - 1 -> return internalRam[addr - 0xFF80]
             0xFFFF -> return ie
@@ -112,19 +112,19 @@ class Emulator(romFile: FileHandle) {
         val ls = readInt(addr)
         val hs = readInt(addr + 1)
 
-        return ((hs shl 8) + ls)
+        return ((hs shl 8) or ls)
     }
 
     fun write(addr: Int, value: Byte) {
         when (addr) {
-            in 0x0000..0x8000 - 1 -> rom.write(addr, value)
+            in 0x0000..0x8000 - 1 -> rom.mbc.write(addr, value)
             in 0x8000..0xA000 - 1 -> vram[addr - 0x8000] = value
-            in 0xA000..0xC000 - 1 -> throw EmulatorException("Switchable RAM bank not implemented. Address: " + addr)
+            in 0xA000..0xC000 - 1 -> rom.mbc.write(addr, value)
             in 0xC000..0xE000 - 1 -> ram[addr - 0xC000] = value
             in 0xE000..0xFE00 - 1 -> ram[addr - 0xE000] = value //ram echo
             in 0xFE00..0xFEA0 - 1 -> oam[addr - 0xFE00] = value
             in 0xFEA0..0xFF00 - 1 -> return//throw EmulatorException("Write attempt to unusable, empty IO memory")
-            in 0xFF00..0xFF4C - 1 -> io.write(addr - 0xFF00, value)
+            in 0xFF00..0xFF4C - 1 -> io.write(addr, value)
             in 0xFF4C..0xFF80 - 1 -> return//throw EmulatorException("Write attempt to unusable, empty IO memory")
             in 0xFF80..0xFFFF - 1 -> internalRam[addr - 0xFF80] = value
             0xFFFF -> ie = value

@@ -35,7 +35,7 @@ fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<I
     op[0x1D] = Instr(1, 4, "DEC E", { proc.dec(Cpu.REG_E) })
     op[0x1E] = Instr(2, 8, "LD E, d8", { proc.ld8ImmValueToReg(Cpu.REG_E) })
     op[0x1F] = Instr(1, 4, "RRA", { proc.rrReg(Cpu.REG_A) })
-    op[0x20] = Instr(2, 12, "JR NZ, r8", { proc.jrNZ() })
+    op[0x20] = JmpInstr(2, 12, "JR NZ, r8", { proc.jrNZ() })
     op[0x21] = Instr(3, 12, "LD HL, d16", { proc.ld16ImmValueToReg(Cpu.REG_HL) })
     op[0x22] = Instr(1, 8, "LD (HL+), A", {
         proc.ld8RegToReg16Addr(Cpu.REG_HL, Cpu.REG_A)
