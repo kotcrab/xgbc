@@ -1,5 +1,6 @@
 package com.kotcrab.xgbc.ui
 
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.kotcrab.vis.ui.widget.VisLabel
 import com.kotcrab.vis.ui.widget.VisScrollPane
@@ -9,9 +10,7 @@ import com.kotcrab.vis.ui.widget.file.FileUtils
 import com.kotcrab.vis.ui.widget.tabbedpane.Tab
 import com.kotcrab.vis.ui.widget.tabbedpane.TabbedPane
 import com.kotcrab.vis.ui.widget.tabbedpane.TabbedPaneAdapter
-import com.kotcrab.xgbc.Emulator
-import com.kotcrab.xgbc.Instr
-import com.kotcrab.xgbc.toHex
+import com.kotcrab.xgbc.*
 
 /** @author Kotcrab */
 
@@ -30,6 +29,7 @@ class DebuggerWindow(val emulator: Emulator) : VisWindow("Debugger") {
             }
         })
 
+        tabbedPane.add(CpuTab(emulator))
         tabbedPane.add(OpcodesTab(emulator))
         tabbedPane.add(MemoryTab(emulator))
         tabbedPane.add(CartridgeInfoTab(emulator))
@@ -41,6 +41,76 @@ class DebuggerWindow(val emulator: Emulator) : VisWindow("Debugger") {
         pack()
         centerWindow()
     }
+}
+
+class CpuTab(val emulator: Emulator) : Tab(false, false) {
+    private val table: CpuTabTable = CpuTabTable()
+
+    private val pcLabel: VisLabel = VisLabel()
+    private val spLabel: VisLabel = VisLabel()
+
+    private val afLabel: VisLabel = VisLabel()
+    private val bcLabel: VisLabel = VisLabel()
+    private val deLabel: VisLabel = VisLabel()
+    private val hlLabel: VisLabel = VisLabel()
+
+    private val flagsLabel: VisLabel = VisLabel()
+
+    init {
+        table.left().top()
+        table.defaults().left()
+        table.add("PC: ")
+        table.add(pcLabel)
+
+        table.row()
+        table.add("SP: ")
+        table.add(spLabel)
+
+        table.row()
+        table.add("AF: ")
+        table.add(afLabel)
+
+        table.row()
+        table.add("BC: ")
+        table.add(bcLabel)
+
+        table.row()
+        table.add("DE: ")
+        table.add(deLabel)
+
+        table.row()
+        table.add("HL: ")
+        table.add(hlLabel)
+
+        table.row()
+        table.add("Flags: ")
+        table.add(flagsLabel)
+    }
+
+    override fun getContentTable(): Table? {
+        return table
+    }
+
+    override fun getTabTitle(): String? {
+        return "CPU"
+    }
+
+    inner  class CpuTabTable() : VisTable(false) {
+        override fun draw(batch: Batch?, parentAlpha: Float) {
+            super.draw(batch, parentAlpha)
+            pcLabel.setText(toHex(emulator.cpu.pc))
+            spLabel.setText(toHex(emulator.cpu.sp))
+            afLabel.setText(toHex(emulator.cpu.readReg16(Cpu.REG_AF)))
+            bcLabel.setText(toHex(emulator.cpu.readReg16(Cpu.REG_BC)))
+            deLabel.setText(toHex(emulator.cpu.readReg16(Cpu.REG_DE)))
+            hlLabel.setText(toHex(emulator.cpu.readReg16(Cpu.REG_HL)))
+            flagsLabel.setText("Z ${emulator.cpu.isFlagSet(Cpu.FLAG_Z).toInt()} " +
+                    "N ${emulator.cpu.isFlagSet(Cpu.FLAG_N).toInt()} " +
+                    "H ${emulator.cpu.isFlagSet(Cpu.FLAG_H).toInt()} " +
+                    "C ${emulator.cpu.isFlagSet(Cpu.FLAG_C).toInt()}")
+        }
+    }
+
 }
 
 class CartridgeInfoTab(val emulator: Emulator) : Tab(false, false) {
@@ -117,8 +187,9 @@ class OpcodesTab(val emulator: Emulator) : Tab(false, false) {
         table.left().top()
         table.defaults().left()
 
-        var addr = 0x0150
-        while (addr < 0x0300) {
+//        var addr = 0x0150
+        var addr = 0x3E97
+        while (addr < 0x47E0) {
             var opcode = emulator.read(addr)
             var opcodeInt = opcode.toInt() and 0xFF
 
