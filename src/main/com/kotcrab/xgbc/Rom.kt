@@ -1,10 +1,14 @@
 package com.kotcrab.xgbc
 
 import com.badlogic.gdx.files.FileHandle
+import com.kotcrab.xgbc.mbc.MBC
+import com.kotcrab.xgbc.mbc.MBC1
+import com.kotcrab.xgbc.mbc.RomOnly
 
 /** @author Kotcrab */
 class Rom(romFile: FileHandle) {
     val rom: ByteArray = romFile.readBytes()
+    lateinit var mbc: MBC
 
     val title: String by lazy {
         val builder = StringBuilder()
@@ -63,18 +67,21 @@ class Rom(romFile: FileHandle) {
         readInt(0x014A)
     }
 
+    init {
+        when (cartridgeType) {
+            CartridgeType.ROM -> mbc = RomOnly(this)
+            CartridgeType.ROM_MBC1 -> mbc = MBC1(this)
+            CartridgeType.ROM_MBC1_RAM -> mbc = MBC1(this)
+            CartridgeType.ROM_MBC1_RAM_BATT -> mbc = MBC1(this)
+            else -> throw EmulatorException("Unsupported memory bank controller: $cartridgeType")
+        }
+    }
+
     fun read(addr: Int): Byte {
-        if (addr < 0x8000)
-            return rom[addr]
-
-        throw EmulatorException("Address out of range: " + addr)
+        return rom[addr]
     }
 
-    fun readInt(addr: Int): Int {
+    private fun readInt(addr: Int): Int {
         return read(addr).toInt() and 0xFF
-    }
-
-    fun write(addr: Int, value: Byte) {
-        throw EmulatorException("Illegal ROM write. MBC not implemented.")
     }
 }
