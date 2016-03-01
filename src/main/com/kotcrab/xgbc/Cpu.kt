@@ -32,7 +32,6 @@ class Cpu(private val emulator: Emulator) {
     val op = arrayOfNulls<Instr>(256)
     val extOp = arrayOfNulls<Instr>(256)
 
-
     private lateinit var opProc: OpCodesProcessor;
 
     init {
@@ -57,7 +56,7 @@ class Cpu(private val emulator: Emulator) {
         val r1 = readRegInt(reg)
         val r2 = readRegInt(reg + 1)
 
-        return ((r1 shl 8) + r2)
+        return ((r1 shl 8) or r2)
     }
 
     fun writeReg16(reg: Int, value: Int) {
@@ -110,7 +109,11 @@ class Cpu(private val emulator: Emulator) {
             val result = instr.op.invoke()
             if (result == false) pc += instr.len;
         } else {
+            val oldPc = pc;
             instr.op.invoke();
+            if (oldPc != pc) {
+                println("Warn: PC modification by non JmpInstr will be ignored, opcode: ${toHex(opcode.toByte())}")
+            }
             pc += instr.len
         }
 
