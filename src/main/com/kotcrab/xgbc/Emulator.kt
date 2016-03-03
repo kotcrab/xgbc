@@ -37,7 +37,7 @@ class Emulator(romFile: FileHandle) {
 
         cpu.sp = 0xFFFE
         cpu.pc = 0x0100
-        cpu.writeReg16(Cpu.REG_AF, 0x01B0)
+        cpu.writeReg16(Cpu.REG_AF, 0x1180)
         cpu.writeReg16(Cpu.REG_BC, 0x0013)
         cpu.writeReg16(Cpu.REG_DE, 0x00D8)
         cpu.writeReg16(Cpu.REG_HL, 0x014D)
