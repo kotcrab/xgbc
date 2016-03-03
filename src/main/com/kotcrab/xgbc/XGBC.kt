@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.kotcrab.vis.ui.VisUI
 import com.kotcrab.vis.ui.widget.VisTable
 import com.kotcrab.xgbc.ui.DebuggerWindow
+import com.kotcrab.xgbc.ui.EmulatorWindow
 
 /** @author Kotcrab */
 class XGBC : ApplicationAdapter() {
@@ -26,8 +27,12 @@ class XGBC : ApplicationAdapter() {
 
         Gdx.input.inputProcessor = stage
 
-        emulator = Emulator(Gdx.files.internal("rom/test/cpu_instrs.gb"))
+        emulator = Emulator(Gdx.files.internal("rom/test/01-special.gb"))
+//        emulator = Emulator(Gdx.files.internal("rom/test/04-op r,imm.gb"))
+//        emulator = Emulator(Gdx.files.internal("rom/test/cpu_instrs.gb"))
+//        emulator = Emulator(Gdx.files.internal("rom/tetris.gb"))
 
+        stage.addActor(EmulatorWindow(emulator))
         stage.addActor(DebuggerWindow(emulator))
     }
 
