@@ -8,20 +8,22 @@ import com.kotcrab.xgbc.io.IO
 class Emulator(romFile: FileHandle) {
     companion object {
         val CLOCK = 4096 * 15
-//        val CLOCK = 1
+        //        val CLOCK = 1
     }
 
     val rom = Rom(romFile)
     val cpu = Cpu(this)
     val io = IO(this)
 
-    val ram: ByteArray = ByteArray(0x2000)
-    val vram: ByteArray = ByteArray(0x2000)
-    val oam: ByteArray = ByteArray(0xA0)
-    val internalRam: ByteArray = ByteArray(0x7F)
+    private val ram: ByteArray = ByteArray(0x2000)
+    private val vram: ByteArray = ByteArray(0x2000)
+    private val oam: ByteArray = ByteArray(0xA0)
+    private val internalRam: ByteArray = ByteArray(0x7F)
 
     /** Interrupt Enable */
-    var ie: Byte = 0
+    private var ie: Byte = 0
+
+    var mode: EmulatorMode = EmulatorMode.NORMAL
 
     init {
         reset()
@@ -75,16 +77,22 @@ class Emulator(romFile: FileHandle) {
     }
 
     fun update() {
-        val cycles = CLOCK * Gdx.graphics.deltaTime
+        if (mode == EmulatorMode.NORMAL) {
+            val cycles = CLOCK * Gdx.graphics.deltaTime
 
-        while (true) {
-            cpu.tick()
-            io.tick()
-            if (cpu.cycle > cycles) {
-                cpu.cycle = 0
-                break
+            while (true) {
+                step()
+                if (cpu.cycle > cycles) {
+                    cpu.cycle = 0
+                    break
+                }
             }
         }
+    }
+
+    fun step() {
+        cpu.tick()
+        io.tick()
     }
 
     fun read(addr: Int): Byte {
@@ -140,6 +148,10 @@ class Emulator(romFile: FileHandle) {
         write(addr, value)
         write(addr + 1, value ushr 8)
     }
+}
+
+enum class EmulatorMode {
+    NORMAL, DEBUGGING
 }
 
 fun toHex(addr: Int) = String.format("%04X", addr)
