@@ -9,7 +9,10 @@ class IO(private val emulator: Emulator) {
     val devicesMap: IntMap<IODevice> = IntMap(0x4C) //TODO direct mapping
 
     val serialPort = SerialPort(emulator)
+    val div = Div(emulator)
+    val timer = Timer(emulator)
 
+//    val devices = arrayOf(serialPort, div, timer)
     val devices = arrayOf(serialPort)
 
     init {
@@ -32,14 +35,16 @@ class IO(private val emulator: Emulator) {
     }
 
     fun read(addr: Int): Byte {
-        val device = devicesMap.get(addr)
+        val relAddr = addr - 0xFF00;
+        val device = devicesMap.get(relAddr)
         device?.onRead(addr)
-        return ioMem[addr]
+        return ioMem[relAddr]
     }
 
     fun write(addr: Int, value: Byte) {
-        ioMem[addr] = value
-        val device = devicesMap.get(addr)
+        val relAddr = addr - 0xFF00;
+        ioMem[relAddr] = value
+        val device = devicesMap.get(relAddr)
         device?.onWrite(addr, value)
     }
 

@@ -1,6 +1,7 @@
 package com.kotcrab.xgbc.io
 
 import com.kotcrab.xgbc.Emulator
+import com.kotcrab.xgbc.toHex
 
 /** @author Kotcrab */
 class SerialPort(private val emulator: Emulator) : IODevice {
@@ -16,14 +17,15 @@ class SerialPort(private val emulator: Emulator) : IODevice {
     }
 
     override fun tick() {
-        tickCounter++
-        if (tickCounter >= tickUpdate) {
-            tickCounter = 0
-//            println(emulator.readInt(SB).toChar())
-            emulator.write(SB, 0xFF)
-            emulator.write(SC, 0)
-
-        }
+//        tickCounter++
+//        if (tickCounter >= tickUpdate) {
+//            tickCounter = 0
+//            if(emulator.readInt(SC) == 0x81) {
+//                println(toHex(emulator.read(SB)))
+//                emulator.write(SB, 0xFF)
+//                emulator.write(SC, 0x01)
+//            }
+//        }
     }
 
     override fun reset() {
@@ -34,6 +36,10 @@ class SerialPort(private val emulator: Emulator) : IODevice {
     }
 
     override fun onWrite(addr: Int, value: Byte) {
-//        println("serial write! " + toHex(addr))
+        if(addr == SC) {
+            println()
+            println(toHex(emulator.read(SB)) + emulator.readInt(SB).toChar())
+        }
+        println("serial write! " + toHex(addr))
     }
 }
