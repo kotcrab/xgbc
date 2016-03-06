@@ -1,17 +1,15 @@
 package com.kotcrab.xgbc.ui
 
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.kotcrab.vis.ui.widget.VisLabel
-import com.kotcrab.vis.ui.widget.VisScrollPane
-import com.kotcrab.vis.ui.widget.VisTable
-import com.kotcrab.vis.ui.widget.VisWindow
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.kotcrab.vis.ui.widget.*
 import com.kotcrab.vis.ui.widget.file.FileUtils
 import com.kotcrab.vis.ui.widget.tabbedpane.Tab
 import com.kotcrab.vis.ui.widget.tabbedpane.TabbedPane
 import com.kotcrab.vis.ui.widget.tabbedpane.TabbedPaneAdapter
 import com.kotcrab.xgbc.Emulator
 import com.kotcrab.xgbc.EmulatorMode
-import com.kotcrab.xgbc.Instr
 import com.kotcrab.xgbc.toHex
 
 /** @author Kotcrab */
@@ -31,8 +29,7 @@ class DebuggerWindow(val emulator: Emulator) : VisWindow("Debugger") {
             }
         })
 
-        tabbedPane.add(CpuTab(emulator))
-        tabbedPane.add(OpcodesTab(emulator))
+        tabbedPane.add(DebuggerTab(emulator))
         tabbedPane.add(MemoryTab(emulator))
         tabbedPane.add(CartridgeInfoTab(emulator))
         tabbedPane.switchTab(0)
@@ -47,13 +44,24 @@ class DebuggerWindow(val emulator: Emulator) : VisWindow("Debugger") {
     }
 }
 
-class CpuTab(val emulator: Emulator) : Tab(false, false) {
-    private val table = VisTable(true)
+class DebuggerTab(val emulator: Emulator) : Tab(false, false) {
+    private val table = VisTable(false)
 
     init {
         table.left().top()
         table.defaults().left()
+        table.add(OpCodesDebuggerTab(emulator)).row()
+        table.add("CPU").padTop(10.0f).row()
         table.add(CpuDebuggerTable(emulator))
+
+        val stepButton = VisTextButton("Step")
+        stepButton.addListener(object: ClickListener(){
+            override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                emulator.cpu.tick()
+            }
+        })
+
+        table.add(stepButton)
     }
 
     override fun getContentTable(): Table? {
@@ -122,63 +130,5 @@ class MemoryTab(val emulator: Emulator) : Tab(false, false) {
 
     override fun getTabTitle(): String? {
         return "Memory"
-    }
-}
-
-class OpcodesTab(val emulator: Emulator) : Tab(false, false) {
-    private val table: VisTable = VisTable(false)
-    private val scrollPaneContainer: VisTable = VisTable(false)
-    private val scrollPane: VisScrollPane = VisScrollPane(table)
-
-    init {
-        scrollPaneContainer.add(scrollPane).grow()
-
-        scrollPane.setFadeScrollBars(false)
-        scrollPane.setFlickScroll(false)
-
-        table.left().top()
-        table.defaults().left()
-
-        //        var addr = 0x0150
-        var addr = 0x3E97
-        while (addr < 0x47E0) {
-            var opcode = emulator.read(addr)
-            var opcodeInt = opcode.toInt() and 0xFF
-
-            var instr: Instr?
-            if (opcodeInt == 0xCB) {
-                opcode = emulator.read(addr + 1)
-                opcodeInt = opcode.toInt() and 0xFF
-                instr = emulator.cpu.extOp[opcodeInt]
-            } else {
-                instr = emulator.cpu.op[opcodeInt]
-            }
-
-            if (instr == null) {
-                table.add("Unsupported opcode: ${toHex(opcode)} at ${toHex(addr)}")
-                addr += 1
-            } else {
-                var evaluatedName = instr.name.replace("d16", toHex(emulator.read16(addr + 1)))
-                evaluatedName = evaluatedName.replace("a16", toHex(emulator.read16(addr + 1)))
-                evaluatedName = evaluatedName.replace("d8", toHex(emulator.read(addr + 1)))
-                evaluatedName = evaluatedName.replace("a8", toHex(emulator.read(addr + 1)))
-                evaluatedName = evaluatedName.replace("r8", toHex(emulator.read(addr + 1)))
-
-                if (evaluatedName.equals(instr.name))
-                    table.add("${toHex(addr)}: ${instr.name}")
-                else
-                    table.add("${toHex(addr)}: $evaluatedName [${instr.name}]")
-                addr += instr.len
-            }
-            table.row()
-        }
-    }
-
-    override fun getContentTable(): Table? {
-        return scrollPaneContainer
-    }
-
-    override fun getTabTitle(): String? {
-        return "Opcodes"
     }
 }

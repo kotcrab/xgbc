@@ -1,0 +1,20 @@
+
+ui.png
+size: 64,32
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+breakpoint
+  rotate: false
+  xy: 2, 2
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+current-line
+  rotate: false
+  xy: 20, 2
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1

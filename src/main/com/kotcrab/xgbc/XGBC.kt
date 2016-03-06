@@ -19,6 +19,7 @@ class XGBC : ApplicationAdapter() {
 
     override fun create() {
         VisUI.load()
+        Assets.load()
         stage = Stage(ScreenViewport())
         val root = VisTable()
         root.setFillParent(true)
@@ -50,8 +51,9 @@ class XGBC : ApplicationAdapter() {
     }
 
     override fun dispose() {
-        VisUI.dispose()
         stage.dispose()
+        Assets.dispose()
+        VisUI.dispose()
     }
 }
 

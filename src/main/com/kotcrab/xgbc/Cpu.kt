@@ -50,6 +50,7 @@ class Cpu(private val emulator: Emulator) {
 
     fun writeReg(reg: Int, value: Byte) {
         regs[reg] = value
+        emulator.debuggerListener.onRegisterWrite(reg, value)
     }
 
     fun readReg16(reg: Int): Int {
@@ -94,6 +95,7 @@ class Cpu(private val emulator: Emulator) {
     }
 
     fun tick() {
+        val oldPc = pc;
         var opcode = emulator.readInt(pc)
 
         var instr: Instr?
@@ -109,7 +111,6 @@ class Cpu(private val emulator: Emulator) {
             val result = instr.op.invoke()
             if (result == false) pc += instr.len;
         } else {
-            val oldPc = pc;
             instr.op.invoke();
             if (oldPc != pc) {
                 println("Warn: PC modification by non JmpInstr will be ignored, opcode: ${toHex(opcode.toByte())}")
@@ -118,6 +119,8 @@ class Cpu(private val emulator: Emulator) {
         }
 
         cycle += instr.cycles
+
+        emulator.debuggerListener.onCpuTick(oldPc, pc)
     }
 }
 

@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.kotcrab.xgbc.io.IO
 
+import com.badlogic.gdx.utils.Array as GdxArray
+
 /** @author Kotcrab */
 class Emulator(romFile: FileHandle) {
     companion object {
@@ -14,6 +16,10 @@ class Emulator(romFile: FileHandle) {
     val rom = Rom(romFile)
     val cpu = Cpu(this)
     val io = IO(this)
+
+    var debuggerListener: DebuggerListener = DebuggerDelegate()
+        private set
+    var debuggerDelegates = GdxArray<DebuggerListener>()
 
     private val ram: ByteArray = ByteArray(0x2000)
     private val vram: ByteArray = ByteArray(0x2000)
@@ -138,6 +144,8 @@ class Emulator(romFile: FileHandle) {
             0xFFFF -> ie = value
             else -> throw EmulatorException("Write address out of range: " + toHex(addr))
         }
+
+        debuggerListener.onMemoryWrite(addr, value)
     }
 
     fun write(addr: Int, value: Int) {
@@ -147,6 +155,31 @@ class Emulator(romFile: FileHandle) {
     fun write16(addr: Int, value: Int) {
         write(addr, value)
         write(addr + 1, value ushr 8)
+    }
+
+    fun addDebuggerListener(listener: DebuggerListener) {
+        debuggerDelegates.add(listener)
+    }
+
+    inner class DebuggerDelegate : DebuggerListener {
+        override fun onCpuTick(oldPc: Int, pc: Int) {
+            if (debuggerDelegates.size == 0) return
+            for (listener in debuggerDelegates)
+                listener.onCpuTick(oldPc, pc)
+        }
+
+        override fun onMemoryWrite(addr: Int, value: Byte) {
+            if (debuggerDelegates.size == 0) return
+            for (listener in debuggerDelegates)
+                listener.onMemoryWrite(addr, value)
+        }
+
+        override fun onRegisterWrite(reg: Int, value: Byte) {
+            if (debuggerDelegates.size == 0) return
+            for (listener in debuggerDelegates)
+                listener.onRegisterWrite(reg, value)
+        }
+
     }
 }
 
