@@ -1,7 +1,7 @@
-package com.kotcrab.xgbc.mbc
+package com.kotcrab.xgbc.rom.mbc
 
 import com.kotcrab.xgbc.EmulatorException
-import com.kotcrab.xgbc.Rom
+import com.kotcrab.xgbc.rom.Rom
 
 /** @author Kotcrab */
 class RomOnly(private val rom: Rom) : MBC {

@@ -3,6 +3,7 @@ package com.kotcrab.xgbc
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.kotcrab.xgbc.io.IO
+import com.kotcrab.xgbc.rom.Rom
 
 import com.badlogic.gdx.utils.Array as GdxArray
 

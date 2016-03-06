@@ -1,4 +1,4 @@
-package com.kotcrab.xgbc.mbc
+package com.kotcrab.xgbc.rom.mbc
 
 /** @author Kotcrab */
 interface MBC {

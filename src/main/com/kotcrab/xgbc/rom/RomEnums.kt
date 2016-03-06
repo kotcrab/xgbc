@@ -1,4 +1,6 @@
-package com.kotcrab.xgbc
+package com.kotcrab.xgbc.rom
+
+import com.kotcrab.xgbc.EmulatorException
 
 /** @author Kotcrab */
 enum class CartridgeType(val type: Byte) {

@@ -1,7 +1,7 @@
-package com.kotcrab.xgbc.mbc
+package com.kotcrab.xgbc.rom.mbc
 
 import com.kotcrab.xgbc.EmulatorException
-import com.kotcrab.xgbc.Rom
+import com.kotcrab.xgbc.rom.Rom
 import com.kotcrab.xgbc.isBitSet
 import com.kotcrab.xgbc.toHex
 
@@ -10,15 +10,15 @@ class MBC1(private val rom: Rom) : MBC {
     var activeRomBank = 1
     var activeRamBank = 0
 
-    var mode = MBC1Mode.ROM16_RAM8;
+    var mode = com.kotcrab.xgbc.rom.MBC1.MBC1Mode.ROM16_RAM8;
 
     override fun write(addr: Int, value: Byte) {
         println("mbc write ${toHex(addr)}")
         if (addr in 0x6000..0x7FFF) {
             if (value.isBitSet(0)) {
-                mode = MBC1Mode.ROM16_RAM8
+                mode = com.kotcrab.xgbc.rom.MBC1.MBC1Mode.ROM16_RAM8
             } else
-                mode = MBC1Mode.ROM4_RAM32
+                mode = com.kotcrab.xgbc.rom.MBC1.MBC1Mode.ROM4_RAM32
         }
     }
 
