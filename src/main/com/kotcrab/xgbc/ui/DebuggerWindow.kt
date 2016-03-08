@@ -35,7 +35,7 @@ class DebuggerWindow(val emulator: Emulator) : VisWindow("Debugger") {
         tabbedPane.switchTab(0)
 
         add(tabbedPane.table).growX().row()
-        add(tabbedPaneContent).size(500.0f, 300.0f)
+        add(tabbedPaneContent).size(500.0f, 500.0f)
 
         pack()
         centerWindow()
@@ -50,9 +50,9 @@ class DebuggerTab(val emulator: Emulator) : Tab(false, false) {
     init {
         table.left().top()
         table.defaults().left()
-        table.add(OpCodesDebuggerTab(emulator)).row()
+        table.add(OpCodesDebuggerTab(emulator)).growX().row()
         table.add("CPU").padTop(10.0f).row()
-        table.add(CpuDebuggerTable(emulator))
+        table.add(CpuDebuggerTable(emulator)).row()
 
         val stepButton = VisTextButton("Step")
         stepButton.addListener(object: ClickListener(){
