@@ -15,6 +15,9 @@ class OpCodeLine() : VisTable(false) {
     private var breakpoint = false
     private var currentLine = false
 
+    var addr: Int = 0
+        private set
+
     init {
         add(icon).size(16.0f, 16.0f).padRight(2.0f)
         add(label)
@@ -27,6 +30,8 @@ class OpCodeLine() : VisTable(false) {
     }
 
     fun parse(emulator: Emulator, addr: Int, instr: Instr?) {
+        this.addr = addr;
+
         if (instr == null) {
             label.setText("Unsupported opcode at ${toHex(addr)}")
             return
@@ -36,7 +41,7 @@ class OpCodeLine() : VisTable(false) {
         evaluatedName = evaluatedName.replace("d8", toHex(emulator.read(addr + 1)))
         evaluatedName = evaluatedName.replace("a8", toHex(emulator.read(addr + 1)))
         evaluatedName = evaluatedName.replace("r8", toHex(emulator.read(addr + 1)))
-        if(addr < 0xFFFF - 1) {
+        if (addr < 0xFFFF - 1) {
             evaluatedName = evaluatedName.replace("a16", toHex(emulator.read16(addr + 1)))
             evaluatedName = evaluatedName.replace("d16", toHex(emulator.read16(addr + 1)))
         }

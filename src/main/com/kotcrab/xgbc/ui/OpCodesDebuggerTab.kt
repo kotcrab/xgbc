@@ -1,6 +1,7 @@
 package com.kotcrab.xgbc.ui
 
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.kotcrab.vis.ui.util.value.PrefHeightIfVisibleValue
 import com.kotcrab.vis.ui.widget.VisScrollPane
@@ -11,6 +12,8 @@ import com.kotcrab.xgbc.Instr
 
 /** @author Kotcrab */
 class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false) {
+    val tmpVector = Vector2()
+
     val chunkSize = 0xFF
     val chunksNumber = 0xFFFF / chunkSize;
     val chunks = arrayOfNulls<Chunk>(chunksNumber)
@@ -19,6 +22,7 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false) {
     var nextParseAddr = 0
 
     val chunksGroup = VerticalGroup()
+    lateinit var scrollPane: VisScrollPane;
 
     init {
         left().top()
@@ -26,7 +30,7 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false) {
 
         chunksGroup.left()
 
-        val scrollPane = object : VisScrollPane(chunksGroup) {
+        scrollPane = object : VisScrollPane(chunksGroup) {
             override fun getMouseWheelY(): Float {
                 return 150.0f
             }
@@ -45,9 +49,19 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false) {
         emulator.addDebuggerListener(object : DebuggerListener {
             override fun onCpuTick(oldPc: Int, pc: Int) {
                 getOpCodeLine(oldPc)?.setCurrentLine(false)
-                getOpCodeLine(pc)?.setCurrentLine(true)
+                val currentLine = getOpCodeLine(pc)
+                currentLine?.setCurrentLine(true)
+                scrollTo(currentLine)
             }
         })
+    }
+
+    private fun scrollTo(line: OpCodeLine?) {
+        if (line == null) return
+
+        tmpVector.set(0.0f, -100.0f)
+        line.localToAscendantCoordinates(chunksGroup, tmpVector)
+        scrollPane.scrollTo(tmpVector.x, tmpVector.y, line.width, line.height)
     }
 
     private fun getOpCodeLine(addr: Int): OpCodeLine? {
