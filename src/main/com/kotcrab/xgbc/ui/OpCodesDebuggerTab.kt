@@ -1,102 +1,133 @@
 package com.kotcrab.xgbc.ui
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.kotcrab.vis.ui.util.value.PrefHeightIfVisibleValue
+import com.kotcrab.vis.ui.widget.NumberSelector
+import com.kotcrab.vis.ui.widget.VisLabel
 import com.kotcrab.vis.ui.widget.VisScrollPane
 import com.kotcrab.vis.ui.widget.VisTable
 import com.kotcrab.xgbc.DebuggerListener
 import com.kotcrab.xgbc.Emulator
 import com.kotcrab.xgbc.Instr
+import com.kotcrab.xgbc.vis.TableBuilder
 
 /** @author Kotcrab */
 class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopupMenu.Listener {
     val tmpVector = Vector2()
 
-    val chunkSize = 0xFF
-    val chunksNumber = 0xFFFF / chunkSize;
-    val chunks = arrayOfNulls<Chunk>(chunksNumber)
-
-    private var currentChunkIndex = 0
-    private var nextParseAddr = 0
-    private var reparseInProgress: Boolean = false
-
-    val chunksGroup = VerticalGroup()
-    lateinit var scrollPane: VisScrollPane;
-
-    private val debuggerPopupMenu = DebuggerPopupMenu(this)
+    val chunkSize = 1027
+    val chunks = arrayOfNulls<Chunk>(0xFFFF / chunkSize)
+    var activeChunk: Chunk? = null;
 
     private var execStopAddr = -1
+
+    val chunkContainer = VisTable()
+    lateinit var scrollPane: VisScrollPane;
+    val chunkInfoLabel = VisLabel()
+    val chunkSelector = NumberSelector("Chunk", 0.0f, 0.0f, chunks.size - 1.toFloat(), 1.0f)
+
+    private val debuggerPopupMenu = DebuggerPopupMenu(this)
 
     init {
         left().top()
         defaults().left()
 
-        chunksGroup.left()
+        chunkContainer.left()
 
-        scrollPane = object : VisScrollPane(chunksGroup) {
+        scrollPane = object : VisScrollPane(chunkContainer) {
             override fun getMouseWheelY(): Float {
-                return 150.0f
+                return 60.0f
             }
 
             override fun getPrefHeight(): Float {
-                return 0xFFFF * 19.0f
+                return chunkSize * 19.0f
             }
         }
+
         scrollPane.setFlickScroll(false)
         scrollPane.setScrollingDisabled(true, false)
         scrollPane.setFadeScrollBars(false)
         scrollPane.setOverscroll(false, false)
         scrollPane.setSmoothScrolling(false)
-        add(scrollPane).growX()
+        add(scrollPane).growX().row()
+        add(TableBuilder.build(chunkInfoLabel, chunkSelector))
+
+        chunkSelector.setProgrammaticChangeEvents(false)
+        chunkSelector.addChangeListener { index -> switchChunk(index.toInt()) }
 
         emulator.addDebuggerListener(object : DebuggerListener {
             override fun onCpuTick(oldPc: Int, pc: Int) {
                 getOpCodeLine(oldPc)?.setCurrentLine(false)
+                val targetChunk = getChunk(pc)!!
+                if (targetChunk.uiReady == false) {
+                    targetChunk.parse()
+                }
                 val currentLine = getOpCodeLine(pc)
                 currentLine?.setCurrentLine(true)
                 scrollTo(currentLine)
 
                 if (execStopAddr == pc) {
-                    execStopAddr = -1;
+                    execStopAddr = -1
                 }
             }
 
             override fun onMemoryWrite(addr: Int, value: Byte) {
-                currentChunkIndex = addr / chunkSize;
-                nextParseAddr = addr;
-                reparseInProgress = true
+                if (execStopAddr == -1) {
+                    reparseChunks();
+                }
             }
         })
+
+        var nextParseAddr = 0;
+        for (index in chunks.indices) {
+            val chunk = Chunk(index * chunkSize, nextParseAddr)
+            chunks[index] = chunk;
+            nextParseAddr = chunk.parseEndAddr
+        }
+        switchChunk(0)
+    }
+
+    private fun switchChunk(index: Int) {
+        val chunk = chunks[index]!!
+        if (chunk == activeChunk) return;
+        reparseChunks()
+        chunk.parse()
+        activeChunk = chunk;
+        chunkContainer.clearChildren()
+        chunkContainer.add(chunk)
+        scrollPane.validate()
+
+        chunkInfoLabel.setText("Chunk $index of ${chunks.size}")
+        chunkSelector.value = index.toFloat();
     }
 
     private fun scrollTo(line: OpCodeLine?) {
         if (line == null) return
 
-        tmpVector.set(0.0f, -100.0f)
-        line.localToAscendantCoordinates(chunksGroup, tmpVector)
-        scrollPane.scrollTo(tmpVector.x, tmpVector.y, line.width, line.height)
+        switchChunk(line.addr / chunkSize)
+        tmpVector.set(0.0f, 0.0f)
+        line.localToParentCoordinates(tmpVector)
+        scrollPane.scrollTo(tmpVector.x, tmpVector.y, line.width, line.height, false, true)
     }
 
     private fun getChunk(addr: Int): Chunk? {
         val chunkIndex = addr / chunkSize;
-        val chunkOffset = addr % chunkSize;
-
         return chunks[chunkIndex];
     }
 
     private fun getOpCodeLine(addr: Int): OpCodeLine? {
-        val chunkIndex = addr / chunkSize;
-        val chunkOffset = addr % chunkSize;
-
-        return chunks[chunkIndex]?.getOpCodeLine(chunkOffset)
+        return getChunk(addr)?.getOpCodeLine(addr)
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
         super.draw(batch, parentAlpha)
 
+        if (Gdx.input.isKeyPressed(Input.Keys.F3)) {
+            emulator.step()
+        }
 
         val cycles = Emulator.CLOCK * Gdx.graphics.deltaTime
 
@@ -113,35 +144,25 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
                 }
             }
         }
+    }
 
-        parseNextChunk()
-        if(reparseInProgress) {
-            reparseNextChunk()
+    override fun runToLine(ctxAddr: Int) {
+        execStopAddr = ctxAddr
+    }
+
+    private fun reparseChunks() {
+        var nextParseAddr = 0;
+        for (index in chunks.indices) {
+            val chunk = chunks[index]!!;
+            chunk.parse(nextParseAddr, chunk == activeChunk)
+            nextParseAddr = chunk.parseEndAddr
         }
     }
 
-    private fun parseNextChunk() {
-        if (currentChunkIndex >= chunksNumber) return
-        val chunk = Chunk(currentChunkIndex * chunkSize, nextParseAddr)
-        nextParseAddr = chunk.parseEndAddr
-        chunksGroup.addActor(chunk)
-        chunks[currentChunkIndex] = chunk
-        currentChunkIndex += 1
-    }
-
-    private fun reparseNextChunk() {
-        if (currentChunkIndex >= chunksNumber) {
-            reparseInProgress = false;
-            return
-        }
-        val chunk = chunks[currentChunkIndex]!!
-        chunk.update(nextParseAddr)
-        nextParseAddr = chunk.parseEndAddr
-        currentChunkIndex += 1
-    }
-
-    inner class Chunk(private val chunkBeginAddr: Int, beginParseFromAddr: Int) : VisTable(false) {
-        val lines = arrayOfNulls<OpCodeLine>(chunkSize)
+    inner class Chunk(private val chunkBeginAddr: Int, private var parseBeginAddr: Int) : VisTable(false) {
+        var uiReady = false
+            private set
+        private val lines = arrayOfNulls<OpCodeLine>(chunkSize)
 
         var parseEndAddr: Int = 0;
             private set
@@ -150,17 +171,22 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
             left().top()
             defaults().left()
 
-            for (i in 0x00..chunkSize - 1) {
-                lines[i] = OpCodeLine(debuggerPopupMenu)
-                lines[i]?.isVisible = false
-                add(lines[i]).height(PrefHeightIfVisibleValue.INSTANCE).row()
-            }
-
-            update(beginParseFromAddr)
+            parse(parseBeginAddr, false)
         }
 
-        public fun update(beginParseFromAddr: Int) {
-            var addr = beginParseFromAddr;
+        fun parse() {
+            parse(this.parseBeginAddr, true)
+        }
+
+        fun parse(parseBeginAddr: Int, updateUI: Boolean) {
+            this.parseBeginAddr = parseBeginAddr;
+
+            if (updateUI && uiReady == false) prepareUI()
+            for (i in 0x00..chunkSize - 1) {
+                lines[i]?.isVisible = false
+            }
+
+            var addr = parseBeginAddr;
             while (addr < chunkBeginAddr + chunkSize) {
                 var opcode = emulator.read(addr)
                 var opcodeInt = opcode.toInt() and 0xFF
@@ -174,8 +200,7 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
                     instr = emulator.cpu.op[opcodeInt]
                 }
 
-                lines[addr - chunkBeginAddr]?.parse(emulator, addr, instr)
-                lines[addr - chunkBeginAddr]?.isVisible = true
+                if (updateUI) updateUI(emulator, addr, instr)
 
                 if (instr != null)
                     addr += instr.len
@@ -185,12 +210,22 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
             parseEndAddr = addr
         }
 
-        fun getOpCodeLine(relAddr: Int): OpCodeLine? {
-            return lines[relAddr]
+        fun prepareUI() {
+            for (i in 0x00..chunkSize - 1) {
+                lines[i] = OpCodeLine(debuggerPopupMenu)
+                add(lines[i]).height(PrefHeightIfVisibleValue.INSTANCE).row()
+            }
+            uiReady = true
         }
-    }
 
-    override fun runToLine(ctxAddr: Int) {
-        execStopAddr = ctxAddr
+        private fun updateUI(emulator: Emulator, addr: Int, instr: Instr?) {
+            lines[addr - chunkBeginAddr]?.parse(emulator, addr, instr)
+            lines[addr - chunkBeginAddr]?.isVisible = true
+        }
+
+        fun getOpCodeLine(addr: Int): OpCodeLine? {
+            if (uiReady == false) throw IllegalStateException("Chunk UI not ready")
+            return lines[addr - chunkBeginAddr]
+        }
     }
 }
