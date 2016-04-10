@@ -1,8 +1,10 @@
 package com.kotcrab.xgbc.ui
 
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.InputListener
+import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.kotcrab.vis.ui.widget.*
 import com.kotcrab.vis.ui.widget.file.FileUtils
 import com.kotcrab.vis.ui.widget.tabbedpane.Tab
@@ -10,6 +12,7 @@ import com.kotcrab.vis.ui.widget.tabbedpane.TabbedPane
 import com.kotcrab.vis.ui.widget.tabbedpane.TabbedPaneAdapter
 import com.kotcrab.xgbc.Emulator
 import com.kotcrab.xgbc.EmulatorMode
+import com.kotcrab.xgbc.changed
 import com.kotcrab.xgbc.toHex
 
 /** @author Kotcrab */
@@ -42,6 +45,19 @@ class DebuggerWindow(val emulator: Emulator) : VisWindow("Debugger") {
 
         emulator.mode = EmulatorMode.DEBUGGING
     }
+
+    override fun setStage(stage: Stage?) {
+        super.setStage(stage)
+        stage?.addListener(object : InputListener() {
+            override fun keyTyped(event: InputEvent?, character: Char): Boolean {
+                if (event?.keyCode == Input.Keys.F3) {
+                    emulator.cpu.tick()
+                    return true
+                }
+                return super.keyTyped(event, character)
+            }
+        })
+    }
 }
 
 class DebuggerTab(val emulator: Emulator) : Tab(false, false) {
@@ -55,11 +71,7 @@ class DebuggerTab(val emulator: Emulator) : Tab(false, false) {
         table.add(CpuDebuggerTable(emulator)).row()
 
         val stepButton = VisTextButton("Step")
-        stepButton.addListener(object: ClickListener(){
-            override fun clicked(event: InputEvent?, x: Float, y: Float) {
-                emulator.cpu.tick()
-            }
-        })
+        stepButton.changed { changeEvent, actor -> emulator.step() }
 
         table.add(stepButton)
     }

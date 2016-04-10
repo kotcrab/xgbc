@@ -1,6 +1,9 @@
 package com.kotcrab.xgbc.ui
 
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.InputListener
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.kotcrab.vis.ui.widget.VisImage
 import com.kotcrab.vis.ui.widget.VisLabel
@@ -8,7 +11,7 @@ import com.kotcrab.vis.ui.widget.VisTable
 import com.kotcrab.xgbc.*
 
 /** @author Kotcrab */
-class OpCodeLine() : VisTable(false) {
+class OpCodeLine(private val debuggerPopupMenu: DebuggerPopupMenu) : VisTable(false) {
     private val icon = VisImage()
     private val label = VisLabel("", "small")
 
@@ -19,12 +22,29 @@ class OpCodeLine() : VisTable(false) {
         private set
 
     init {
+        touchable = Touchable.enabled
+
         add(icon).size(16.0f, 16.0f).padRight(2.0f)
         add(label)
 
         icon.addListener(object : ClickListener() {
             override fun clicked(event: InputEvent?, x: Float, y: Float) {
                 setBreakpoint(!breakpoint)
+            }
+        })
+
+        addListener(object : InputListener() {
+            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+                return true
+            }
+
+            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+                super.touchUp(event, x, y, pointer, button)
+                if (event == null) return
+                if (button == Input.Buttons.RIGHT) {
+                    debuggerPopupMenu.ctxAddr = addr
+                    debuggerPopupMenu.showMenu(stage, event.stageX, event.stageY)
+                }
             }
         })
     }
