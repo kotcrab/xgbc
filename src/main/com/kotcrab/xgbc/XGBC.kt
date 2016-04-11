@@ -2,15 +2,17 @@ package com.kotcrab.xgbc
 
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.kotcrab.vis.ui.VisUI
 import com.kotcrab.vis.ui.widget.VisTable
 import com.kotcrab.xgbc.ui.DebuggerWindow
-import com.kotcrab.xgbc.ui.EmulatorWindow
 
 /** @author Kotcrab */
 class XGBC : ApplicationAdapter() {
@@ -29,12 +31,27 @@ class XGBC : ApplicationAdapter() {
         Gdx.input.inputProcessor = stage
 
         emulator = Emulator(Gdx.files.internal("rom/test/01-special.gb"))
-//        emulator = Emulator(Gdx.files.internal("rom/test/04-op r,imm.gb"))
-//        emulator = Emulator(Gdx.files.internal("rom/test/cpu_instrs.gb"))
-//        emulator = Emulator(Gdx.files.internal("rom/tetris.gb"))
+        //emulator = Emulator(Gdx.files.internal("rom/test/04-op r,imm.gb"))
+        //emulator = Emulator(Gdx.files.internal("rom/test/cpu_instrs.gb"))
+        //emulator = Emulator(Gdx.files.internal("rom/tetris.gb"))
 
-        stage.addActor(EmulatorWindow(emulator))
-        stage.addActor(DebuggerWindow(emulator))
+        //stage.addActor(EmulatorWindow(emulator))
+        var debuggerWindow = DebuggerWindow(emulator);
+        stage.addActor(debuggerWindow)
+
+        stage.addListener(object : InputListener() {
+            override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
+                if (keycode == Input.Keys.F1) {
+                    debuggerWindow.remove()
+                    emulator.reset()
+                    debuggerWindow = DebuggerWindow(emulator);
+                    stage.addActor(debuggerWindow)
+
+                }
+                return super.keyDown(event, keycode)
+            }
+        })
+
     }
 
     override fun resize(width: Int, height: Int) {
