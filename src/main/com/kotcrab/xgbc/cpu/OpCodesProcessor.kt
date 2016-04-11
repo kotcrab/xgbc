@@ -467,7 +467,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
 
     fun reti(): Boolean {
         cpu.pc = pop()
-        cpu.ime = true
+        cpu.setImeFlagNow(true)
         return true
     }
 

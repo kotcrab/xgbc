@@ -31,8 +31,11 @@ class XGBC : ApplicationAdapter() {
         Gdx.input.inputProcessor = stage
 
         emulator = Emulator(Gdx.files.internal("rom/test/01-special.gb"))
-        //emulator = Emulator(Gdx.files.internal("rom/test/04-op r,imm.gb"))
-        //emulator = Emulator(Gdx.files.internal("rom/test/cpu_instrs.gb"))
+//        emulator = Emulator(Gdx.files.internal("rom/test/08-misc instrs.gb"))
+//        emulator = Emulator(Gdx.files.internal("rom/test/02-interrupts.gb"))
+//        emulator = Emulator(Gdx.files.internal("rom/test/03-op sp,hl.gb"))
+//        emulator = Emulator(Gdx.files.internal("rom/test/04-op r,imm.gb"))
+//        emulator = Emulator(Gdx.files.internal("rom/test/cpu_instrs.gb"))
         //emulator = Emulator(Gdx.files.internal("rom/tetris.gb"))
 
         //stage.addActor(EmulatorWindow(emulator))

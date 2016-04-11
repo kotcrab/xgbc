@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.Array as GdxArray
 /** @author Kotcrab */
 class Emulator(romFile: FileHandle) {
     companion object {
-        val CLOCK = 4096 * 15
+        val CLOCK = 4096 * 100
     }
 
     val rom = Rom(romFile)

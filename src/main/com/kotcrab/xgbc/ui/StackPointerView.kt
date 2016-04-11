@@ -40,7 +40,7 @@ class StackPointerView(val emulator: Emulator) : VisTable() {
         var index = 0
         for (addr in sp + spOffset downTo sp - spOffset step 2) {
             val label = labels[index]!!
-            if (addr < 0xFFFF) {
+            if (addr < 0xFFFF && addr > 0x0000) {
                 label.setText(toHex(addr) + ": " + toHex(emulator.read16(addr)))
                 label.isVisible = true
             } else {

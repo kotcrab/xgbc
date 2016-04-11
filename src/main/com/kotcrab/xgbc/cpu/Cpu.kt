@@ -27,7 +27,9 @@ class Cpu(private val emulator: Emulator) {
     var pc: Int = 0 //program counter
     var cycle: Int = 0
     private val regs: ByteArray = ByteArray(8)
-    var ime = false
+    private var ime = false
+    private var targetIme = false
+    private var changeImeState = ImeState.IDLE
 
     val op = arrayOfNulls<Instr>(256)
     val extOp = arrayOfNulls<Instr>(256)
@@ -63,6 +65,15 @@ class Cpu(private val emulator: Emulator) {
     fun writeReg16(reg: Int, value: Int) {
         writeReg(reg, (value ushr 8).toByte())
         writeReg(reg + 1, (value).toByte())
+    }
+
+    fun setImeFlag(ime: Boolean) {
+        targetIme = ime
+        changeImeState = ImeState.CHANGE_AFTER_NEXT;
+    }
+
+    fun setImeFlagNow(ime: Boolean) {
+        this.ime = ime;
     }
 
     fun setFlag(flag: Int) {
@@ -120,7 +131,24 @@ class Cpu(private val emulator: Emulator) {
 
         cycle += instr.cycles
 
+        when (changeImeState) {
+            ImeState.IDLE -> {
+            }
+            ImeState.CHANGE_AFTER_NEXT -> changeImeState = ImeState.CHANGE_IME
+            ImeState.CHANGE_IME -> {
+                ime = targetIme
+                targetIme = false
+                changeImeState = ImeState.IDLE
+            }
+        }
+
         emulator.debuggerListener.onCpuTick(oldPc, pc)
+    }
+
+    private enum class ImeState {
+        IDLE,
+        CHANGE_AFTER_NEXT,
+        CHANGE_IME,
     }
 }
 
