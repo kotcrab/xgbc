@@ -255,24 +255,24 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     // Stack pointer push and pop
 
     fun push(addr: Int) {
-        emulator.write16(cpu.sp, addr)
         cpu.sp = cpu.sp - 2
+        emulator.write16(cpu.sp, addr)
     }
 
     fun pop(): Int {
-        cpu.sp = cpu.sp + 2
         val addr = emulator.read16(cpu.sp)
+        cpu.sp = cpu.sp + 2
         return addr;
     }
 
     fun pushReg(reg16: Int) {
-        emulator.write16(cpu.sp, cpu.readReg16(reg16))
         cpu.sp = cpu.sp - 2
+        emulator.write16(cpu.sp, cpu.readReg16(reg16))
     }
 
     fun popReg(reg16: Int) {
-        cpu.sp = cpu.sp + 2
         cpu.writeReg16(reg16, emulator.read16(cpu.sp))
+        cpu.sp = cpu.sp + 2
     }
 
     // Others
@@ -414,7 +414,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     // Calls
 
     fun call(): Boolean {
-        push(emulator.read16(cpu.pc) + 3) //each call instructions is 3 bytes long
+        push(cpu.pc + 3) //each call instructions is 3 bytes long
         jp()
         return true;
     }
