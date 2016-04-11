@@ -53,8 +53,16 @@ class DebuggerTab(val emulator: Emulator) : Tab(false, false) {
         table.left().top()
         table.defaults().left()
         table.add(opCodesDebuggerTab).growX().row()
-        table.add("CPU").padTop(10.0f).row()
-        table.add(CpuDebuggerTable(emulator)).row()
+
+        val subTable = VisTable(true)
+        val cpuDebuggerTab = CpuDebuggerTable(emulator);
+        val stackPointerScrollPane = VisScrollPane(StackPointerView(emulator));
+        stackPointerScrollPane.setScrollingDisabled(true, false)
+        stackPointerScrollPane.setFlickScroll(false)
+        stackPointerScrollPane.setFadeScrollBars(false)
+        subTable.add(cpuDebuggerTab)
+        subTable.add(stackPointerScrollPane).height(110.0f).width(150.0f)
+        table.add(subTable).padTop(10.0f).row()
 
         val stepButton = VisTextButton("Step")
         stepButton.changed { changeEvent, actor -> emulator.step() }
