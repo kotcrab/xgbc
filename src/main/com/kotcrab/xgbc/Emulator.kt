@@ -35,7 +35,10 @@ class Emulator(romFile: FileHandle) {
         reset()
     }
 
-    private fun reset() {
+    public fun reset() {
+        mode = EmulatorMode.NORMAL
+        debuggerDelegates.clear()
+
         ram.fill(0)
         vram.fill(0)
         oam.fill(0)
