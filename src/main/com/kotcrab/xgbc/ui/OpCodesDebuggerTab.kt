@@ -210,12 +210,12 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
             var addr = parseBeginAddr;
             while (addr < chunkBeginAddr + chunkSize) {
                 var opcode = emulator.read(addr)
-                var opcodeInt = opcode.toInt() and 0xFF
+                var opcodeInt = opcode.toUnsignedInt()
 
                 var instr: Instr?
                 if (opcodeInt == 0xCB) {
                     opcode = emulator.read(addr + 1)
-                    opcodeInt = opcode.toInt() and 0xFF
+                    opcodeInt = opcode.toUnsignedInt()
                     instr = emulator.cpu.extOp[opcodeInt]
                 } else {
                     instr = emulator.cpu.op[opcodeInt]

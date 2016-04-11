@@ -92,8 +92,8 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
 
         if (result and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
         cpu.setFlag(Cpu.FLAG_N)
-        if ((regA and 0xF) - (value and 0xF) and 0x10 != 0) cpu.resetFlag(Cpu.FLAG_H) else cpu.setFlag(Cpu.FLAG_H)
-        if ((regA and 0xFF) - (value and 0xFF) and 0x100 != 0) cpu.resetFlag(Cpu.FLAG_C) else cpu.setFlag(Cpu.FLAG_C)
+        if ((regA and 0xF) + (value and 0xF) and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
+        if ((regA and 0xFF) + (value and 0xFF) and 0x100 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
 
         cpu.writeReg(Cpu.REG_A, result.toByte())
     }
@@ -161,7 +161,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
 
         if (result and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
         cpu.setFlag(Cpu.FLAG_N)
-        if ((regA and 0xF) - (value and 0xF) and 0x10 != 0) cpu.resetFlag(Cpu.FLAG_H) else cpu.setFlag(Cpu.FLAG_H)
+        if ((regA and 0xF) + (value and 0xF) and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
         if (regA < value) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
     }
 
@@ -278,7 +278,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     // Others
 
     fun swap(b: Byte): Byte {
-        val value = b.toInt() and 0xFF
+        val value = b.toUnsignedInt()
         val result = ((value and 0x0F shl 4) or (value and 0xF0 shr 4));
         if (result and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
         cpu.resetFlag(Cpu.FLAG_N)
@@ -530,7 +530,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         result = result and cpu.isFlagSet(Cpu.FLAG_C).toInt();
         result.rotateLeft(1, 9)
 
-        if (result.toInt() and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
         cpu.resetFlag(Cpu.FLAG_N)
         cpu.resetFlag(Cpu.FLAG_H)
         cpu.setFlagState(Cpu.FLAG_C, byte.isBitSet(7))
@@ -543,7 +543,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         result = result and cpu.isFlagSet(Cpu.FLAG_C).toInt();
         result.rotateRight(1, 9)
 
-        if (result.toInt() and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
         cpu.resetFlag(Cpu.FLAG_N)
         cpu.resetFlag(Cpu.FLAG_H)
         cpu.setFlagState(Cpu.FLAG_C, byte.isBitSet(0))
@@ -573,7 +573,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     fun sla(byte: Byte): Byte {
         var result = (byte.toInt() and 0xFF) shl 1;
 
-        if (result.toInt() and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
         cpu.resetFlag(Cpu.FLAG_N)
         cpu.resetFlag(Cpu.FLAG_H)
         cpu.setFlagState(Cpu.FLAG_C, byte.isBitSet(7))
@@ -584,7 +584,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     fun srl(byte: Byte): Byte {
         var result = (byte.toInt() and 0xFF) shr 1;
 
-        if (result.toInt() and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
         cpu.resetFlag(Cpu.FLAG_N)
         cpu.resetFlag(Cpu.FLAG_H)
         cpu.setFlagState(Cpu.FLAG_C, byte.isBitSet(0))
@@ -595,7 +595,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     fun sra(byte: Byte): Byte {
         var result = (byte.toInt() and 0xFF) ushr 1;
 
-        if (result.toInt() and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
         cpu.resetFlag(Cpu.FLAG_N)
         cpu.resetFlag(Cpu.FLAG_H)
         cpu.setFlagState(Cpu.FLAG_C, byte.isBitSet(0))

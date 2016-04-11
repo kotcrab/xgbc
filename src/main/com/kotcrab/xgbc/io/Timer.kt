@@ -2,6 +2,7 @@ package com.kotcrab.xgbc.io
 
 import com.kotcrab.xgbc.Emulator
 import com.kotcrab.xgbc.isBitSet
+import com.kotcrab.xgbc.toUnsignedInt
 
 /** @author Kotcrab */
 class Timer(private val emulator: Emulator) : IODevice {
@@ -33,7 +34,7 @@ class Timer(private val emulator: Emulator) : IODevice {
                 tickCounter = 0
                 tima++
                 if (tima > 255) {
-                    tima = emulator.read(TMA).toInt() and 0xFF
+                    tima = emulator.read(TMA).toUnsignedInt()
                 }
                 emulator.io.directWrite(TIMA, tima.toByte())
             }

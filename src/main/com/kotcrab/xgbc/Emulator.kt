@@ -122,7 +122,7 @@ class Emulator(romFile: FileHandle) {
     }
 
     fun readInt(addr: Int): Int {
-        return read(addr).toInt() and 0xFF
+        return read(addr).toUnsignedInt()
     }
 
     fun read16(addr: Int): Int {

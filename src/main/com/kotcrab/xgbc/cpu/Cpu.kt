@@ -47,7 +47,7 @@ class Cpu(private val emulator: Emulator) {
     }
 
     fun readRegInt(reg: Int): Int {
-        return readReg(reg).toInt() and 0xFF
+        return readReg(reg).toUnsignedInt()
     }
 
     fun writeReg(reg: Int, value: Byte) {

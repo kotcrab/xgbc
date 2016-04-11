@@ -1,12 +1,11 @@
 package com.kotcrab.xgbc.rom
 
 import com.badlogic.gdx.files.FileHandle
-import com.kotcrab.xgbc.rom.CartridgeType
 import com.kotcrab.xgbc.EmulatorException
-import com.kotcrab.xgbc.rom.cartridgeTypeFromByte
 import com.kotcrab.xgbc.rom.mbc.MBC
 import com.kotcrab.xgbc.rom.mbc.MBC1
 import com.kotcrab.xgbc.rom.mbc.RomOnly
+import com.kotcrab.xgbc.toUnsignedInt
 
 /** @author Kotcrab */
 class Rom(romFile: FileHandle) {
@@ -85,6 +84,6 @@ class Rom(romFile: FileHandle) {
     }
 
     private fun readInt(addr: Int): Int {
-        return read(addr).toInt() and 0xFF
+        return read(addr).toUnsignedInt()
     }
 }
