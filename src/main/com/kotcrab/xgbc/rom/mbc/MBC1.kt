@@ -13,7 +13,7 @@ class MBC1(private val rom: Rom) : MBC {
     var mode = MBC1Mode.ROM16_RAM8;
 
     override fun write(addr: Int, value: Byte) {
-        println("mbc write ${toHex(addr)}")
+//        println("mbc write ${toHex(addr)}")
         if (addr in 0x6000..0x7FFF) {
             if (value.isBitSet(0)) {
                 mode = MBC1Mode.ROM16_RAM8

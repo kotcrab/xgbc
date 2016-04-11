@@ -17,29 +17,27 @@ class SerialPort(private val emulator: Emulator) : IODevice {
     }
 
     override fun tick() {
-//        tickCounter++
-//        if (tickCounter >= tickUpdate) {
-//            tickCounter = 0
-//            if(emulator.readInt(SC) == 0x81) {
-//                println(toHex(emulator.read(SB)))
-//                emulator.write(SB, 0xFF)
-//                emulator.write(SC, 0x01)
-//            }
-//        }
+        //        tickCounter++
+        //        if (tickCounter >= tickUpdate) {
+        //            tickCounter = 0
+        //            if(emulator.readInt(SC) == 0x81) {
+        //                println(toHex(emulator.read(SB)))
+        //                emulator.write(SB, 0xFF)
+        //                emulator.write(SC, 0x01)
+        //            }
+        //        }
     }
 
     override fun reset() {
     }
 
     override fun onRead(addr: Int) {
-//        println("serial read! " + toHex(addr))
+        //        println("serial read! " + toHex(addr))
     }
 
     override fun onWrite(addr: Int, value: Byte) {
-        if(addr == SC) {
-            println()
-            println(toHex(emulator.read(SB)) + emulator.readInt(SB).toChar())
+        if (addr == SC) {
+            println("serial write:" + toHex(emulator.readInt(SB)) + " " + emulator.readInt(SB).toChar())
         }
-        println("serial write! " + toHex(addr))
     }
 }
