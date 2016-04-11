@@ -10,6 +10,7 @@ import com.kotcrab.xgbc.Emulator
 import com.kotcrab.xgbc.EmulatorMode
 import com.kotcrab.xgbc.changed
 import com.kotcrab.xgbc.toHex
+import com.kotcrab.xgbc.vis.TableBuilder
 
 /** @author Kotcrab */
 
@@ -47,16 +48,20 @@ class DebuggerTab(val emulator: Emulator) : Tab(false, false) {
     private val table = VisTable(false)
 
     init {
+        val opCodesDebuggerTab = OpCodesDebuggerTab(emulator)
+
         table.left().top()
         table.defaults().left()
-        table.add(OpCodesDebuggerTab(emulator)).growX().row()
+        table.add(opCodesDebuggerTab).growX().row()
         table.add("CPU").padTop(10.0f).row()
         table.add(CpuDebuggerTable(emulator)).row()
 
         val stepButton = VisTextButton("Step")
         stepButton.changed { changeEvent, actor -> emulator.step() }
+        val goToPC = VisTextButton("Show Exec Point")
+        goToPC.changed { changeEvent, actor -> opCodesDebuggerTab.scrollToExecPoint() }
 
-        table.add(stepButton)
+        table.add(TableBuilder.build(stepButton, goToPC))
     }
 
     override fun getContentTable(): Table? {

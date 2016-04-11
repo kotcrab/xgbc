@@ -58,9 +58,11 @@ class OpCodeLine(private val debuggerPopupMenu: DebuggerPopupMenu) : VisTable(fa
         }
 
         var evaluatedName = instr.name;
-        evaluatedName = evaluatedName.replace("d8", toHex(emulator.read(addr + 1)))
-        evaluatedName = evaluatedName.replace("a8", toHex(emulator.read(addr + 1)))
-        evaluatedName = evaluatedName.replace("r8", toHex(emulator.read(addr + 1)))
+        if (addr < 0xFFFF) {
+            evaluatedName = evaluatedName.replace("d8", toHex(emulator.read(addr + 1)))
+            evaluatedName = evaluatedName.replace("a8", toHex(emulator.read(addr + 1)))
+            evaluatedName = evaluatedName.replace("r8", toHex(emulator.read(addr + 1)))
+        }
         if (addr < 0xFFFF - 1) {
             evaluatedName = evaluatedName.replace("a16", toHex(emulator.read16(addr + 1)))
             evaluatedName = evaluatedName.replace("d16", toHex(emulator.read16(addr + 1)))

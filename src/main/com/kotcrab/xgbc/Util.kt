@@ -3,7 +3,7 @@ package com.kotcrab.xgbc
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 
-fun Actor.changed(callback: (ChangeListener.ChangeEvent, Actor) -> Unit) {
+fun Actor.changed(callback: (ChangeListener.ChangeEvent, Actor) -> Any?) {
     this.addListener(object : ChangeListener() {
         override fun changed(event: ChangeEvent?, actor: Actor?) {
             callback.invoke(event!!, actor!!);

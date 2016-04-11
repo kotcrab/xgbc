@@ -4,14 +4,10 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
+import com.kotcrab.vis.ui.VisUI
 import com.kotcrab.vis.ui.util.value.PrefHeightIfVisibleValue
-import com.kotcrab.vis.ui.widget.NumberSelector
-import com.kotcrab.vis.ui.widget.VisLabel
-import com.kotcrab.vis.ui.widget.VisScrollPane
-import com.kotcrab.vis.ui.widget.VisTable
-import com.kotcrab.xgbc.DebuggerListener
-import com.kotcrab.xgbc.Emulator
-import com.kotcrab.xgbc.Instr
+import com.kotcrab.vis.ui.widget.*
+import com.kotcrab.xgbc.*
 import com.kotcrab.xgbc.vis.TableBuilder
 
 /** @author Kotcrab */
@@ -19,7 +15,7 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
     val tmpVector = Vector2()
 
     val chunkSize = 1027
-    val chunks = arrayOfNulls<Chunk>(0xFFFF / chunkSize)
+    val chunks = arrayOfNulls<Chunk>(0xFFFF / chunkSize + 1)
     var activeChunk: Chunk? = null;
 
     private var execStopAddr = -1
@@ -27,7 +23,8 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
     val chunkContainer = VisTable()
     lateinit var scrollPane: VisScrollPane;
     val chunkInfoLabel = VisLabel()
-    val chunkSelector = NumberSelector("Chunk", 0.0f, 0.0f, chunks.size - 1.toFloat(), 1.0f)
+    val chunkSelector = NumberSelector("Fragment", 0.0f, 0.0f, chunks.size - 1.toFloat(), 1.0f)
+    val goToAddressField = VisValidatableTextField("")
 
     private val debuggerPopupMenu = DebuggerPopupMenu(this)
 
@@ -53,7 +50,7 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
         scrollPane.setOverscroll(false, false)
         scrollPane.setSmoothScrolling(false)
         add(scrollPane).growX().row()
-        add(TableBuilder.build(chunkInfoLabel, chunkSelector))
+        add(TableBuilder.build(VisUI.getSizes().spacingRight.toInt(), chunkSelector, chunkInfoLabel, VisLabel("Go to: "), goToAddressField))
 
         chunkSelector.setProgrammaticChangeEvents(false)
         chunkSelector.addChangeListener { index -> switchChunk(index.toInt()) }
@@ -81,6 +78,17 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
             }
         })
 
+        goToAddressField.setFocusTraversal(false)
+        goToAddressField.setProgrammaticChangeEvents(false)
+        goToAddressField.textFieldFilter = VisTextField.TextFieldFilter { textField, c -> Character.isDigit(c) || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F' }
+        goToAddressField.maxLength = 4
+        goToAddressField.changed { changeEvent, actor ->
+            if (goToAddressField.text.equals("") == false) {
+                val addr = Integer.parseInt(goToAddressField.text, 16)
+                scrollToAddr(addr)
+            }
+        }
+
         var nextParseAddr = 0;
         for (index in chunks.indices) {
             val chunk = Chunk(index * chunkSize, nextParseAddr)
@@ -88,6 +96,10 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
             nextParseAddr = chunk.parseEndAddr
         }
         switchChunk(0)
+    }
+
+    fun scrollToExecPoint() {
+        scrollToAddr(emulator.cpu.pc)
     }
 
     private fun switchChunk(index: Int) {
@@ -100,8 +112,17 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
         chunkContainer.add(chunk)
         scrollPane.validate()
 
-        chunkInfoLabel.setText("Chunk $index of ${chunks.size}")
+        chunkInfoLabel.setText("Showing ${toHex(chunk.chunkBeginAddr)}-${toHex(Math.min(0xFFFF, chunk.chunkBeginAddr + chunkSize - 1))}")
         chunkSelector.value = index.toFloat();
+    }
+
+    private fun scrollToAddr(addr: Int) {
+        val targetChunk = getChunk(addr)!!
+        if (targetChunk.uiReady == false) {
+            targetChunk.parse()
+        }
+        val currentLine = getOpCodeLine(addr)
+        scrollTo(currentLine)
     }
 
     private fun scrollTo(line: OpCodeLine?) {
@@ -159,7 +180,7 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
         }
     }
 
-    inner class Chunk(private val chunkBeginAddr: Int, private var parseBeginAddr: Int) : VisTable(false) {
+    inner class Chunk(val chunkBeginAddr: Int, private var parseBeginAddr: Int) : VisTable(false) {
         var uiReady = false
             private set
         private val lines = arrayOfNulls<OpCodeLine>(chunkSize)
@@ -202,10 +223,15 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
 
                 if (updateUI) updateUI(emulator, addr, instr)
 
-                if (instr != null)
+                if (instr != null) {
                     addr += instr.len
-                else
+                } else {
                     addr += 1
+                }
+
+                if (addr > 0xFFFF) {
+                    break
+                }
             }
             parseEndAddr = addr
         }
