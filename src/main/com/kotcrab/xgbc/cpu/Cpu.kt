@@ -51,8 +51,13 @@ class Cpu(private val emulator: Emulator) {
     }
 
     fun writeReg(reg: Int, value: Byte) {
-        regs[reg] = value
-        emulator.debuggerListener.onRegisterWrite(reg, value)
+        var setValue = value;
+        if (reg == REG_F) {
+            //reset four lsb bits
+            setValue = (value.toUnsignedInt() and 0xF0).toByte()
+        }
+        regs[reg] = setValue
+        emulator.debuggerListener.onRegisterWrite(reg, setValue)
     }
 
     fun readReg16(reg: Int): Int {
