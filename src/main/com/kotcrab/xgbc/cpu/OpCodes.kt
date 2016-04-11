@@ -46,7 +46,7 @@ fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<I
     op[0x25] = Instr(1, 4, "DEC H", { proc.dec(Cpu.REG_H) })
     op[0x26] = Instr(2, 8, "LD H, d8", { proc.ld8ImmValueToReg(Cpu.REG_H) })
     op[0x27] = Instr(1, 4, "DAA", { proc.daa() })
-    op[0x28] = Instr(2, 12, "JR Z, r8", { proc.jrZ() })
+    op[0x28] = JmpInstr(2, 12, "JR Z, r8", { proc.jrZ() })
     op[0x29] = Instr(1, 8, "ADD HL, HL", { proc.addHL(Cpu.REG_HL) })
     op[0x2A] = Instr(1, 8, "LD A, (HL+)", {
         proc.ld8Reg16AddrToReg(Cpu.REG_A, Cpu.REG_HL)
@@ -57,7 +57,7 @@ fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<I
     op[0x2D] = Instr(1, 4, "DEC L", { proc.dec(Cpu.REG_L) })
     op[0x2E] = Instr(2, 8, "LD L, d8", { proc.ld8ImmValueToReg(Cpu.REG_L) })
     op[0x2F] = Instr(1, 4, "CPL", { proc.cpl() })
-    op[0x30] = Instr(2, 12, "JR NC, r8", { proc.jrNC() })
+    op[0x30] = JmpInstr(2, 12, "JR NC, r8", { proc.jrNC() })
     op[0x31] = VoidInstr(3, 12, "LD SP, d16", { cpu.sp = emu.read16(cpu.pc + 1) })
     op[0x32] = Instr(1, 8, "LD (HL-), A", {
         proc.ld8RegToReg16Addr(Cpu.REG_HL, Cpu.REG_A)
@@ -68,7 +68,7 @@ fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<I
     op[0x35] = Instr(1, 12, "DEC (HL)", { proc.decHL() })
     op[0x36] = VoidInstr(2, 12, "LD (HL), d8", { emu.write(cpu.readReg16(Cpu.REG_HL), emu.read(cpu.pc + 1)) })
     op[0x37] = Instr(1, 4, "SCF", { proc.scf() })
-    op[0x38] = Instr(2, 12, "JR C, r8", { proc.jrC() })
+    op[0x38] = JmpInstr(2, 12, "JR C, r8", { proc.jrC() })
     op[0x39] = Instr(1, 8, "ADD HL, SP", { proc.addHLSP() })
     op[0x3A] = Instr(1, 8, "LD A, (HL-)", {
         proc.ld8Reg16AddrToReg(Cpu.REG_A, Cpu.REG_HL)
