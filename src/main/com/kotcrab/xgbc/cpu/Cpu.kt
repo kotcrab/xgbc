@@ -73,6 +73,7 @@ class Cpu(private val emulator: Emulator) {
     }
 
     fun setImeFlag(ime: Boolean) {
+        if (this.ime == ime) return
         targetIme = ime
         changeImeState = ImeState.CHANGE_AFTER_NEXT;
     }
@@ -116,7 +117,7 @@ class Cpu(private val emulator: Emulator) {
 
         var instr: Instr?
         if (opcode == 0xCB) {
-            instr = emulator.cpu.extOp[opcode]
+            instr = emulator.cpu.extOp[emulator.readInt(pc + 1)]
         } else {
             instr = emulator.cpu.op[opcode]
         }
@@ -139,10 +140,12 @@ class Cpu(private val emulator: Emulator) {
         when (changeImeState) {
             ImeState.IDLE -> {
             }
-            ImeState.CHANGE_AFTER_NEXT -> changeImeState = ImeState.CHANGE_IME
+            ImeState.CHANGE_AFTER_NEXT -> {
+                ime = targetIme
+                changeImeState = ImeState.CHANGE_IME
+            }
             ImeState.CHANGE_IME -> {
                 ime = targetIme
-                targetIme = false
                 changeImeState = ImeState.IDLE
             }
         }
