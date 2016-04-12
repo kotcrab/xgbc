@@ -8,7 +8,7 @@ import com.kotcrab.xgbc.Emulator
 import com.kotcrab.xgbc.toHex
 
 /** @author Kotcrab */
-class StackPointerView(val emulator: Emulator) : VisTable() {
+class StackPointerView(val emulator: Emulator, opCodesDebuggerTab: OpCodesDebuggerTab) : VisTable() {
     private val numValuesShown = 7; //must be odd
     private val spOffset = (numValuesShown - 1)
     private val labels = arrayOfNulls<VisLabel>(numValuesShown)
@@ -27,6 +27,7 @@ class StackPointerView(val emulator: Emulator) : VisTable() {
 
         emulator.addDebuggerListener(object : DebuggerListener {
             override fun onCpuTick(oldPc: Int, pc: Int) {
+                if (opCodesDebuggerTab.execStopAddr != -1) return
                 if (currentSp != emulator.cpu.sp) {
                     currentSp = emulator.cpu.sp
                     updateLabels()

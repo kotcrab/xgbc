@@ -56,7 +56,7 @@ class DebuggerTab(val emulator: Emulator) : Tab(false, false) {
 
         val subTable = VisTable(true)
         val cpuDebuggerTab = CpuDebuggerTable(emulator);
-        val stackPointerScrollPane = VisScrollPane(StackPointerView(emulator));
+        val stackPointerScrollPane = VisScrollPane(StackPointerView(emulator, opCodesDebuggerTab));
         stackPointerScrollPane.setScrollingDisabled(true, false)
         stackPointerScrollPane.setFlickScroll(false)
         stackPointerScrollPane.setFadeScrollBars(false)

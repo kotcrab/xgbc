@@ -18,12 +18,14 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
     val chunks = arrayOfNulls<Chunk>(0xFFFF / chunkSize + 1)
     var activeChunk: Chunk? = null;
 
-    private var execStopAddr = -1
+    var execStopAddr = -1
+        private set;
 
     val chunkContainer = VisTable()
     lateinit var scrollPane: VisScrollPane;
     val chunkInfoLabel = VisLabel()
     val chunkSelector = NumberSelector("Fragment", 0.0f, 0.0f, chunks.size - 1.toFloat(), 1.0f)
+    private var currentLine: OpCodeLine? = null;
     val goToAddressField = VisValidatableTextField("")
 
     private val debuggerPopupMenu = DebuggerPopupMenu(this)
@@ -57,23 +59,29 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
 
         emulator.addDebuggerListener(object : DebuggerListener {
             override fun onCpuTick(oldPc: Int, pc: Int) {
-                getOpCodeLine(oldPc)?.setCurrentLine(false)
-                val targetChunk = getChunk(pc)!!
-                if (targetChunk.uiReady == false) {
-                    targetChunk.parse()
-                }
-                val currentLine = getOpCodeLine(pc)
-                currentLine?.setCurrentLine(true)
-                scrollTo(currentLine)
-
                 if (execStopAddr == pc) {
                     execStopAddr = -1
+                    reparseChunks()
+                    Gdx.app.postRunnable {
+                        Gdx.app.postRunnable { scrollToExecPoint() }
+                    }
+                }
+
+                if (execStopAddr == -1) {
+                    currentLine?.setCurrentLine(false)
+                    val targetChunk = getChunk(pc)!!
+                    if (targetChunk.uiReady == false) {
+                        targetChunk.parse()
+                    }
+                    currentLine = getOpCodeLine(pc)
+                    currentLine?.setCurrentLine(true)
+                    scrollTo(currentLine)
                 }
             }
 
             override fun onMemoryWrite(addr: Int, value: Byte) {
                 if (execStopAddr == -1) {
-                    reparseChunks();
+                    reparseChunks()
                 }
             }
         })
@@ -146,7 +154,7 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
     override fun draw(batch: Batch?, parentAlpha: Float) {
         super.draw(batch, parentAlpha)
 
-        if (Gdx.input.isKeyPressed(Input.Keys.F3)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F3)) {
             emulator.step()
         }
 
