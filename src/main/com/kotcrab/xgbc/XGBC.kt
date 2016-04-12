@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.kotcrab.vis.ui.VisUI
 import com.kotcrab.vis.ui.widget.VisTable
 import com.kotcrab.xgbc.ui.DebuggerWindow
+import com.kotcrab.xgbc.ui.EmulatorWindow
 
 /** @author Kotcrab */
 class XGBC : ApplicationAdapter() {
@@ -31,21 +32,31 @@ class XGBC : ApplicationAdapter() {
         Gdx.input.inputProcessor = stage
 
         emulator = Emulator(Gdx.files.internal("rom/test/01-special.gb"))
-//        emulator = Emulator(Gdx.files.internal("rom/test/08-misc instrs.gb"))
-//        emulator = Emulator(Gdx.files.internal("rom/test/02-interrupts.gb"))
-//        emulator = Emulator(Gdx.files.internal("rom/test/03-op sp,hl.gb"))
-//        emulator = Emulator(Gdx.files.internal("rom/test/04-op r,imm.gb"))
-//        emulator = Emulator(Gdx.files.internal("rom/test/cpu_instrs.gb"))
+//                        emulator = Emulator(Gdx.files.internal("rom/test/02-interrupts.gb"))
+//                        emulator = Emulator(Gdx.files.internal("rom/test/03-op sp,hl.gb"))
+//                        emulator = Emulator(Gdx.files.internal("rom/test/04-op r,imm.gb"))
+        //                emulator = Emulator(Gdx.files.internal("rom/test/05-op rp.gb"))
+        //                emulator = Emulator(Gdx.files.internal("rom/test/06-ld r,r.gb"))
+        //                emulator = Emulator(Gdx.files.internal("rom/test/07-jr,jp,call,ret,rst.gb"))
+        //                emulator = Emulator(Gdx.files.internal("rom/test/08-misc instrs.gb"))
+        //                emulator = Emulator(Gdx.files.internal("rom/test/09-op r,r.gb"))
+        //                emulator = Emulator(Gdx.files.internal("rom/test/10-bit ops.gb"))
+        //                emulator = Emulator(Gdx.files.internal("rom/test/11-op a,(hl).gb"))
+        //                emulator = Emulator(Gdx.files.internal("rom/test/cpu_instrs.gb"))
         //emulator = Emulator(Gdx.files.internal("rom/tetris.gb"))
 
-        //stage.addActor(EmulatorWindow(emulator))
-        var debuggerWindow = DebuggerWindow(emulator);
-        stage.addActor(debuggerWindow)
+        stage.addActor(EmulatorWindow(emulator))
+        val debug = true;
+        var debuggerWindow: DebuggerWindow? = null
+        if (debug) {
+            debuggerWindow = DebuggerWindow(emulator);
+            stage.addActor(debuggerWindow)
+        }
 
         stage.addListener(object : InputListener() {
             override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
-                if (keycode == Input.Keys.F1) {
-                    debuggerWindow.remove()
+                if (keycode == Input.Keys.F1 && debuggerWindow != null) {
+                    (debuggerWindow as DebuggerWindow).remove()
                     emulator.reset()
                     debuggerWindow = DebuggerWindow(emulator);
                     stage.addActor(debuggerWindow)
