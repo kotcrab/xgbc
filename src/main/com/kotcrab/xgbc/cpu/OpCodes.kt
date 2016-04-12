@@ -248,15 +248,16 @@ fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<I
     op[0xE6] = Instr(2, 8, "AND d8", { proc.and(emu.readInt(cpu.pc + 1)) })
     op[0xE7] = JmpInstr(1, 16, "RST 20H", { proc.rst(0x20) })
     op[0xE8] = VoidInstr(2, 16, "ADD SP, r8", {
+        val value = emu.read(cpu.pc + 1).toInt(); //r8 is signed here lol
+        val sp = cpu.sp + value;
         cpu.resetFlag(Cpu.FLAG_Z)
         cpu.resetFlag(Cpu.FLAG_N)
 
-        val value = emu.readInt(cpu.pc + 1);
+        //the only answer https://stackoverflow.com/questions/5159603/gbz80-how-does-ld-hl-spe-affect-h-and-c-flags
+        if ((cpu.sp and 0xF) + (value and 0xF) and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
+        if ((cpu.sp and 0xFF) + (value and 0xFF) and 0x100 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
 
-        if ((cpu.sp and 0xFFF) + (value and 0xFFF) and 0x1000 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
-        if ((cpu.sp and 0xFFFF) + (value and 0xFFFF) and 0x10000 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
-
-        cpu.sp = cpu.sp + value
+        cpu.sp = sp
     })
     op[0xE9] = JmpInstr(1, 4, "JP (HL)", { proc.jpHL() })
     op[0xEA] = Instr(3, 16, "LD (a16), A", { proc.ld8RegToImmAddr(Cpu.REG_A) })
@@ -274,13 +275,12 @@ fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<I
     op[0xF6] = Instr(2, 8, "OR d8", { proc.or(emu.readInt(cpu.pc + 1)) })
     op[0xF7] = JmpInstr(1, 16, "RST 30H", { proc.rst(0x30) })
     op[0xF8] = VoidInstr(2, 12, "LD HL, SP+r8", {
+        val value = emu.read(cpu.pc + 1).toInt();
+
         cpu.resetFlag(Cpu.FLAG_Z)
         cpu.resetFlag(Cpu.FLAG_N)
-
-        val value = emu.readInt(cpu.pc + 1);
-
-        if ((cpu.sp and 0xFFF) + (value and 0xFFF) and 0x1000 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
-        if ((cpu.sp and 0xFFFF) + (value and 0xFFFF) and 0x10000 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
+        if ((cpu.sp and 0xF) + (value and 0xF) and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
+        if ((cpu.sp and 0xFF) + (value and 0xFF) and 0x100 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
 
         cpu.writeReg16(Cpu.REG_HL, cpu.sp + value)
     })
