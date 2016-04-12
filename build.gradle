@@ -18,6 +18,8 @@ apply plugin: 'kotlin'
 sourceSets {
     main.kotlin.srcDirs += 'src/main/'
     main.java.srcDirs += 'src/main/'
+    test.kotlin.srcDirs += 'src/test/'
+    test.java.srcDirs += 'src/test/'
 }
 
 repositories {
