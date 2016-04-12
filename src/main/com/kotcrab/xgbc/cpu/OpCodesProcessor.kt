@@ -223,8 +223,8 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         val result = regHL + reg
 
         cpu.resetFlag(Cpu.FLAG_N)
-        if ((regHL and 0xF) + (reg and 0xF) and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
-        if ((regHL and 0xFF) + (reg and 0xFF) and 0x100 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
+        if ((regHL and 0xFFF) + (cpu.sp and 0xFFF) and 0x1000 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
+        if ((regHL and 0xFFFF) + (cpu.sp and 0xFFFF) and 0x10000 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
 
         cpu.writeReg16(Cpu.REG_HL, result)
     }
@@ -234,8 +234,8 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         val result = regHL + cpu.sp
 
         cpu.resetFlag(Cpu.FLAG_N)
-        if ((regHL and 0xF) + (cpu.sp and 0xF) and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
-        if ((regHL and 0xFF) + (cpu.sp and 0xFF) and 0x100 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
+        if ((regHL and 0xFFF) + (cpu.sp and 0xFFF) and 0x1000 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
+        if ((regHL and 0xFFFF) + (cpu.sp and 0xFFFF) and 0x10000 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
 
         cpu.writeReg16(Cpu.REG_HL, result)
     }
