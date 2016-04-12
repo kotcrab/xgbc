@@ -413,7 +413,7 @@ fun generateExtOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Arra
     op[0x5C] = Instr(2, 8, "BIT 3, H", { proc.bitReg(3, Cpu.REG_H) })
     op[0x5D] = Instr(2, 8, "BIT 3, L", { proc.bitReg(3, Cpu.REG_L) })
     op[0x5E] = Instr(2, 16, "BIT 3, (HL)", { proc.bit(3, emu.read(cpu.readReg16(Cpu.REG_HL))) })
-    op[0x5F] = Instr(2, 8, "BIT 3, A", { proc.bitReg(3, Cpu.REG_B) })
+    op[0x5F] = Instr(2, 8, "BIT 3, A", { proc.bitReg(3, Cpu.REG_A) })
     op[0x60] = Instr(2, 8, "BIT 4, B", { proc.bitReg(4, Cpu.REG_B) })
     op[0x61] = Instr(2, 8, "BIT 4, C", { proc.bitReg(4, Cpu.REG_C) })
     op[0x62] = Instr(2, 8, "BIT 4, D", { proc.bitReg(4, Cpu.REG_D) })
