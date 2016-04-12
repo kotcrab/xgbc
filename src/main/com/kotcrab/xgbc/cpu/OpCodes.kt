@@ -239,7 +239,7 @@ fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<I
     op[0xDD] = null
     op[0xDE] = Instr(2, 8, "SBC A, d8", { proc.sbc(emu.readInt(cpu.pc + 1)) })
     op[0xDF] = JmpInstr(1, 16, "RST 18H", { proc.rst(0x18) })
-    op[0xE0] = Instr(2, 12, "LDH (a8), A", { proc.ld8RegToAddr(0xFF00 + emu.read(cpu.pc + 1), Cpu.REG_A) })
+    op[0xE0] = Instr(2, 12, "LDH (a8), A", { proc.ld8RegToAddr(0xFF00 + emu.readInt(cpu.pc + 1), Cpu.REG_A) })
     op[0xE1] = Instr(1, 12, "POP HL", { proc.popReg(Cpu.REG_HL) })
     op[0xE2] = Instr(2, 8, "LD (C), A", { proc.ld8RegToAddr(0xFF00 + cpu.readReg(Cpu.REG_C), Cpu.REG_A) })
     op[0xE3] = null
