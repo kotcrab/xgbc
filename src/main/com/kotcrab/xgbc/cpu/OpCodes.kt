@@ -133,7 +133,7 @@ fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<I
     op[0x73] = Instr(1, 8, "LD (HL), E", { proc.ld8RegToReg16Addr(Cpu.REG_HL, Cpu.REG_E) })
     op[0x74] = Instr(1, 8, "LD (HL), H", { proc.ld8RegToReg16Addr(Cpu.REG_HL, Cpu.REG_H) })
     op[0x75] = Instr(1, 8, "LD (HL), L", { proc.ld8RegToReg16Addr(Cpu.REG_HL, Cpu.REG_L) })
-    op[0x76] = Instr(1, 4, "HALT", {})
+    op[0x76] = VoidInstr(1, 4, "HALT", { cpu.halt = true })
     op[0x77] = Instr(1, 8, "LD (HL), A", { proc.ld8RegToReg16Addr(Cpu.REG_HL, Cpu.REG_A) })
     op[0x78] = Instr(1, 4, "LD A, B", { proc.ld8RegToReg(Cpu.REG_A, Cpu.REG_B) })
     op[0x79] = Instr(1, 4, "LD A, C", { proc.ld8RegToReg(Cpu.REG_A, Cpu.REG_C) })

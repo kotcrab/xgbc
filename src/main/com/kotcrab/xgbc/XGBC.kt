@@ -32,7 +32,7 @@ class XGBC : ApplicationAdapter() {
         Gdx.input.inputProcessor = stage
 
         //emulator = Emulator(Gdx.files.internal("rom/test/01-special.gb")) //pass
-        emulator = Emulator(Gdx.files.internal("rom/test/02-interrupts.gb")) //failed halt
+        emulator = Emulator(Gdx.files.internal("rom/test/02-interrupts.gb")) //pass
         //emulator = Emulator(Gdx.files.internal("rom/test/03-op sp,hl.gb")) //pass
         //emulator = Emulator(Gdx.files.internal("rom/test/04-op r,imm.gb")) //pass
         //emulator = Emulator(Gdx.files.internal("rom/test/05-op rp.gb")) //pass
