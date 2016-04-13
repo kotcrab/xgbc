@@ -10,5 +10,6 @@ Test roms:
 ```
 cpu_instrs
 
-01:ok  02:02  03:ok  04:01  05:ok  06:02  07:ok  08:01  09:ok [starts printing garbage]
+01:ok  02:05  03:ok  04:ok  05:ok  06:04  07:ok  08:ok  09:ok  10:05  11:ok [starts looping, should not happen]
 ```
+Doesn't seem to be trustworthy running test individually can give different results.

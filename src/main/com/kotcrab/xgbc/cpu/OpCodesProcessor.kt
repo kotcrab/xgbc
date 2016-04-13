@@ -79,11 +79,20 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     }
 
     fun adc(value: Int) {
-        add(value + if (cpu.isFlagSet(Cpu.FLAG_C)) 1 else 0)
+        val regA = cpu.readRegInt(Cpu.REG_A)
+        val carry = cpu.isFlagSet(Cpu.FLAG_C).toInt()
+        val result = regA + value + carry
+
+        if (result and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        cpu.resetFlag(Cpu.FLAG_N)
+        if ((regA and 0xF) + (value and 0xF) + carry and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
+        if ((regA and 0xFF) + (value and 0xFF) + carry and 0x100 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
+
+        cpu.writeReg(Cpu.REG_A, result.toByte())
     }
 
     fun adcReg(reg: Int) {
-        add(cpu.readRegInt(reg) + if (cpu.isFlagSet(Cpu.FLAG_C)) 1 else 0)
+        adc(cpu.readRegInt(reg))
     }
 
     fun sub(value: Int) {
@@ -92,8 +101,8 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
 
         if (result and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
         cpu.setFlag(Cpu.FLAG_N)
-        if ((regA and 0xF) + (value and 0xF) and 0x10 != 0) cpu.resetFlag(Cpu.FLAG_H) else cpu.setFlag(Cpu.FLAG_H)
-        if ((regA and 0xFF) + (value and 0xFF) and 0x100 != 0) cpu.resetFlag(Cpu.FLAG_C) else cpu.setFlag(Cpu.FLAG_C)
+        if ((regA and 0xF) - (value and 0xF) and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
+        if ((regA and 0xFF) - (value and 0xFF) and 0x100 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
 
         cpu.writeReg(Cpu.REG_A, result.toByte())
     }
@@ -103,11 +112,20 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     }
 
     fun sbc(value: Int) {
-        sub(value + if (cpu.isFlagSet(Cpu.FLAG_C)) 1 else 0)
+        val regA = cpu.readRegInt(Cpu.REG_A)
+        val carry = cpu.isFlagSet(Cpu.FLAG_C).toInt()
+        val result = regA - value - carry
+
+        if (result and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        cpu.setFlag(Cpu.FLAG_N)
+        if ((regA and 0xF) - (value and 0xF) - carry and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
+        if ((regA and 0xFF) - (value and 0xFF) - carry and 0x100 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
+
+        cpu.writeReg(Cpu.REG_A, result.toByte())
     }
 
     fun sbcReg(reg: Int) {
-        sub(cpu.readRegInt(reg) + if (cpu.isFlagSet(Cpu.FLAG_C)) 1 else 0)
+        sbc(cpu.readRegInt(reg))
     }
 
     fun and(value: Int) {
@@ -161,7 +179,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
 
         if (result and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
         cpu.setFlag(Cpu.FLAG_N)
-        if ((regA and 0xF) + (value and 0xF) and 0x10 != 0) cpu.resetFlag(Cpu.FLAG_H) else cpu.setFlag(Cpu.FLAG_H)
+        if ((regA and 0xF) - (value and 0xF) and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
         if (regA < value) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
     }
 
