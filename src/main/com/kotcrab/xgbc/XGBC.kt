@@ -44,7 +44,7 @@ class XGBC : ApplicationAdapter() {
         //emulator = Emulator(Gdx.files.internal("rom/test/11-op a,(hl).gb")) //fault
 
         //emulator = Emulator(Gdx.files.internal("rom/test/mem_timing.gb"))
-        //emulator = Emulator(Gdx.files.internal("rom/test/cpu_instrs.gb"))
+        emulator = Emulator(Gdx.files.internal("rom/test/cpu_instrs.gb"))
         //emulator = Emulator(Gdx.files.internal("rom/tetris.gb"))
 
         stage.addActor(EmulatorWindow(emulator))

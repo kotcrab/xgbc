@@ -4,17 +4,23 @@ import com.kotcrab.xgbc.EmulatorException
 import com.kotcrab.xgbc.isBitSet
 import com.kotcrab.xgbc.rom.Rom
 import com.kotcrab.xgbc.toHex
+import com.kotcrab.xgbc.toUnsignedInt
 
 /** @author Kotcrab */
-class MBC1(private val rom: Rom) : MBC {
+class MBC1(private val rom: Rom) : MBC { //TODO
     var activeRomBank = 1
     var activeRamBank = 0
 
     var mode = MBC1Mode.ROM16_RAM8;
 
     override fun write(addr: Int, value: Byte) {
-//        println("mbc write ${toHex(addr)}")
-        if (addr in 0x6000..0x7FFF) {
+        if (mode == MBC1Mode.ROM16_RAM8) {
+            if (addr in 0x2000..0x3FFF - 1) {
+                activeRomBank = value.toUnsignedInt() and 0x1F
+            }
+        }
+
+        if (addr in 0x6000..0x7FFF - 1) {
             if (value.isBitSet(0)) {
                 mode = MBC1Mode.ROM16_RAM8
             } else
