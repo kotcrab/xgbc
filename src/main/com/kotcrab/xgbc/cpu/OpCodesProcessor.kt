@@ -433,7 +433,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     // Calls
 
     fun call(): Boolean {
-        push(cpu.pc + 3) //each call instructions is 3 bytes long
+        push(cpu.pc + 3) //each CALL instructions is 3 bytes long
         jp()
         return true;
     }
@@ -472,7 +472,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     // Restarts
 
     fun rst(addr: Int): Boolean {
-        push(cpu.pc)
+        push(cpu.pc + 1) //each RST is one byte long
         cpu.pc = addr
         return true
     }
