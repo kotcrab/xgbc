@@ -158,13 +158,12 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
             emulator.step()
         }
 
-        val cycles = Emulator.CLOCK * Gdx.graphics.deltaTime
+        val cycles = emulator.cpu.cycle + Emulator.CLOCK * Gdx.graphics.deltaTime
 
         if (execStopAddr != -1) {
             while (true) {
                 emulator.step()
                 if (emulator.cpu.cycle > cycles) {
-                    emulator.cpu.cycle = 0
                     break
                 }
 

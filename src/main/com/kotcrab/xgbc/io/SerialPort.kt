@@ -15,7 +15,7 @@ class SerialPort(private val emulator: Emulator) : IODevice {
         registrar.invoke(SC)
     }
 
-    override fun tick() {
+    override fun tick(cyclesElapsed: Int) {
         //        tickCounter++
         //        if (tickCounter >= tickUpdate) {
         //            tickCounter = 0
@@ -25,6 +25,9 @@ class SerialPort(private val emulator: Emulator) : IODevice {
         //                emulator.write(SC, 0x01)
         //            }
         //        }
+
+
+        //trigger interrupt
     }
 
     override fun reset() {

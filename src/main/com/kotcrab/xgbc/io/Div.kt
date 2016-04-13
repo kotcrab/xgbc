@@ -13,7 +13,7 @@ class Div(private val emulator: Emulator) : IODevice {
         registrar.invoke(DIV)
     }
 
-    override fun tick() {
+    override fun tick(cyclesElapsed: Int) {
         tickCounter++
         if (tickCounter >= tickUpdate) {
             tickCounter = 0

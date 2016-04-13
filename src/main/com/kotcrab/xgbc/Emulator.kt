@@ -10,7 +10,8 @@ import com.badlogic.gdx.utils.Array as GdxArray
 /** @author Kotcrab */
 class Emulator(romFile: FileHandle) {
     companion object {
-        val CLOCK = 4096 * 1000
+        val BASE_CLOCK = 4096 //khz
+        val CLOCK = BASE_CLOCK * 1000
         val REG_IF = 0xFF0F
         val REG_IE = 0xFFFF
     }
@@ -91,12 +92,11 @@ class Emulator(romFile: FileHandle) {
 
     fun update() {
         if (mode == EmulatorMode.NORMAL) {
-            val cycles = CLOCK * Gdx.graphics.deltaTime
+            val cycles = cpu.cycle + CLOCK * Gdx.graphics.deltaTime
 
             while (true) {
                 step()
                 if (cpu.cycle > cycles) {
-                    cpu.cycle = 0
                     break
                 }
             }
@@ -105,9 +105,10 @@ class Emulator(romFile: FileHandle) {
 
     fun step() {
         executingOpCode = true
+        val cycles = cpu.cycle
         cpu.tick()
         executingOpCode = false
-        io.tick()
+        io.tick((cpu.cycle - cycles).toInt())
     }
 
     fun read(addr: Int): Byte {

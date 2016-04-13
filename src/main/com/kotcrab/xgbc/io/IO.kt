@@ -27,9 +27,9 @@ class IO(private val emulator: Emulator) {
         }
     }
 
-    fun tick() {
+    fun tick(cyclesElapsed: Int) {
         for (device in devices) {
-            device.tick()
+            device.tick(cyclesElapsed)
         }
     }
 
@@ -55,7 +55,7 @@ class IO(private val emulator: Emulator) {
 interface IODevice {
     fun reset()
 
-    fun tick()
+    fun tick(cyclesElapsed: Int)
 
     fun register(registrar: (addr: Int) -> Unit)
 

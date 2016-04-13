@@ -25,7 +25,8 @@ class Cpu(private val emulator: Emulator) {
 
     var sp: Int = 0 //stack pointer
     var pc: Int = 0 //program counter
-    var cycle: Int = 0
+    var cycle: Long = 0
+        private set
     private val regs: ByteArray = ByteArray(8)
     private var ime = false //interrupt master enable
     private var targetIme = false
