@@ -27,7 +27,7 @@ class Cpu(private val emulator: Emulator) {
     var pc: Int = 0 //program counter
     var cycle: Int = 0
     private val regs: ByteArray = ByteArray(8)
-    private var ime = false
+    private var ime = false //interrupt master enable
     private var targetIme = false
     private var changeImeState = ImeState.IDLE
 
@@ -112,6 +112,8 @@ class Cpu(private val emulator: Emulator) {
     }
 
     fun tick() {
+        processInterrupts()
+
         val oldPc = pc;
         var opcode = emulator.readInt(pc)
 
@@ -141,7 +143,6 @@ class Cpu(private val emulator: Emulator) {
             ImeState.IDLE -> {
             }
             ImeState.CHANGE_AFTER_NEXT -> {
-                ime = targetIme
                 changeImeState = ImeState.CHANGE_IME
             }
             ImeState.CHANGE_IME -> {
@@ -151,6 +152,24 @@ class Cpu(private val emulator: Emulator) {
         }
 
         emulator.debuggerListener.onCpuTick(oldPc, pc)
+    }
+
+    private fun processInterrupts() {
+        if (ime == false) return
+        val ie = emulator.read(Emulator.REG_IE)
+        val if_ = emulator.read(Emulator.REG_IF)
+
+        for (interrupt in Interrupt.values()) {
+            if (ie.isBitSet(interrupt.interruptBit) && if_.isBitSet(interrupt.interruptBit)) {
+                emulator.write(Emulator.REG_IF, emulator.read(Emulator.REG_IF).resetBit(interrupt.interruptBit))
+
+                ime = false
+                opProc.push(pc)
+                pc = interrupt.addr
+
+                break;
+            }
+        }
     }
 
     private enum class ImeState {

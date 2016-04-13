@@ -11,6 +11,8 @@ import com.badlogic.gdx.utils.Array as GdxArray
 class Emulator(romFile: FileHandle) {
     companion object {
         val CLOCK = 4096 * 1000
+        val REG_IF = 0xFF0F
+        val REG_IE = 0xFFFF
     }
 
     val rom = Rom(romFile)
@@ -25,6 +27,8 @@ class Emulator(romFile: FileHandle) {
     private val vram: ByteArray = ByteArray(0x2000)
     private val oam: ByteArray = ByteArray(0xA0)
     private val internalRam: ByteArray = ByteArray(0x7F)
+
+    private var executingOpCode = false;
 
     /** Interrupt Enable */
     private var ie: Byte = 0
@@ -100,7 +104,9 @@ class Emulator(romFile: FileHandle) {
     }
 
     fun step() {
+        executingOpCode = true
         cpu.tick()
+        executingOpCode = false
         io.tick()
     }
 
@@ -184,6 +190,19 @@ class Emulator(romFile: FileHandle) {
         }
 
     }
+
+    fun interrupt(interrupt: Interrupt) {
+        write(REG_IF, read(REG_IF).setBit(interrupt.interruptBit))
+    }
+}
+
+enum class Interrupt(val interruptBit: Int, val addr: Int) {
+    //ordered by priority
+    VBLANK(0, 0x0040),
+    LCDC(1, 0x0048),
+    TIMER(2, 0x0050),
+    SERIAL(3, 0x0058),
+    JOYPAD(4, 0x0060),
 }
 
 enum class EmulatorMode {
