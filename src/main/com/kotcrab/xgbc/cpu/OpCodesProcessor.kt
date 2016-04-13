@@ -517,8 +517,9 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     fun retC(): Boolean {
         if (cpu.isFlagSet(Cpu.FLAG_C)) {
             return ret()
-        } else
+        } else {
             return false
+        }
     }
 
     // Rotates and shifts

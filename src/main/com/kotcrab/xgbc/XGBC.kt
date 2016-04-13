@@ -31,18 +31,20 @@ class XGBC : ApplicationAdapter() {
 
         Gdx.input.inputProcessor = stage
 
-//        emulator = Emulator(Gdx.files.internal("rom/test/01-special.gb"))
-//                        emulator = Emulator(Gdx.files.internal("rom/test/02-interrupts.gb"))
-//                        emulator = Emulator(Gdx.files.internal("rom/test/03-op sp,hl.gb"))
-//                        emulator = Emulator(Gdx.files.internal("rom/test/04-op r,imm.gb"))
-        //                emulator = Emulator(Gdx.files.internal("rom/test/05-op rp.gb"))
-        //                emulator = Emulator(Gdx.files.internal("rom/test/06-ld r,r.gb"))
-        //                emulator = Emulator(Gdx.files.internal("rom/test/07-jr,jp,call,ret,rst.gb"))
-        //                emulator = Emulator(Gdx.files.internal("rom/test/08-misc instrs.gb"))
-        //                emulator = Emulator(Gdx.files.internal("rom/test/09-op r,r.gb"))
-        //                emulator = Emulator(Gdx.files.internal("rom/test/10-bit ops.gb"))
-        //                emulator = Emulator(Gdx.files.internal("rom/test/11-op a,(hl).gb"))
-                        emulator = Emulator(Gdx.files.internal("rom/test/cpu_instrs.gb"))
+        //emulator = Emulator(Gdx.files.internal("rom/test/01-special.gb")) //pass
+        emulator = Emulator(Gdx.files.internal("rom/test/02-interrupts.gb")) //failed halt
+        //emulator = Emulator(Gdx.files.internal("rom/test/03-op sp,hl.gb")) //pass
+        //emulator = Emulator(Gdx.files.internal("rom/test/04-op r,imm.gb")) //pass
+        //emulator = Emulator(Gdx.files.internal("rom/test/05-op rp.gb")) //pass
+        //emulator = Emulator(Gdx.files.internal("rom/test/06-ld r,r.gb")) //pass
+        //emulator = Emulator(Gdx.files.internal("rom/test/07-jr,jp,call,ret,rst.gb")) //doesn't finish
+        //emulator = Emulator(Gdx.files.internal("rom/test/08-misc instrs.gb")) //pass
+        //emulator = Emulator(Gdx.files.internal("rom/test/09-op r,r.gb")) //fault
+        //emulator = Emulator(Gdx.files.internal("rom/test/10-bit ops.gb")) //pass
+        //emulator = Emulator(Gdx.files.internal("rom/test/11-op a,(hl).gb")) //fault
+
+        //emulator = Emulator(Gdx.files.internal("rom/test/mem_timing.gb"))
+        //emulator = Emulator(Gdx.files.internal("rom/test/cpu_instrs.gb"))
         //emulator = Emulator(Gdx.files.internal("rom/tetris.gb"))
 
         stage.addActor(EmulatorWindow(emulator))
