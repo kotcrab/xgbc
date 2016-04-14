@@ -524,68 +524,84 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
 
     // Rotates and shifts
 
-    fun rlc(byte: Byte): Byte {
+    fun rlc(byte: Byte, sefZFlagIfNeeded: Boolean): Byte {
         val result = byte.rotateLeft(1)
 
-        if (result.toUnsignedInt() == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        if (sefZFlagIfNeeded) {
+            if (result.toUnsignedInt() == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        } else {
+            cpu.resetFlag(Cpu.FLAG_Z)
+        }
         cpu.resetFlag(Cpu.FLAG_N)
         cpu.resetFlag(Cpu.FLAG_H)
         cpu.setFlagState(Cpu.FLAG_C, byte.isBitSet(7))
         return result;
     }
 
-    fun rrc(byte: Byte): Byte {
+    fun rrc(byte: Byte, sefZFlagIfNeeded: Boolean): Byte {
         val result = byte.rotateRight(1)
 
-        if (result.toUnsignedInt() == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        if (sefZFlagIfNeeded) {
+            if (result.toUnsignedInt() == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        } else {
+            cpu.resetFlag(Cpu.FLAG_Z)
+        }
         cpu.resetFlag(Cpu.FLAG_N)
         cpu.resetFlag(Cpu.FLAG_H)
         cpu.setFlagState(Cpu.FLAG_C, byte.isBitSet(0))
         return result;
     }
 
-    fun rl(byte: Byte): Byte {
+    fun rl(byte: Byte, sefZFlagIfNeeded: Boolean): Byte {
         var result = byte.rotateLeft(1)
 
         result = result.setBitState(0, cpu.isFlagSet(Cpu.FLAG_C))
 
-        if (result.toUnsignedInt() == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        if (sefZFlagIfNeeded) {
+            if (result.toUnsignedInt() == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        } else {
+            cpu.resetFlag(Cpu.FLAG_Z)
+        }
         cpu.resetFlag(Cpu.FLAG_N)
         cpu.resetFlag(Cpu.FLAG_H)
         cpu.setFlagState(Cpu.FLAG_C, byte.isBitSet(7))
         return result.toByte();
     }
 
-    fun rr(byte: Byte): Byte {
+    fun rr(byte: Byte, sefZFlagIfNeeded: Boolean): Byte {
         var result = byte.rotateRight(1)
 
         result = result.setBitState(7, cpu.isFlagSet(Cpu.FLAG_C))
 
-        if (result.toUnsignedInt() == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        if (sefZFlagIfNeeded) {
+            if (result.toUnsignedInt() == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
+        } else {
+            cpu.resetFlag(Cpu.FLAG_Z)
+        }
         cpu.resetFlag(Cpu.FLAG_N)
         cpu.resetFlag(Cpu.FLAG_H)
         cpu.setFlagState(Cpu.FLAG_C, byte.isBitSet(0))
         return result.toByte();
     }
 
-    fun rlcReg(reg: Int) {
+    fun rlcReg(reg: Int, sefZFlagIfNeeded: Boolean = true) {
         val value = cpu.readReg(reg)
-        cpu.writeReg(reg, rlc(value))
+        cpu.writeReg(reg, rlc(value, sefZFlagIfNeeded))
     }
 
-    fun rrcReg(reg: Int) {
+    fun rrcReg(reg: Int, sefZFlagIfNeeded: Boolean = true) {
         val value = cpu.readReg(reg)
-        cpu.writeReg(reg, rrc(value))
+        cpu.writeReg(reg, rrc(value, sefZFlagIfNeeded))
     }
 
-    fun rrReg(reg: Int) {
+    fun rrReg(reg: Int, sefZFlagIfNeeded: Boolean = true) {
         val value = cpu.readReg(reg)
-        cpu.writeReg(reg, rr(value))
+        cpu.writeReg(reg, rr(value, sefZFlagIfNeeded))
     }
 
-    fun rlReg(reg: Int) {
+    fun rlReg(reg: Int, sefZFlagIfNeeded: Boolean = true) {
         val value = cpu.readReg(reg)
-        cpu.writeReg(reg, rl(value))
+        cpu.writeReg(reg, rl(value, sefZFlagIfNeeded))
     }
 
     fun sla(byte: Byte): Byte {
