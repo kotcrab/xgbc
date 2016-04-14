@@ -137,16 +137,21 @@ class Cpu(private val emulator: Emulator) {
 
         if (instr is JmpInstr) {
             val result = instr.op.invoke()
-            if (result == false) pc += instr.len;
+            if (result == false) {
+                pc += instr.len;
+                cycle += instr.cycles
+            } else {
+                cycle += instr.cyclesIfTaken
+            }
         } else {
             instr.op.invoke();
             if (oldPc != pc) {
                 println("Warn: PC modification by non JmpInstr will be ignored, opcode: ${toHex(opcode.toByte())}")
             }
             pc += instr.len
+            cycle += instr.cycles
         }
 
-        cycle += instr.cycles
 
         when (changeImeState) {
             ImeState.IDLE -> {
@@ -200,6 +205,7 @@ class VoidInstr(len: Int,
                 op: () -> Unit) : Instr(len, cycles, name, op)
 
 class JmpInstr(len: Int,
+               val cyclesIfTaken: Int,
                cycles: Int,
                name: String,
                op: () -> Boolean) : Instr(len, cycles, name, op) {
