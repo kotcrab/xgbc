@@ -606,6 +606,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
 
     fun sla(byte: Byte): Byte {
         var result = (byte.toInt() and 0xFF) shl 1;
+        result = result and 0xFF
 
         if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
         cpu.resetFlag(Cpu.FLAG_N)
@@ -617,6 +618,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
 
     fun srl(byte: Byte): Byte {
         var result = (byte.toInt() and 0xFF) shr 1;
+        result = result and 0xFF
 
         if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
         cpu.resetFlag(Cpu.FLAG_N)
@@ -628,6 +630,8 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
 
     fun sra(byte: Byte): Byte {
         var result = (byte.toInt() and 0xFF) ushr 1;
+        result = result and 0xFF
+        result = result.toByte().setBitState(7, byte.isBitSet(7)).toUnsignedInt() //preserve msb
 
         if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
         cpu.resetFlag(Cpu.FLAG_N)
