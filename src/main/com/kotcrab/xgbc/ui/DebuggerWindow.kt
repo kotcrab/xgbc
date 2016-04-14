@@ -60,7 +60,7 @@ class DebuggerTab(val emulator: Emulator) : Tab(false, false) {
         stackPointerScrollPane.setScrollingDisabled(true, false)
         stackPointerScrollPane.setFlickScroll(false)
         stackPointerScrollPane.setFadeScrollBars(false)
-        subTable.add(cpuDebuggerTab)
+        subTable.add(cpuDebuggerTab).width(150.0f)
         subTable.add(stackPointerScrollPane).height(110.0f).width(150.0f)
         table.add(subTable).padTop(10.0f).row()
 

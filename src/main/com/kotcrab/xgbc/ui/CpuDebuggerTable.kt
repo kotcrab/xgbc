@@ -53,7 +53,7 @@ class CpuDebuggerTable(private val emulator: Emulator) : VisTable(true) {
         miscTable.add(TableBuilder.build(cFlagCheck, hFlagCheck)).row()
 
         add("CPU:").row()
-        add(regsTable)
+        add(regsTable).width(60.0f)
         add(miscTable)
     }
 
