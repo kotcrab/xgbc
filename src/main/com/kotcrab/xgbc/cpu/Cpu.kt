@@ -152,7 +152,6 @@ class Cpu(private val emulator: Emulator) {
             cycle += instr.cycles
         }
 
-
         when (changeImeState) {
             ImeState.IDLE -> {
             }
@@ -166,6 +165,7 @@ class Cpu(private val emulator: Emulator) {
         }
 
         emulator.debuggerListener.onCpuTick(oldPc, pc)
+
     }
 
     private fun processInterrupts() {
@@ -179,8 +179,8 @@ class Cpu(private val emulator: Emulator) {
                 emulator.write(Emulator.REG_IF, emulator.read(Emulator.REG_IF).resetBit(interrupt.interruptBit))
                 ime = false
                 opProc.push(pc)
+                cycle += 16
                 pc = interrupt.addr
-
                 break;
             }
         }

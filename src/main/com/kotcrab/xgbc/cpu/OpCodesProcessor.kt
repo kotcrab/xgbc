@@ -426,8 +426,9 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     fun jrC(): Boolean {
         if (cpu.isFlagSet(Cpu.FLAG_C)) {
             return jr()
-        } else
+        } else {
             return false
+        }
     }
 
     // Calls
@@ -465,8 +466,9 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     fun callC(): Boolean {
         if (cpu.isFlagSet(Cpu.FLAG_C)) {
             return call()
-        } else
+        } else {
             return false
+        }
     }
 
     // Restarts
