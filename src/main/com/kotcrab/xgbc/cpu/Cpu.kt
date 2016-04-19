@@ -43,6 +43,7 @@ class Cpu(private val emulator: Emulator) {
         opProc = OpCodesProcessor(emulator, this)
         generateOpCodes(emulator, this, opProc, op)
         generateExtOpCodes(emulator, this, opProc, extOp)
+        verifyInstrData(op, extOp)
     }
 
     fun readReg(reg: Int): Byte {
@@ -165,7 +166,6 @@ class Cpu(private val emulator: Emulator) {
         }
 
         emulator.debuggerListener.onCpuTick(oldPc, pc)
-
     }
 
     private fun processInterrupts() {

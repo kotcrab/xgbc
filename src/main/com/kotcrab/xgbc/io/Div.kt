@@ -19,9 +19,9 @@ class Div(private val emulator: Emulator) : IODevice {
         while (cycleCounter >= cycleUpdate) {
             cycleCounter -= cycleUpdate
             div += 1
-        }
-        if (div > 0xFF) {
-            div = 0
+            if (div > 0xFF) {
+                div = 0
+            }
         }
         emulator.io.directWrite(DIV, div.toByte())
     }

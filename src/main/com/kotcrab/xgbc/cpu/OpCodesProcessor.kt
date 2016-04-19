@@ -395,7 +395,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     }
 
     fun jr(): Boolean {
-        cpu.pc = emulator.read(cpu.pc + 1) + cpu.pc + 2 //jr is to bytes long which actually needs to be acknowledged here
+        cpu.pc = cpu.pc + emulator.read(cpu.pc + 1) + 2 //jr is 2 bytes long which actually needs to be acknowledged here
         return true;
     }
 

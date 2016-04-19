@@ -33,12 +33,13 @@ class Timer(private val emulator: Emulator) : IODevice {
                 //println("TAC:" + toHex(emulator.read(TAC)) + " TIMA:" + toHex(emulator.read(TIMA)) + " TMA:" + toHex(emulator.read(TMA)))
                 cycleCounter -= cycleUpdate
                 tima++
+
+                if (tima > 0xFF) {
+                    tima = emulator.readInt(TMA)
+                    emulator.interrupt(Interrupt.TIMER)
+                }
             }
 
-            if (tima >= 0xFF) {
-                tima = emulator.readInt(TMA)
-                emulator.interrupt(Interrupt.TIMER)
-            }
             emulator.io.directWrite(TIMA, tima.toByte())
         }
     }

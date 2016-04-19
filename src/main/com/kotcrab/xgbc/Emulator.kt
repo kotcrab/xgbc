@@ -29,8 +29,6 @@ class Emulator(romFile: FileHandle) {
     private val oam: ByteArray = ByteArray(0xA0)
     private val internalRam: ByteArray = ByteArray(0x7F)
 
-    private var executingOpCode = false;
-
     /** Interrupt Enable */
     private var ie: Byte = 0
 
@@ -104,10 +102,8 @@ class Emulator(romFile: FileHandle) {
     }
 
     fun step() {
-        executingOpCode = true
         val cycles = cpu.cycle
         cpu.tick()
-        executingOpCode = false
         io.tick((cpu.cycle - cycles).toInt())
     }
 

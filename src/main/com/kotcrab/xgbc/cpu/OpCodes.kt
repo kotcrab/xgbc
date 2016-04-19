@@ -241,7 +241,7 @@ fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<I
     op[0xDF] = JmpInstr(1, 16, 16, "RST 18H", { proc.rst(0x18) })
     op[0xE0] = Instr(2, 12, "LDH (a8), A", { proc.ld8RegToAddr(0xFF00 + emu.readInt(cpu.pc + 1), Cpu.REG_A) })
     op[0xE1] = Instr(1, 12, "POP HL", { proc.popReg(Cpu.REG_HL) })
-    op[0xE2] = Instr(2, 8, "LD (C), A", { proc.ld8RegToAddr(0xFF00 + cpu.readRegInt(Cpu.REG_C), Cpu.REG_A) })
+    op[0xE2] = Instr(1, 8, "LD (C), A", { proc.ld8RegToAddr(0xFF00 + cpu.readRegInt(Cpu.REG_C), Cpu.REG_A) })
     op[0xE3] = null
     op[0xE4] = null
     op[0xE5] = Instr(1, 16, "PUSH HL", { proc.pushReg(Cpu.REG_HL) })
@@ -268,7 +268,7 @@ fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<I
     op[0xEF] = JmpInstr(1, 16, 16, "RST 28H", { proc.rst(0x28) })
     op[0xF0] = Instr(2, 12, "LDH A, (a8)", { proc.ld8AddrToReg(Cpu.REG_A, 0xFF00 + emu.readInt(cpu.pc + 1)) })
     op[0xF1] = Instr(1, 12, "POP AF", { proc.popReg(Cpu.REG_AF) })
-    op[0xF2] = Instr(2, 8, "LD A, (C)", { proc.ld8AddrToReg(Cpu.REG_A, 0xFF00 + cpu.readRegInt(Cpu.REG_C)) })
+    op[0xF2] = Instr(1, 8, "LD A, (C)", { proc.ld8AddrToReg(Cpu.REG_A, 0xFF00 + cpu.readRegInt(Cpu.REG_C)) })
     op[0xF3] = VoidInstr(1, 4, "DI", { cpu.setImeFlag(false) })
     op[0xF4] = null
     op[0xF5] = Instr(1, 16, "PUSH AF", { proc.pushReg(Cpu.REG_AF) })
@@ -388,7 +388,7 @@ fun generateExtOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Arra
     op[0x43] = Instr(2, 8, "BIT 0, E", { proc.bitReg(0, Cpu.REG_E) })
     op[0x44] = Instr(2, 8, "BIT 0, H", { proc.bitReg(0, Cpu.REG_H) })
     op[0x45] = Instr(2, 8, "BIT 0, L", { proc.bitReg(0, Cpu.REG_L) })
-    op[0x46] = Instr(2, 16, "BIT 0, (HL)", { proc.bit(0, emu.read(cpu.readReg16(Cpu.REG_HL))) })
+    op[0x46] = Instr(2, 12, "BIT 0, (HL)", { proc.bit(0, emu.read(cpu.readReg16(Cpu.REG_HL))) })
     op[0x47] = Instr(2, 8, "BIT 0, A", { proc.bitReg(0, Cpu.REG_A) })
     op[0x48] = Instr(2, 8, "BIT 1, B", { proc.bitReg(1, Cpu.REG_B) })
     op[0x49] = Instr(2, 8, "BIT 1, C", { proc.bitReg(1, Cpu.REG_C) })
@@ -396,7 +396,7 @@ fun generateExtOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Arra
     op[0x4B] = Instr(2, 8, "BIT 1, E", { proc.bitReg(1, Cpu.REG_E) })
     op[0x4C] = Instr(2, 8, "BIT 1, H", { proc.bitReg(1, Cpu.REG_H) })
     op[0x4D] = Instr(2, 8, "BIT 1, L", { proc.bitReg(1, Cpu.REG_L) })
-    op[0x4E] = Instr(2, 16, "BIT 1, (HL)", { proc.bit(1, emu.read(cpu.readReg16(Cpu.REG_HL))) })
+    op[0x4E] = Instr(2, 12, "BIT 1, (HL)", { proc.bit(1, emu.read(cpu.readReg16(Cpu.REG_HL))) })
     op[0x4F] = Instr(2, 8, "BIT 1, A", { proc.bitReg(1, Cpu.REG_A) })
     op[0x50] = Instr(2, 8, "BIT 2, B", { proc.bitReg(2, Cpu.REG_B) })
     op[0x51] = Instr(2, 8, "BIT 2, C", { proc.bitReg(2, Cpu.REG_C) })
@@ -404,7 +404,7 @@ fun generateExtOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Arra
     op[0x53] = Instr(2, 8, "BIT 2, E", { proc.bitReg(2, Cpu.REG_E) })
     op[0x54] = Instr(2, 8, "BIT 2, H", { proc.bitReg(2, Cpu.REG_H) })
     op[0x55] = Instr(2, 8, "BIT 2, L", { proc.bitReg(2, Cpu.REG_L) })
-    op[0x56] = Instr(2, 16, "BIT 2, (HL)", { proc.bit(2, emu.read(cpu.readReg16(Cpu.REG_HL))) })
+    op[0x56] = Instr(2, 12, "BIT 2, (HL)", { proc.bit(2, emu.read(cpu.readReg16(Cpu.REG_HL))) })
     op[0x57] = Instr(2, 8, "BIT 2, A", { proc.bitReg(2, Cpu.REG_A) })
     op[0x58] = Instr(2, 8, "BIT 3, B", { proc.bitReg(3, Cpu.REG_B) })
     op[0x59] = Instr(2, 8, "BIT 3, C", { proc.bitReg(3, Cpu.REG_C) })
@@ -412,7 +412,7 @@ fun generateExtOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Arra
     op[0x5B] = Instr(2, 8, "BIT 3, E", { proc.bitReg(3, Cpu.REG_E) })
     op[0x5C] = Instr(2, 8, "BIT 3, H", { proc.bitReg(3, Cpu.REG_H) })
     op[0x5D] = Instr(2, 8, "BIT 3, L", { proc.bitReg(3, Cpu.REG_L) })
-    op[0x5E] = Instr(2, 16, "BIT 3, (HL)", { proc.bit(3, emu.read(cpu.readReg16(Cpu.REG_HL))) })
+    op[0x5E] = Instr(2, 12, "BIT 3, (HL)", { proc.bit(3, emu.read(cpu.readReg16(Cpu.REG_HL))) })
     op[0x5F] = Instr(2, 8, "BIT 3, A", { proc.bitReg(3, Cpu.REG_A) })
     op[0x60] = Instr(2, 8, "BIT 4, B", { proc.bitReg(4, Cpu.REG_B) })
     op[0x61] = Instr(2, 8, "BIT 4, C", { proc.bitReg(4, Cpu.REG_C) })
@@ -420,7 +420,7 @@ fun generateExtOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Arra
     op[0x63] = Instr(2, 8, "BIT 4, E", { proc.bitReg(4, Cpu.REG_E) })
     op[0x64] = Instr(2, 8, "BIT 4, H", { proc.bitReg(4, Cpu.REG_H) })
     op[0x65] = Instr(2, 8, "BIT 4, L", { proc.bitReg(4, Cpu.REG_L) })
-    op[0x66] = Instr(2, 16, "BIT 4, (HL)", { proc.bit(4, emu.read(cpu.readReg16(Cpu.REG_HL))) })
+    op[0x66] = Instr(2, 12, "BIT 4, (HL)", { proc.bit(4, emu.read(cpu.readReg16(Cpu.REG_HL))) })
     op[0x67] = Instr(2, 8, "BIT 4, A", { proc.bitReg(4, Cpu.REG_A) })
     op[0x68] = Instr(2, 8, "BIT 5, B", { proc.bitReg(5, Cpu.REG_B) })
     op[0x69] = Instr(2, 8, "BIT 5, C", { proc.bitReg(5, Cpu.REG_C) })
@@ -428,7 +428,7 @@ fun generateExtOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Arra
     op[0x6B] = Instr(2, 8, "BIT 5, E", { proc.bitReg(5, Cpu.REG_E) })
     op[0x6C] = Instr(2, 8, "BIT 5, H", { proc.bitReg(5, Cpu.REG_H) })
     op[0x6D] = Instr(2, 8, "BIT 5, L", { proc.bitReg(5, Cpu.REG_L) })
-    op[0x6E] = Instr(2, 16, "BIT 5, (HL)", { proc.bit(5, emu.read(cpu.readReg16(Cpu.REG_HL))) })
+    op[0x6E] = Instr(2, 12, "BIT 5, (HL)", { proc.bit(5, emu.read(cpu.readReg16(Cpu.REG_HL))) })
     op[0x6F] = Instr(2, 8, "BIT 5, A", { proc.bitReg(5, Cpu.REG_A) })
     op[0x70] = Instr(2, 8, "BIT 6, B", { proc.bitReg(6, Cpu.REG_B) })
     op[0x71] = Instr(2, 8, "BIT 6, C", { proc.bitReg(6, Cpu.REG_C) })
@@ -436,7 +436,7 @@ fun generateExtOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Arra
     op[0x73] = Instr(2, 8, "BIT 6, E", { proc.bitReg(6, Cpu.REG_E) })
     op[0x74] = Instr(2, 8, "BIT 6, H", { proc.bitReg(6, Cpu.REG_H) })
     op[0x75] = Instr(2, 8, "BIT 6, L", { proc.bitReg(6, Cpu.REG_L) })
-    op[0x76] = Instr(2, 16, "BIT 6, (HL)", { proc.bit(6, emu.read(cpu.readReg16(Cpu.REG_HL))) })
+    op[0x76] = Instr(2, 12, "BIT 6, (HL)", { proc.bit(6, emu.read(cpu.readReg16(Cpu.REG_HL))) })
     op[0x77] = Instr(2, 8, "BIT 6, A", { proc.bitReg(6, Cpu.REG_A) })
     op[0x78] = Instr(2, 8, "BIT 7, B", { proc.bitReg(7, Cpu.REG_B) })
     op[0x79] = Instr(2, 8, "BIT 7, C", { proc.bitReg(7, Cpu.REG_C) })
@@ -444,7 +444,7 @@ fun generateExtOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Arra
     op[0x7B] = Instr(2, 8, "BIT 7, E", { proc.bitReg(7, Cpu.REG_E) })
     op[0x7C] = Instr(2, 8, "BIT 7, H", { proc.bitReg(7, Cpu.REG_H) })
     op[0x7D] = Instr(2, 8, "BIT 7, L", { proc.bitReg(7, Cpu.REG_L) })
-    op[0x7E] = Instr(2, 16, "BIT 7, (HL)", { proc.bit(7, emu.read(cpu.readReg16(Cpu.REG_HL))) })
+    op[0x7E] = Instr(2, 12, "BIT 7, (HL)", { proc.bit(7, emu.read(cpu.readReg16(Cpu.REG_HL))) })
     op[0x7F] = Instr(2, 8, "BIT 7, A", { proc.bitReg(7, Cpu.REG_A) })
     op[0x80] = Instr(2, 8, "RES 0, B", { proc.resReg(0, Cpu.REG_B) })
     op[0x81] = Instr(2, 8, "RES 0, C", { proc.resReg(0, Cpu.REG_C) })
@@ -622,4 +622,143 @@ fun generateExtOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Arra
         emu.write(addr, proc.set(7, emu.read(addr)))
     })
     op[0xFF] = Instr(2, 8, "SET 7, A", { proc.setReg(7, Cpu.REG_A) })
+}
+
+fun verifyInstrData(op: Array<Instr?>, extOp: Array<Instr?>) {
+    //don't believe any website or docs, only use source code of instr_timing.gb to get timings
+    //and instruction lengths, so many discrepancies...
+
+    verifyInstrLength(op)
+    verifyInstrTiming(op)
+    verifyConditionalInstrTiming(op)
+    verifyCbInstrTiming(extOp)
+}
+
+private fun verifyInstrLength(op: Array<Instr?>) {
+    val instrLength = arrayOf(
+            1, 3, 1, 1, 1, 1, 2, 1, 3, 1, 1, 1, 1, 1, 2, 1,
+            0, 3, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1,
+            2, 3, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1,
+            2, 3, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 3, 3, 3, 1, 2, 1, 1, 1, 3, 0, 3, 3, 2, 1,
+            1, 1, 3, 0, 3, 1, 2, 1, 1, 1, 3, 0, 3, 0, 2, 1,
+            2, 1, 1, 0, 0, 1, 2, 1, 2, 1, 3, 0, 0, 0, 2, 1,
+            2, 1, 1, 1, 0, 1, 2, 1, 2, 1, 3, 1, 0, 0, 2, 1)
+
+    for (i in 0x00..0xFF - 1) {
+        val length = instrLength[i];
+        val instr = op[i];
+        if (length == 0 || instr == null)
+            continue
+
+        if (instr.len != length) {
+            println("Invalid op code length: OP: ${toHex(i)}, expected $length")
+        }
+    }
+}
+
+private fun verifyInstrTiming(op: Array<Instr?>) {
+    val instrTiming = arrayOf(
+            1, 3, 2, 2, 1, 1, 2, 1, 5, 2, 2, 2, 1, 1, 2, 1,
+            0, 3, 2, 2, 1, 1, 2, 1, 3, 2, 2, 2, 1, 1, 2, 1,
+            2, 3, 2, 2, 1, 1, 2, 1, 2, 2, 2, 2, 1, 1, 2, 1,
+            2, 3, 2, 2, 3, 3, 3, 1, 2, 2, 2, 2, 1, 1, 2, 1,
+            1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+            1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+            1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+            2, 2, 2, 2, 2, 2, 0, 2, 1, 1, 1, 1, 1, 1, 2, 1,
+            1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+            1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+            1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+            1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+            2, 3, 3, 4, 3, 4, 2, 4, 2, 4, 3, 0, 3, 6, 2, 4,
+            2, 3, 3, 0, 3, 4, 2, 4, 2, 4, 3, 0, 3, 0, 2, 4,
+            3, 3, 2, 0, 0, 4, 2, 4, 4, 1, 4, 0, 0, 0, 2, 4,
+            3, 3, 2, 1, 0, 4, 2, 4, 3, 2, 4, 1, 0, 0, 2, 4)
+
+    for (i in 0x00..0xFF - 1) {
+        val instrCycles = instrTiming[i];
+        val instr = op[i];
+        if (instrCycles == 0 || instr == null)
+            continue
+
+        if (instr.cycles != instrCycles * 4) {
+            println("Invalid op code timing: OP: ${toHex(i)}, expected $instrCycles MC")
+        }
+    }
+}
+
+fun verifyConditionalInstrTiming(op: Array<Instr?>) {
+    val instrTiming = arrayOf(
+            1, 3, 2, 2, 1, 1, 2, 1, 5, 2, 2, 2, 1, 1, 2, 1,
+            0, 3, 2, 2, 1, 1, 2, 1, 3, 2, 2, 2, 1, 1, 2, 1,
+            3, 3, 2, 2, 1, 1, 2, 1, 3, 2, 2, 2, 1, 1, 2, 1,
+            3, 3, 2, 2, 3, 3, 3, 1, 3, 2, 2, 2, 1, 1, 2, 1,
+            1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+            1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+            1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+            2, 2, 2, 2, 2, 2, 0, 2, 1, 1, 1, 1, 1, 1, 2, 1,
+            1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+            1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+            1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+            1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1,
+            5, 3, 4, 4, 6, 4, 2, 4, 5, 4, 4, 0, 6, 6, 2, 4,
+            5, 3, 4, 0, 6, 4, 2, 4, 5, 4, 4, 0, 6, 0, 2, 4,
+            3, 3, 2, 0, 0, 4, 2, 4, 4, 1, 4, 0, 0, 0, 2, 4,
+            3, 3, 2, 1, 0, 4, 2, 4, 3, 2, 4, 1, 0, 0, 2, 4)
+
+    for (i in 0x00..0xFF - 1) {
+        val instrCycles = instrTiming[i];
+        val instr = op[i];
+        if (instrCycles == 0 || instr == null)
+            continue
+
+        var cycles = instr.cycles
+        if (instr is JmpInstr) {
+            cycles = instr.cyclesIfTaken
+        }
+
+        if (cycles != instrCycles * 4) {
+            println("Invalid op code conditional timing: OP: ${toHex(i)}, expected $instrCycles MC")
+        }
+    }
+}
+
+fun verifyCbInstrTiming(extOp: Array<Instr?>) {
+    val instrTiming = arrayOf(
+            2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+            2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+            2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+            2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+            2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 3, 2,
+            2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 3, 2,
+            2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 3, 2,
+            2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 3, 2,
+            2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+            2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+            2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+            2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+            2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+            2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+            2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2,
+            2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2)
+
+    for (i in 0x00..0xFF - 1) {
+        val instrCycles = instrTiming[i];
+        val instr = extOp[i];
+        if (instrCycles == 0 || instr == null)
+            continue
+
+        if (instr.cycles != instrCycles * 4) {
+            println("Invalid CB op code timing: OP: ${toHex(i)}, expected $instrCycles MC")
+        }
+    }
 }
