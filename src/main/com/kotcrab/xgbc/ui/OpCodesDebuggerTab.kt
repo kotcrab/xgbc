@@ -158,6 +158,18 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
             emulator.step()
         }
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F5)) {
+            //dump test result
+            for (i in 0xA004..0xC000) {
+                val value = emulator.readInt(i)
+                if (value == 0) {
+                    println()
+                    break;
+                }
+                print(value.toChar())
+            }
+        }
+
         val cycles = emulator.cpu.cycle + Emulator.CLOCK * Gdx.graphics.deltaTime
 
         if (execStopAddr != -1) {
