@@ -21,3 +21,6 @@ instr_timing
 
 Passed
 ```
+
+VRAM viewer (showing first tile palette) and debugger:  
+![Screenshot](http://dl.kotcrab.com/img/d/2016-04-20_2341.png)
