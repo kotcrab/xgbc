@@ -1,4 +1,6 @@
-package com.kotcrab.xgbc
+package com.kotcrab.xgbc.cpu
+
+import com.kotcrab.xgbc.*
 
 /** @author Kotcrab */
 class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
@@ -364,34 +366,21 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     }
 
     fun jpNZ(): Boolean {
-        if (cpu.isFlagSet(Cpu.FLAG_Z) == false) {
-            return jp()
-        } else {
-            return false
-        }
+        return invokeIfZFlagReset { jp() }
     }
 
     fun jpZ(): Boolean {
-        if (cpu.isFlagSet(Cpu.FLAG_Z)) {
-            return jp()
-        } else {
-            return false;
-        }
+        return invokeIfZFlagSet { jp() }
+
     }
 
     fun jpNC(): Boolean {
-        if (cpu.isFlagSet(Cpu.FLAG_C) == false) {
-            return jp()
-        } else {
-            return false
-        }
+        return invokeIfCFlagReset { jp() }
+
     }
 
     fun jpC(): Boolean {
-        if (cpu.isFlagSet(Cpu.FLAG_C)) {
-            return jp()
-        } else
-            return false
+        return invokeIfCFlagSet { jp() }
     }
 
     fun jr(): Boolean {
@@ -400,35 +389,19 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     }
 
     fun jrNZ(): Boolean {
-        if (cpu.isFlagSet(Cpu.FLAG_Z) == false) {
-            return jr()
-        } else {
-            return false
-        }
+        return invokeIfZFlagReset { jr() }
     }
 
     fun jrZ(): Boolean {
-        if (cpu.isFlagSet(Cpu.FLAG_Z)) {
-            return jr()
-        } else {
-            return false;
-        }
+        return invokeIfZFlagSet { jr() }
     }
 
     fun jrNC(): Boolean {
-        if (cpu.isFlagSet(Cpu.FLAG_C) == false) {
-            return jr()
-        } else {
-            return false
-        }
+        return invokeIfCFlagReset { jr() }
     }
 
     fun jrC(): Boolean {
-        if (cpu.isFlagSet(Cpu.FLAG_C)) {
-            return jr()
-        } else {
-            return false
-        }
+        return invokeIfCFlagSet { jr() }
     }
 
     // Calls
@@ -440,35 +413,19 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     }
 
     fun callNZ(): Boolean {
-        if (cpu.isFlagSet(Cpu.FLAG_Z) == false) {
-            return call()
-        } else {
-            return false
-        }
+        return invokeIfZFlagReset { call() }
     }
 
     fun callZ(): Boolean {
-        if (cpu.isFlagSet(Cpu.FLAG_Z)) {
-            return call()
-        } else {
-            return false
-        }
+        return invokeIfZFlagSet { call() }
     }
 
     fun callNC(): Boolean {
-        if (cpu.isFlagSet(Cpu.FLAG_C) == false) {
-            return call()
-        } else {
-            return false
-        }
+        return invokeIfCFlagReset { call() }
     }
 
     fun callC(): Boolean {
-        if (cpu.isFlagSet(Cpu.FLAG_C)) {
-            return call()
-        } else {
-            return false
-        }
+        return invokeIfCFlagSet { call() }
     }
 
     // Restarts
@@ -493,35 +450,19 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     }
 
     fun retNZ(): Boolean {
-        if (cpu.isFlagSet(Cpu.FLAG_Z) == false) {
-            return ret()
-        } else {
-            return false
-        }
+        return invokeIfZFlagReset { ret() }
     }
 
     fun retZ(): Boolean {
-        if (cpu.isFlagSet(Cpu.FLAG_Z)) {
-            return ret()
-        } else {
-            return false
-        }
+        return invokeIfZFlagSet { ret() }
     }
 
     fun retNC(): Boolean {
-        if (cpu.isFlagSet(Cpu.FLAG_C) == false) {
-            return ret()
-        } else {
-            return false
-        }
+        return invokeIfCFlagReset { ret() }
     }
 
     fun retC(): Boolean {
-        if (cpu.isFlagSet(Cpu.FLAG_C)) {
-            return ret()
-        } else {
-            return false
-        }
+        return invokeIfCFlagSet { ret() }
     }
 
     // Rotates and shifts
@@ -688,4 +629,37 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         cpu.writeReg(reg, res(bit, value))
     }
 
+    // Internal util
+
+    private fun invokeIfCFlagSet(runnable: () -> Boolean): Boolean {
+        if (cpu.isFlagSet(Cpu.FLAG_C)) {
+            return runnable.invoke()
+        } else {
+            return false
+        }
+    }
+
+    private fun invokeIfCFlagReset(runnable: () -> Boolean): Boolean {
+        if (cpu.isFlagSet(Cpu.FLAG_C) == false) {
+            return runnable.invoke()
+        } else {
+            return false
+        }
+    }
+
+    private fun invokeIfZFlagSet(runnable: () -> Boolean): Boolean {
+        if (cpu.isFlagSet(Cpu.FLAG_Z)) {
+            return runnable.invoke()
+        } else {
+            return false
+        }
+    }
+
+    private fun invokeIfZFlagReset(runnable: () -> Boolean): Boolean {
+        if (cpu.isFlagSet(Cpu.FLAG_Z) == false) {
+            return runnable.invoke()
+        } else {
+            return false
+        }
+    }
 }

@@ -1,4 +1,6 @@
-package com.kotcrab.xgbc
+package com.kotcrab.xgbc.cpu
+
+import com.kotcrab.xgbc.*
 
 /** @author Kotcrab */
 class Cpu(private val emulator: Emulator) {
@@ -43,7 +45,6 @@ class Cpu(private val emulator: Emulator) {
         opProc = OpCodesProcessor(emulator, this)
         generateOpCodes(emulator, this, opProc, op)
         generateExtOpCodes(emulator, this, opProc, extOp)
-        verifyInstrData(op, extOp)
     }
 
     fun readReg(reg: Int): Byte {

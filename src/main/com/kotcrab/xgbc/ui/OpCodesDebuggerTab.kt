@@ -8,6 +8,7 @@ import com.kotcrab.vis.ui.VisUI
 import com.kotcrab.vis.ui.util.value.PrefHeightIfVisibleValue
 import com.kotcrab.vis.ui.widget.*
 import com.kotcrab.xgbc.*
+import com.kotcrab.xgbc.cpu.Instr
 import com.kotcrab.xgbc.vis.TableBuilder
 
 /** @author Kotcrab */

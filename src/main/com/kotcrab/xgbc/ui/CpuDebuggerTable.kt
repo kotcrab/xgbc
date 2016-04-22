@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.kotcrab.vis.ui.widget.VisCheckBox
 import com.kotcrab.vis.ui.widget.VisLabel
 import com.kotcrab.vis.ui.widget.VisTable
-import com.kotcrab.xgbc.Cpu
 import com.kotcrab.xgbc.Emulator
+import com.kotcrab.xgbc.cpu.Cpu
 import com.kotcrab.xgbc.toHex
 import com.kotcrab.xgbc.vis.TableBuilder
 

@@ -8,7 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.kotcrab.vis.ui.widget.VisImage
 import com.kotcrab.vis.ui.widget.VisLabel
 import com.kotcrab.vis.ui.widget.VisTable
-import com.kotcrab.xgbc.*
+import com.kotcrab.xgbc.Assets
+import com.kotcrab.xgbc.Emulator
+import com.kotcrab.xgbc.Icon
+import com.kotcrab.xgbc.cpu.Instr
+import com.kotcrab.xgbc.toHex
 
 /** @author Kotcrab */
 class OpCodeLine(private val debuggerPopupMenu: DebuggerPopupMenu) : VisTable(false) {
