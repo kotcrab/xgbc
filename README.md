@@ -4,7 +4,7 @@ Trying to make Game Boy emulator
 
 #### Status
 * Working cpu emulation (`cpu_instrs` and `instr_timing` passing)
-* Debugger with 'Run to Line' function, breakpoints not ready
+* Debugger with 'Run to Line' function and breakpoints
 
 Test roms:
 ```

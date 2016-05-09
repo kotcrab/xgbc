@@ -66,10 +66,14 @@ class DebuggerTab(val emulator: Emulator) : Tab(false, false) {
 
         val stepButton = VisTextButton("Step")
         stepButton.changed { changeEvent, actor -> emulator.step() }
-        val goToPC = VisTextButton("Show Exec Point")
+        val goToPC = VisTextButton("Show Execution Point")
         goToPC.changed { changeEvent, actor -> opCodesDebuggerTab.scrollToExecPoint() }
+        val resume = VisTextButton("Resume")
+        resume.changed { changeEvent, actor -> opCodesDebuggerTab.resumeExecution() }
+        val stop = VisTextButton("Stop")
+        stop.changed { changeEvent, actor -> opCodesDebuggerTab.stopExecution() }
 
-        table.add(TableBuilder.build(stepButton, goToPC))
+        table.add(TableBuilder.build(stepButton, goToPC, resume, stop))
     }
 
     override fun getContentTable(): Table? {

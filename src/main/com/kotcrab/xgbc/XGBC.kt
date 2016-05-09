@@ -75,7 +75,9 @@ class XGBC : ApplicationAdapter() {
         stage.act(Math.min(Gdx.graphics.deltaTime, 1 / 30f))
         stage.draw()
 
-        emulator.update()
+        if(emulator.mode == EmulatorMode.NORMAL) {
+            emulator.update()
+        }
     }
 
     override fun dispose() {

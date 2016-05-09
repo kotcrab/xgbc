@@ -16,5 +16,9 @@ class DebuggerPopupMenu(val listener: Listener) : PopupMenu() {
 
     interface Listener {
         fun runToLine(ctxAddr: Int)
+
+        fun addBreakpoint(addr: Int)
+
+        fun removeBreakpoint(addr: Int)
     }
 }

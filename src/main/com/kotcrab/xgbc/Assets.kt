@@ -23,5 +23,6 @@ object Assets {
 }
 
 enum class Icon(val iconName: String) {
-    BREAKPOINT("breakpoint"), CURRENT_LINE("current-line")
+    BREAKPOINT("breakpoint"), CURRENT_LINE("current-line"),
+    BREAKPOINT_CURRENT_LINE("breakpoint-current-line")
 }

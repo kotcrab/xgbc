@@ -27,7 +27,7 @@ class StackPointerView(val emulator: Emulator, opCodesDebuggerTab: OpCodesDebugg
 
         emulator.addDebuggerListener(object : DebuggerListener {
             override fun onCpuTick(oldPc: Int, pc: Int) {
-                if (opCodesDebuggerTab.execStopAddr != -1) return
+                if (opCodesDebuggerTab.mode == OpCodesDebuggerTab.Mode.RUNNING) return
                 if (currentSp != emulator.cpu.sp) {
                     currentSp = emulator.cpu.sp
                     updateLabels()

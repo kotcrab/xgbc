@@ -11,6 +11,8 @@ import com.kotcrab.xgbc.*
 import com.kotcrab.xgbc.cpu.Instr
 import com.kotcrab.xgbc.vis.TableBuilder
 
+import com.badlogic.gdx.utils.Array as GdxArray
+
 /** @author Kotcrab */
 class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopupMenu.Listener {
     val tmpVector = Vector2()
@@ -19,14 +21,18 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
     val chunks = arrayOfNulls<Chunk>(0xFFFF / chunkSize + 1)
     var activeChunk: Chunk? = null;
 
+    var mode = Mode.INTERACTIVE
+        private set;
     var execStopAddr = -1
         private set;
+    val breakpoints = GdxArray<Int>();
 
     val chunkContainer = VisTable()
     lateinit var scrollPane: VisScrollPane;
     val chunkInfoLabel = VisLabel()
     val chunkSelector = NumberSelector("Fragment", 0.0f, 0.0f, chunks.size - 1.toFloat(), 1.0f)
     private var currentLine: OpCodeLine? = null;
+
     val goToAddressField = VisValidatableTextField("")
 
     private val debuggerPopupMenu = DebuggerPopupMenu(this)
@@ -60,28 +66,22 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
 
         emulator.addDebuggerListener(object : DebuggerListener {
             override fun onCpuTick(oldPc: Int, pc: Int) {
+                var stopExecution = false
                 if (execStopAddr == pc) {
                     execStopAddr = -1
-                    reparseChunks()
-                    Gdx.app.postRunnable {
-                        Gdx.app.postRunnable { scrollToExecPoint() }
-                    }
+                    stopExecution = true
                 }
 
-                if (execStopAddr == -1) {
-                    currentLine?.setCurrentLine(false)
-                    val targetChunk = getChunk(pc)!!
-                    if (targetChunk.uiReady == false) {
-                        targetChunk.parse()
-                    }
-                    currentLine = getOpCodeLine(pc)
-                    currentLine?.setCurrentLine(true)
-                    scrollTo(currentLine)
+                if (breakpoints.contains(emulator.cpu.pc, false)) {
+                    stopExecution = true
                 }
+
+                if(stopExecution) stopExecution()
+                updateCurrentLine(pc)
             }
 
             override fun onMemoryWrite(addr: Int, value: Byte) {
-                if (execStopAddr == -1) {
+                if (mode == Mode.INTERACTIVE) {
                     reparseChunks()
                 }
             }
@@ -171,24 +171,51 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
             }
         }
 
-        val cycles = emulator.cpu.cycle + Emulator.CLOCK * Gdx.graphics.deltaTime
-
-        if (execStopAddr != -1) {
-            while (true) {
-                emulator.step()
-                if (emulator.cpu.cycle > cycles) {
-                    break
-                }
-
-                if (execStopAddr == -1) {
-                    break;
-                }
-            }
+        if (mode == Mode.RUNNING) {
+            //if emulator step caused debugger to go into interactive mode stop update
+            emulator.update(updateBreaker = { mode == Mode.INTERACTIVE })
         }
     }
 
     override fun runToLine(ctxAddr: Int) {
         execStopAddr = ctxAddr
+        mode = Mode.RUNNING
+    }
+
+    override fun addBreakpoint(addr: Int) {
+        breakpoints.add(addr)
+    }
+
+    override fun removeBreakpoint(addr: Int) {
+        breakpoints.removeValue(addr, false)
+    }
+
+    fun resumeExecution() {
+        mode = Mode.RUNNING
+        currentLine?.setCurrentLine(false)
+    }
+
+    fun stopExecution() {
+        execStopAddr = -1
+        mode = Mode.INTERACTIVE
+        reparseChunks()
+        Gdx.app.postRunnable {
+            Gdx.app.postRunnable { scrollToExecPoint() }
+        }
+        updateCurrentLine(emulator.cpu.pc)
+    }
+
+    private fun updateCurrentLine(pc: Int) {
+        if (mode == Mode.INTERACTIVE) {
+            currentLine?.setCurrentLine(false)
+            val targetChunk = getChunk(pc)!!
+            if (targetChunk.uiReady == false) {
+                targetChunk.parse()
+            }
+            currentLine = getOpCodeLine(pc)
+            currentLine?.setCurrentLine(true)
+            scrollTo(currentLine)
+        }
     }
 
     private fun reparseChunks() {
@@ -273,5 +300,9 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
             if (uiReady == false) throw IllegalStateException("Chunk UI not ready")
             return lines[addr - chunkBeginAddr]
         }
+    }
+
+    enum class Mode {
+        RUNNING, INTERACTIVE
     }
 }

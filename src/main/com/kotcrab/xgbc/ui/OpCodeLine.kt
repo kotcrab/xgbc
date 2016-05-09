@@ -80,6 +80,11 @@ class OpCodeLine(private val debuggerPopupMenu: DebuggerPopupMenu) : VisTable(fa
 
     fun setBreakpoint(breakpoint: Boolean) {
         this.breakpoint = breakpoint;
+        if (breakpoint) {
+            debuggerPopupMenu.listener.addBreakpoint(addr);
+        } else {
+            debuggerPopupMenu.listener.removeBreakpoint(addr);
+        }
         updateIcon()
     }
 
@@ -89,7 +94,9 @@ class OpCodeLine(private val debuggerPopupMenu: DebuggerPopupMenu) : VisTable(fa
     }
 
     private fun updateIcon() {
-        if (currentLine)
+        if (currentLine && breakpoint)
+            setIcon(Icon.BREAKPOINT_CURRENT_LINE)
+        else if (currentLine)
             setIcon(Icon.CURRENT_LINE)
         else if (breakpoint)
             setIcon(Icon.BREAKPOINT)

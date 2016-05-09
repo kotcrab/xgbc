@@ -89,15 +89,17 @@ class Emulator(romFile: FileHandle) {
         write(0xFFFF, 0x00) //IE
     }
 
-    fun update() {
-        if (mode == EmulatorMode.NORMAL) {
-            val cycles = cpu.cycle + CLOCK * Gdx.graphics.deltaTime
+    fun update(updateBreaker: () -> Boolean = { false }) {
+        val cycles = cpu.cycle + CLOCK * Gdx.graphics.deltaTime
 
-            while (true) {
-                step()
-                if (cpu.cycle > cycles) {
-                    break
-                }
+        while (true) {
+            step()
+            if (cpu.cycle > cycles) {
+                break
+            }
+
+            if (updateBreaker.invoke()) {
+                break;
             }
         }
     }
