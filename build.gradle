@@ -30,7 +30,7 @@ repositories {
 
 ext {
     gdxVersion = '1.9.2'
-    visuiVersion = '1.0.1'
+    visuiVersion = '1.0.2'
 }
 
 dependencies {
