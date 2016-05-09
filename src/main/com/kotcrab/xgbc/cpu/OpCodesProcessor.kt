@@ -41,12 +41,14 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     /** Loads 8 bit value from immediate address into reg */
     fun ld8ImmAddrToReg(reg: Int) {
         val fromAddr = emulator.read16(cpu.pc + 1);
+        syncTimer(8)
         ld8AddrToReg(reg, fromAddr)
     }
 
     /** Saves 8 bit value from reg into immediate address */
     fun ld8RegToImmAddr(reg: Int) {
         val toAddr = emulator.read16(cpu.pc + 1);
+        syncTimer(8)
         ld8RegToAddr(toAddr, reg);
     }
 
@@ -619,6 +621,12 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         bit(bit, cpu.readReg(reg))
     }
 
+    fun bitHL(bit: Int) {
+        val addr = cpu.readReg16(Cpu.REG_HL);
+        syncTimer(4)
+        bit(bit, emulator.read(addr))
+    }
+
     fun setReg(bit: Int, reg: Int) {
         val value = cpu.readReg(reg)
         cpu.writeReg(reg, set(bit, value))
@@ -661,5 +669,9 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         } else {
             return false
         }
+    }
+
+    fun syncTimer(cycles: Int) {
+        emulator.io.timer.sync(cycles);
     }
 }

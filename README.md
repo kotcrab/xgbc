@@ -3,7 +3,7 @@
 Trying to make Game Boy emulator
 
 #### Status
-* Working cpu emulation (`cpu_instrs` and `instr_timing` passing)
+* Working cpu emulation (`cpu_instrs` and `instr_timing` passing. `mem_timing`: 'read', 'write' tests pass, some 'modify' tests fail)
 * Debugger with 'Run to Line' function and breakpoints
 
 Test roms:
