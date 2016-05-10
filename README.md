@@ -22,5 +22,13 @@ instr_timing
 Passed
 ```
 
+```
+mem_timing
+
+01:ok  02:ok  03:01  
+
+Failed 1 tests.
+```
+
 VRAM viewer (showing first tile palette) and debugger:  
 ![Screenshot](http://dl.kotcrab.com/img/d/2016-04-20_2341.png)
