@@ -1,6 +1,6 @@
 # xgbc
 
-Trying to make Game Boy emulator
+Game Boy emulator written in Kotlin using libGDX and [VisUI](https://github.com/kotcrab/vis-editor/wiki/VisUI)
 
 #### Status
 * Working cpu emulation (`cpu_instrs` and `instr_timing` passing. `mem_timing`: 'read', 'write' tests pass, some 'modify' tests fail)
