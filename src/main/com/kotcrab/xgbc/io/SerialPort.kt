@@ -1,14 +1,15 @@
 package com.kotcrab.xgbc.io
 
 import com.kotcrab.xgbc.Emulator
+import com.kotcrab.xgbc.Interrupt
 
 /** @author Kotcrab */
 class SerialPort(private val emulator: Emulator) : IODevice {
     val SB = 0xFF01
     val SC = 0xFF02
 
-    var tickCounter = 0
-    val tickUpdate = 8192
+    var cycleCounter = 0
+    val cycleUpdate = 512 //~8102 khz
 
     override fun register(registrar: (Int) -> Unit) {
         registrar.invoke(SB)
@@ -16,31 +17,26 @@ class SerialPort(private val emulator: Emulator) : IODevice {
     }
 
     override fun tick(cyclesElapsed: Int) {
-        //        tickCounter++
-        //        if (tickCounter >= tickUpdate) {
-        //            tickCounter = 0
-        //            if(emulator.readInt(SC) == 0x81) {
-        //                println(toHex(emulator.read(SB)))
-        //                emulator.write(SB, 0xFF)
-        //                emulator.write(SC, 0x01)
-        //            }
-        //        }
-
-
-        //trigger interrupt
+        cycleCounter += cyclesElapsed
+        if (cycleCounter >= cycleUpdate) {
+            cycleCounter -= cycleUpdate
+            val sc = emulator.readInt(SC);
+            if (sc == 0x81) {
+                print(emulator.read(SB).toChar())
+                emulator.write(SB, 0xFF)
+                emulator.write(SC, 0x01)
+                emulator.interrupt(Interrupt.SERIAL)
+            }
+        }
     }
 
     override fun reset() {
+        cycleCounter = 0
     }
 
     override fun onRead(addr: Int) {
-        //        println("serial read! " + toHex(addr))
     }
 
     override fun onWrite(addr: Int, value: Byte) {
-        if (addr == SC) {
-            print(emulator.readInt(SB).toChar())
-            //            println("serial write:" + toHex(emulator.readInt(SB)) + " " + emulator.readInt(SB).toChar())
-        }
     }
 }

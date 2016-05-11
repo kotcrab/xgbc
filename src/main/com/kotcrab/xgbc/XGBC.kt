@@ -39,7 +39,9 @@ class XGBC : ApplicationAdapter() {
         //emulator = Emulator(Gdx.files.internal("rom/test/mem/02-write_timing.gb"))
         //emulator = Emulator(Gdx.files.internal("rom/test/mem/03-modify_timing.gb"))
         emulator = Emulator(Gdx.files.internal("rom/test/cpu_instrs.gb"))
-        //emulator = Emulator(Gdx.files.internal("rom/tetris.gb"))
+        //emulator = Emulator(Gdx.files.internal("rom/tetris.gbc"))
+        //emulator = Emulator(Gdx.files.internal("rom/pokemon_gold.gbc"))
+        //emulator = Emulator(Gdx.files.internal("rom/BADAPPLE.gbc"))
 
         stage.addActor(EmulatorWindow(emulator))
         stage.addActor(VRAMWindow(emulator))
@@ -75,7 +77,7 @@ class XGBC : ApplicationAdapter() {
         stage.act(Math.min(Gdx.graphics.deltaTime, 1 / 30f))
         stage.draw()
 
-        if(emulator.mode == EmulatorMode.NORMAL) {
+        if (emulator.mode == EmulatorMode.NORMAL) {
             emulator.update()
         }
     }
