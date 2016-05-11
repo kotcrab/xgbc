@@ -9,7 +9,7 @@ class SerialPort(private val emulator: Emulator) : IODevice {
     val SC = 0xFF02
 
     var cycleCounter = 0
-    val cycleUpdate = 512 //~8102 khz
+    val cycleUpdate = 512 // 8192 khz
 
     override fun register(registrar: (Int) -> Unit) {
         registrar.invoke(SB)

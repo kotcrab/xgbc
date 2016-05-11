@@ -11,10 +11,10 @@ class Timer(private val emulator: Emulator) : IODevice {
     val TMA = 0xFF06
     val TAC = 0xFF07
 
-    val clock00 = 1024 //4096 khz
-    val clock01 = 16   //262144 khz
-    val clock10 = 64   //65536 khz
-    val clock11 = 256  //16384 khz
+    val clock00 = 1024 //4096 hz
+    val clock01 = 16   //262144 hz
+    val clock10 = 64   //65536 hz
+    val clock11 = 256  //16384 hz
 
     var cycleUpdate = clock00
     var cycleCounter = 0
