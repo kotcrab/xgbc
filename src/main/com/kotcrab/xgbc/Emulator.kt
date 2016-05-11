@@ -3,6 +3,7 @@ package com.kotcrab.xgbc
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.kotcrab.xgbc.cpu.Cpu
+import com.kotcrab.xgbc.io.Gpu
 import com.kotcrab.xgbc.io.IO
 import com.kotcrab.xgbc.rom.Rom
 
@@ -19,6 +20,7 @@ class Emulator(romFile: FileHandle) {
 
     val rom = Rom(romFile)
     val cpu = Cpu(this)
+    val gpu = Gpu(this)
     val io = IO(this)
 
     var debuggerListener: DebuggerListener = DebuggerDelegate()
@@ -26,7 +28,6 @@ class Emulator(romFile: FileHandle) {
     var debuggerDelegates = GdxArray<DebuggerListener>()
 
     private val ram: ByteArray = ByteArray(0x2000)
-    private val vram: ByteArray = ByteArray(0x2000)
     private val oam: ByteArray = ByteArray(0xA0)
     private val internalRam: ByteArray = ByteArray(0x7F)
 
@@ -44,9 +45,9 @@ class Emulator(romFile: FileHandle) {
         debuggerDelegates.clear()
 
         ram.fill(0)
-        vram.fill(0)
         oam.fill(0)
         internalRam.fill(0)
+        gpu.reset()
         io.reset()
         ie = 0
 
@@ -113,7 +114,7 @@ class Emulator(romFile: FileHandle) {
     fun read(addr: Int): Byte {
         when (addr) {
             in 0x0000..0x8000 - 1 -> return rom.mbc.read(addr)
-            in 0x8000..0xA000 - 1 -> return vram[addr - 0x8000]
+            in 0x8000..0xA000 - 1 -> return gpu.vram[addr - 0x8000]
             in 0xA000..0xC000 - 1 -> return rom.mbc.read(addr)
             in 0xC000..0xE000 - 1 -> return ram[addr - 0xC000]
             in 0xE000..0xFE00 - 1 -> return ram[addr - 0xE000] //ram echo
@@ -141,7 +142,7 @@ class Emulator(romFile: FileHandle) {
     fun write(addr: Int, value: Byte) {
         when (addr) {
             in 0x0000..0x8000 - 1 -> rom.mbc.write(addr, value)
-            in 0x8000..0xA000 - 1 -> vram[addr - 0x8000] = value
+            in 0x8000..0xA000 - 1 -> gpu.vram[addr - 0x8000] = value
             in 0xA000..0xC000 - 1 -> rom.mbc.write(addr, value)
             in 0xC000..0xE000 - 1 -> ram[addr - 0xC000] = value
             in 0xE000..0xFE00 - 1 -> ram[addr - 0xE000] = value //ram echo
