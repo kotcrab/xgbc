@@ -2,6 +2,7 @@ package com.kotcrab.xgbc.test
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Files
 import com.kotcrab.xgbc.Emulator
+import com.kotcrab.xgbc.cpu.JmpInstr
 import com.kotcrab.xgbc.toHex
 import org.junit.Assert
 import org.junit.Before
