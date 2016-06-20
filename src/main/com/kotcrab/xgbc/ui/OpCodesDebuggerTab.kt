@@ -7,6 +7,8 @@ import com.badlogic.gdx.math.Vector2
 import com.kotcrab.vis.ui.VisUI
 import com.kotcrab.vis.ui.util.value.PrefHeightIfVisibleValue
 import com.kotcrab.vis.ui.widget.*
+import com.kotcrab.vis.ui.widget.spinner.IntSpinnerModel
+import com.kotcrab.vis.ui.widget.spinner.Spinner
 import com.kotcrab.xgbc.*
 import com.kotcrab.xgbc.cpu.Instr
 import com.kotcrab.xgbc.vis.TableBuilder
@@ -30,7 +32,7 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
     val chunkContainer = VisTable()
     lateinit var scrollPane: VisScrollPane;
     val chunkInfoLabel = VisLabel()
-    val chunkSelector = NumberSelector("Fragment", 0.0f, 0.0f, chunks.size - 1.toFloat(), 1.0f)
+    val chunkSelector = Spinner("Fragment", IntSpinnerModel(0, 0, chunks.size - 1))
     private var currentLine: OpCodeLine? = null;
 
     val goToAddressField = VisValidatableTextField("")
@@ -61,8 +63,10 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
         add(scrollPane).growX().row()
         add(TableBuilder.build(VisUI.getSizes().spacingRight.toInt(), chunkSelector, chunkInfoLabel, VisLabel("Go to: "), goToAddressField))
 
-        chunkSelector.setProgrammaticChangeEvents(false)
-        chunkSelector.addChangeListener { index -> switchChunk(index.toInt()) }
+        chunkSelector.isProgrammaticChangeEvents = false
+        chunkSelector.changed { changeEvent, actor ->
+            switchChunk((chunkSelector.model as IntSpinnerModel).value)
+        }
 
         emulator.addDebuggerListener(object : DebuggerListener {
             override fun onCpuTick(oldPc: Int, pc: Int) {
@@ -76,7 +80,7 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
                     stopExecution = true
                 }
 
-                if(stopExecution) stopExecution()
+                if (stopExecution) stopExecution()
                 updateCurrentLine(pc)
             }
 
@@ -122,7 +126,7 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
         scrollPane.validate()
 
         chunkInfoLabel.setText("Showing ${toHex(chunk.chunkBeginAddr)}-${toHex(Math.min(0xFFFF, chunk.chunkBeginAddr + chunkSize - 1))}")
-        chunkSelector.value = index.toFloat();
+        (chunkSelector.model as IntSpinnerModel).setValue(index);
     }
 
     private fun scrollToAddr(addr: Int) {

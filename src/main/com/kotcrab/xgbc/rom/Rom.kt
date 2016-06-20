@@ -35,7 +35,7 @@ class Rom(romFile: FileHandle) {
     }
 
     val romSize: Int by lazy {
-        var size = 0
+        val size: Int
         when (readInt(0x148)) {
             0x0 -> size = 32 * 1024
             0x1 -> size = 64 * 1024
@@ -53,7 +53,7 @@ class Rom(romFile: FileHandle) {
     }
 
     val ramSize: Int by lazy {
-        var size = 0
+        val size: Int
         when (readInt(0x149)) {
             0x0 -> size = 0
             0x1 -> size = 2 * 1024
