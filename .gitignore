@@ -1,4 +1,4 @@
-assets/rom/*
+src/main/resources/rom/*
 
 ## Maven
 target/
