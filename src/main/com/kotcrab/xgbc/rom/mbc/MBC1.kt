@@ -8,7 +8,7 @@ import com.kotcrab.xgbc.toUnsignedInt
 
 /** @author Kotcrab */
 class MBC1(private val rom: Rom) : MBC {
-    var mode = MBC1Mode.ROM16_RAM8;
+    var mode = MBC1Mode.ROM16_RAM8
 
     var romBankSelector = 0
     var activeRomBank = 1
@@ -37,7 +37,7 @@ class MBC1(private val rom: Rom) : MBC {
                 romBankSelector = romBankSelector or (value.toUnsignedInt() shl 4)
                 updateRomBank()
             } else {
-                activeRamBank = ramBanks[value.toUnsignedInt() and 0x03];
+                activeRamBank = ramBanks[value.toUnsignedInt() and 0x03]
             }
         }
 

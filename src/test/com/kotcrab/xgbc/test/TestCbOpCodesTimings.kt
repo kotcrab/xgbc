@@ -9,7 +9,7 @@ import org.junit.Test
 
 /** @author Kotcrab */
 class TestCbOpCodesTimings {
-    lateinit var emulator: Emulator;
+    lateinit var emulator: Emulator
 
     @Before
     fun setUp() {
@@ -37,8 +37,8 @@ class TestCbOpCodesTimings {
                 2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 2)
 
         for (i in 0x00..0xFF - 1) {
-            val instrCycles = instrTiming[i];
-            val instr = emulator.cpu.extOp[i];
+            val instrCycles = instrTiming[i]
+            val instr = emulator.cpu.extOp[i]
             if (instrCycles == 0 || instr == null)
                 continue
 

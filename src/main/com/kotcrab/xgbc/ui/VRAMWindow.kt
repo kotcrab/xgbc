@@ -26,7 +26,7 @@ class VRAMWindow(val emulator: Emulator) : VisWindow("VRAM") {
     private val texture = Texture(pixmap)
 
     init {
-        val img = VisImage(TextureRegionDrawable(TextureRegion(texture)));
+        val img = VisImage(TextureRegionDrawable(TextureRegion(texture)))
         add(img).size(256f, 256f)
         pack()
 

@@ -9,11 +9,11 @@ import com.kotcrab.xgbc.toHex
 
 /** @author Kotcrab */
 class StackPointerView(val emulator: Emulator, opCodesDebuggerTab: OpCodesDebuggerTab) : VisTable() {
-    private val numValuesShown = 7; //must be odd
+    private val numValuesShown = 7 //must be odd
     private val spOffset = (numValuesShown - 1)
     private val labels = arrayOfNulls<VisLabel>(numValuesShown)
 
-    private var currentSp = -1;
+    private var currentSp = -1
 
     init {
         left().top()

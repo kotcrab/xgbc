@@ -20,7 +20,7 @@ class SerialPort(private val emulator: Emulator) : IODevice {
         cycleCounter += cyclesElapsed
         if (cycleCounter >= cycleUpdate) {
             cycleCounter -= cycleUpdate
-            val sc = emulator.readInt(SC);
+            val sc = emulator.readInt(SC)
             if (sc == 0x81) {
                 print(emulator.read(SB).toChar())
                 emulator.write(SB, 0xFF)

@@ -21,19 +21,19 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
 
     val chunkSize = 1027
     val chunks = arrayOfNulls<Chunk>(0xFFFF / chunkSize + 1)
-    var activeChunk: Chunk? = null;
+    var activeChunk: Chunk? = null
 
     var mode = Mode.INTERACTIVE
-        private set;
+        private set
     var execStopAddr = -1
-        private set;
-    val breakpoints = GdxArray<Int>();
+        private set
+    val breakpoints = GdxArray<Int>()
 
     val chunkContainer = VisTable()
-    lateinit var scrollPane: VisScrollPane;
+    lateinit var scrollPane: VisScrollPane
     val chunkInfoLabel = VisLabel()
     val chunkSelector = Spinner("Fragment", IntSpinnerModel(0, 0, chunks.size - 1))
-    private var currentLine: OpCodeLine? = null;
+    private var currentLine: OpCodeLine? = null
 
     val goToAddressField = VisValidatableTextField("")
 
@@ -102,10 +102,10 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
             }
         }
 
-        var nextParseAddr = 0;
+        var nextParseAddr = 0
         for (index in chunks.indices) {
             val chunk = Chunk(index * chunkSize, nextParseAddr)
-            chunks[index] = chunk;
+            chunks[index] = chunk
             nextParseAddr = chunk.parseEndAddr
         }
         switchChunk(0)
@@ -117,16 +117,16 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
 
     private fun switchChunk(index: Int) {
         val chunk = chunks[index]!!
-        if (chunk == activeChunk) return;
+        if (chunk == activeChunk) return
         reparseChunks()
         chunk.parse()
-        activeChunk = chunk;
+        activeChunk = chunk
         chunkContainer.clearChildren()
         chunkContainer.add(chunk)
         scrollPane.validate()
 
         chunkInfoLabel.setText("Showing ${toHex(chunk.chunkBeginAddr)}-${toHex(Math.min(0xFFFF, chunk.chunkBeginAddr + chunkSize - 1))}")
-        (chunkSelector.model as IntSpinnerModel).setValue(index);
+        (chunkSelector.model as IntSpinnerModel).value = index
     }
 
     private fun scrollToAddr(addr: Int) {
@@ -148,8 +148,8 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
     }
 
     private fun getChunk(addr: Int): Chunk? {
-        val chunkIndex = addr / chunkSize;
-        return chunks[chunkIndex];
+        val chunkIndex = addr / chunkSize
+        return chunks[chunkIndex]
     }
 
     private fun getOpCodeLine(addr: Int): OpCodeLine? {
@@ -169,7 +169,7 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
                 val value = emulator.readInt(i)
                 if (value == 0) {
                     println()
-                    break;
+                    break
                 }
                 print(value.toChar())
             }
@@ -223,9 +223,9 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
     }
 
     private fun reparseChunks() {
-        var nextParseAddr = 0;
+        var nextParseAddr = 0
         for (index in chunks.indices) {
-            val chunk = chunks[index]!!;
+            val chunk = chunks[index]!!
             chunk.parse(nextParseAddr, chunk == activeChunk)
             nextParseAddr = chunk.parseEndAddr
         }
@@ -236,7 +236,7 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
             private set
         private val lines = arrayOfNulls<OpCodeLine>(chunkSize)
 
-        var parseEndAddr: Int = 0;
+        var parseEndAddr: Int = 0
             private set
 
         init {
@@ -251,14 +251,14 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
         }
 
         fun parse(parseBeginAddr: Int, updateUI: Boolean) {
-            this.parseBeginAddr = parseBeginAddr;
+            this.parseBeginAddr = parseBeginAddr
 
             if (updateUI && uiReady == false) prepareUI()
             for (i in 0x00..chunkSize - 1) {
                 lines[i]?.isVisible = false
             }
 
-            var addr = parseBeginAddr;
+            var addr = parseBeginAddr
             while (addr < chunkBeginAddr + chunkSize) {
                 var opcode = emulator.read(addr)
                 var opcodeInt = opcode.toUnsignedInt()

@@ -45,10 +45,10 @@ class XGBC : ApplicationAdapter() {
 
         stage.addActor(EmulatorWindow(emulator))
         stage.addActor(VRAMWindow(emulator))
-        val debug = true;
+        val debug = true
         var debuggerWindow: DebuggerWindow? = null
         if (debug) {
-            debuggerWindow = DebuggerWindow(emulator);
+            debuggerWindow = DebuggerWindow(emulator)
             stage.addActor(debuggerWindow)
         }
 
@@ -57,7 +57,7 @@ class XGBC : ApplicationAdapter() {
                 if (keycode == Input.Keys.F1 && debuggerWindow != null) {
                     (debuggerWindow as DebuggerWindow).remove()
                     emulator.reset()
-                    debuggerWindow = DebuggerWindow(emulator);
+                    debuggerWindow = DebuggerWindow(emulator)
                     stage.addActor(debuggerWindow)
 
                 }

@@ -54,14 +54,14 @@ class OpCodeLine(private val debuggerPopupMenu: DebuggerPopupMenu) : VisTable(fa
     }
 
     fun parse(emulator: Emulator, addr: Int, instr: Instr?) {
-        this.addr = addr;
+        this.addr = addr
 
         if (instr == null) {
             label.setText("Unsupported opcode at ${toHex(addr)}")
             return
         }
 
-        var evaluatedName = instr.name;
+        var evaluatedName = instr.name
         if (addr < 0xFFFF) {
             evaluatedName = evaluatedName.replace("d8", toHex(emulator.read(addr + 1)))
             evaluatedName = evaluatedName.replace("a8", toHex(emulator.read(addr + 1)))
@@ -79,17 +79,17 @@ class OpCodeLine(private val debuggerPopupMenu: DebuggerPopupMenu) : VisTable(fa
     }
 
     fun setBreakpoint(breakpoint: Boolean) {
-        this.breakpoint = breakpoint;
+        this.breakpoint = breakpoint
         if (breakpoint) {
-            debuggerPopupMenu.listener.addBreakpoint(addr);
+            debuggerPopupMenu.listener.addBreakpoint(addr)
         } else {
-            debuggerPopupMenu.listener.removeBreakpoint(addr);
+            debuggerPopupMenu.listener.removeBreakpoint(addr)
         }
         updateIcon()
     }
 
     fun setCurrentLine(currentLine: Boolean) {
-        this.currentLine = currentLine;
+        this.currentLine = currentLine
         updateIcon()
     }
 

@@ -34,14 +34,14 @@ class IO(private val emulator: Emulator) {
     }
 
     fun read(addr: Int): Byte {
-        val relAddr = addr - 0xFF00;
+        val relAddr = addr - 0xFF00
         val device = devicesMap.get(relAddr)
         device?.onRead(addr)
         return ioMem[relAddr]
     }
 
     fun write(addr: Int, value: Byte) {
-        val relAddr = addr - 0xFF00;
+        val relAddr = addr - 0xFF00
         ioMem[relAddr] = value
         val device = devicesMap.get(relAddr)
         device?.onWrite(addr, value)

@@ -39,7 +39,7 @@ class Cpu(private val emulator: Emulator) {
     val op = arrayOfNulls<Instr>(256)
     val extOp = arrayOfNulls<Instr>(256)
 
-    private lateinit var opProc: OpCodesProcessor;
+    private lateinit var opProc: OpCodesProcessor
 
     init {
         opProc = OpCodesProcessor(emulator, this)
@@ -56,7 +56,7 @@ class Cpu(private val emulator: Emulator) {
     }
 
     fun writeReg(reg: Int, value: Byte) {
-        var setValue = value;
+        var setValue = value
         if (reg == REG_F) {
             //reset four lsb bits
             setValue = (value.toUnsignedInt() and 0xF0).toByte()
@@ -80,28 +80,28 @@ class Cpu(private val emulator: Emulator) {
     fun setImeFlag(ime: Boolean) {
         if (this.ime == ime) return
         targetIme = ime
-        changeImeState = ImeState.CHANGE_AFTER_NEXT;
+        changeImeState = ImeState.CHANGE_AFTER_NEXT
     }
 
     fun setImeFlagNow(ime: Boolean) {
-        this.ime = ime;
+        this.ime = ime
     }
 
     fun setFlag(flag: Int) {
         var flagReg = readRegInt(REG_F)
-        flagReg = flagReg or (1 shl flag);
+        flagReg = flagReg or (1 shl flag)
         writeReg(REG_F, flagReg.toByte())
     }
 
     fun resetFlag(flag: Int) {
         var flagReg = readRegInt(REG_F)
-        flagReg = flagReg and (1 shl flag).inv();
+        flagReg = flagReg and (1 shl flag).inv()
         writeReg(REG_F, flagReg.toByte())
     }
 
     fun toggleFlag(flag: Int) {
         var flagReg = readRegInt(REG_F)
-        flagReg = flagReg xor (1 shl flag);
+        flagReg = flagReg xor (1 shl flag)
         writeReg(REG_F, flagReg.toByte())
     }
 
@@ -125,7 +125,7 @@ class Cpu(private val emulator: Emulator) {
             return
         }
 
-        val oldPc = pc;
+        val oldPc = pc
         var opcode = emulator.readInt(pc)
 
         var instr: Instr?
@@ -140,13 +140,13 @@ class Cpu(private val emulator: Emulator) {
         if (instr is JmpInstr) {
             val result = instr.op.invoke()
             if (result == false) {
-                pc += instr.len;
+                pc += instr.len
                 cycle += instr.cycles
             } else {
                 cycle += instr.cyclesIfTaken
             }
         } else {
-            instr.op.invoke();
+            instr.op.invoke()
             if (oldPc != pc) {
                 println("Warn: PC modification by non JmpInstr will be ignored, opcode: ${toHex(opcode.toByte())}")
             }
@@ -182,7 +182,7 @@ class Cpu(private val emulator: Emulator) {
                 opProc.push(pc)
                 cycle += 16
                 pc = interrupt.addr
-                break;
+                break
             }
         }
     }

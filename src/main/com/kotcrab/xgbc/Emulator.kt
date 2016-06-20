@@ -100,7 +100,7 @@ class Emulator(romFile: FileHandle) {
             }
 
             if (updateBreaker.invoke()) {
-                break;
+                break
             }
         }
     }

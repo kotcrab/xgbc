@@ -19,7 +19,7 @@ class Gpu(private val emulator: Emulator) {
 
     fun readTilePatternTable0(tileId: Int, buffer: IntArray): IntArray {
         val tileStart = PATTERN_TABLE_0 + (tileId * TILE_BYTE_SIZE)
-        return readTile(tileStart, buffer);
+        return readTile(tileStart, buffer)
     }
 
     fun readTile(tileStartAddr: Int, buffer: IntArray): IntArray {
@@ -38,9 +38,9 @@ class Gpu(private val emulator: Emulator) {
                 val colorVal = colorLSB.toInt() or colorMSB.toInt()
                 buffer[bufferIdx++] = colorVal
             }
-            lineIdx++;
+            lineIdx++
         }
 
-        return buffer;
+        return buffer
     }
 }

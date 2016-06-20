@@ -9,7 +9,7 @@ import org.junit.Test
 
 /** @author Kotcrab */
 class TestOpCodesLengths {
-    lateinit var emulator: Emulator;
+    lateinit var emulator: Emulator
 
     @Before
     fun setUp() {
@@ -37,8 +37,8 @@ class TestOpCodesLengths {
                 2, 1, 1, 1, 0, 1, 2, 1, 2, 1, 3, 1, 0, 0, 2, 1)
 
         for (i in 0x00..0xFF - 1) {
-            val length = instrLength[i];
-            val instr = emulator.cpu.op[i];
+            val length = instrLength[i]
+            val instr = emulator.cpu.op[i]
             if (length == 0 || instr == null)
                 continue
 

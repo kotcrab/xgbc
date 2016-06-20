@@ -9,7 +9,7 @@ import org.junit.Test
 
 /** @author Kotcrab */
 class TestOpCodesTimings {
-    lateinit var emulator: Emulator;
+    lateinit var emulator: Emulator
 
     @Before
     fun setUp() {
@@ -37,8 +37,8 @@ class TestOpCodesTimings {
                 3, 3, 2, 1, 0, 4, 2, 4, 3, 2, 4, 1, 0, 0, 2, 4)
 
         for (i in 0x00..0xFF - 1) {
-            val instrCycles = instrTiming[i];
-            val instr = emulator.cpu.op[i];
+            val instrCycles = instrTiming[i]
+            val instr = emulator.cpu.op[i]
             if (instrCycles == 0 || instr == null)
                 continue
 

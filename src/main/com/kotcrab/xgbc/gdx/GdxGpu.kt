@@ -15,7 +15,7 @@ class GdxGpu(private val gpu: Gpu) {
     val colors = arrayOf(Color.rgba8888(color0), Color.rgba8888(color1), Color.rgba8888(color2), Color.rgba8888(color3))
 
     fun drawPattern0TileToPixmap(pixmap: Pixmap, xOffset: Int, yOffset: Int, tileId: Int) {
-        val buffer = gpu.readTilePatternTable0(tileId, tmpTileBuffer);
+        val buffer = gpu.readTilePatternTable0(tileId, tmpTileBuffer)
 
         for (i in 0..7) {
             for (ii in 0..7) {

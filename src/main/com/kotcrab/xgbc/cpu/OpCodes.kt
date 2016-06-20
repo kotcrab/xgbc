@@ -247,7 +247,7 @@ fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<I
     op[0xDE] = Instr(2, 8, "SBC A, d8", { proc.sbc(emu.readInt(cpu.pc + 1)) })
     op[0xDF] = JmpInstr(1, 16, 16, "RST 18H", { proc.rst(0x18) })
     op[0xE0] = Instr(2, 12, "LDH (a8), A", {
-        val addr = 0xFF00 + emu.readInt(cpu.pc + 1);
+        val addr = 0xFF00 + emu.readInt(cpu.pc + 1)
         proc.syncTimer(4)
         proc.ld8RegToAddr(addr, Cpu.REG_A)
     })
@@ -259,8 +259,8 @@ fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<I
     op[0xE6] = Instr(2, 8, "AND d8", { proc.and(emu.readInt(cpu.pc + 1)) })
     op[0xE7] = JmpInstr(1, 16, 16, "RST 20H", { proc.rst(0x20) })
     op[0xE8] = VoidInstr(2, 16, "ADD SP, r8", {
-        val value = emu.read(cpu.pc + 1).toInt(); //r8 is signed here lol
-        val sp = cpu.sp + value;
+        val value = emu.read(cpu.pc + 1).toInt() //r8 is signed here lol
+        val sp = cpu.sp + value
         cpu.resetFlag(Cpu.FLAG_Z)
         cpu.resetFlag(Cpu.FLAG_N)
 
@@ -278,7 +278,7 @@ fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<I
     op[0xEE] = Instr(2, 8, "XOR d8", { proc.xor(emu.readInt(cpu.pc + 1)) })
     op[0xEF] = JmpInstr(1, 16, 16, "RST 28H", { proc.rst(0x28) })
     op[0xF0] = Instr(2, 12, "LDH A, (a8)", {
-        val addr = 0xFF00 + emu.readInt(cpu.pc + 1);
+        val addr = 0xFF00 + emu.readInt(cpu.pc + 1)
         proc.syncTimer(4)
         proc.ld8AddrToReg(Cpu.REG_A, addr)
     })
@@ -290,7 +290,7 @@ fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<I
     op[0xF6] = Instr(2, 8, "OR d8", { proc.or(emu.readInt(cpu.pc + 1)) })
     op[0xF7] = JmpInstr(1, 16, 16, "RST 30H", { proc.rst(0x30) })
     op[0xF8] = VoidInstr(2, 12, "LD HL, SP+r8", {
-        val value = emu.read(cpu.pc + 1).toInt();
+        val value = emu.read(cpu.pc + 1).toInt()
 
         cpu.resetFlag(Cpu.FLAG_Z)
         cpu.resetFlag(Cpu.FLAG_N)
@@ -382,7 +382,7 @@ fun generateExtOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Arra
     op[0x34] = Instr(2, 8, "SWAP H", { proc.swapReg(Cpu.REG_H) })
     op[0x35] = Instr(2, 8, "SWAP L", { proc.swapReg(Cpu.REG_L) })
     op[0x36] = Instr(2, 16, "SWAP (HL)", {
-        val addr = cpu.readReg16(Cpu.REG_HL);
+        val addr = cpu.readReg16(Cpu.REG_HL)
         emu.write(addr, proc.swap(emu.read(addr)))
     })
     op[0x37] = Instr(2, 8, "SWAP A", { proc.swapReg(Cpu.REG_A) })
@@ -403,7 +403,7 @@ fun generateExtOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Arra
     op[0x43] = Instr(2, 8, "BIT 0, E", { proc.bitReg(0, Cpu.REG_E) })
     op[0x44] = Instr(2, 8, "BIT 0, H", { proc.bitReg(0, Cpu.REG_H) })
     op[0x45] = Instr(2, 8, "BIT 0, L", { proc.bitReg(0, Cpu.REG_L) })
-    op[0x46] = Instr(2, 12, "BIT 0, (HL)", { proc.bitHL(0); })
+    op[0x46] = Instr(2, 12, "BIT 0, (HL)", { proc.bitHL(0) })
     op[0x47] = Instr(2, 8, "BIT 0, A", { proc.bitReg(0, Cpu.REG_A) })
     op[0x48] = Instr(2, 8, "BIT 1, B", { proc.bitReg(1, Cpu.REG_B) })
     op[0x49] = Instr(2, 8, "BIT 1, C", { proc.bitReg(1, Cpu.REG_C) })
@@ -411,7 +411,7 @@ fun generateExtOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Arra
     op[0x4B] = Instr(2, 8, "BIT 1, E", { proc.bitReg(1, Cpu.REG_E) })
     op[0x4C] = Instr(2, 8, "BIT 1, H", { proc.bitReg(1, Cpu.REG_H) })
     op[0x4D] = Instr(2, 8, "BIT 1, L", { proc.bitReg(1, Cpu.REG_L) })
-    op[0x4E] = Instr(2, 12, "BIT 1, (HL)", { proc.bitHL(1); })
+    op[0x4E] = Instr(2, 12, "BIT 1, (HL)", { proc.bitHL(1) })
     op[0x4F] = Instr(2, 8, "BIT 1, A", { proc.bitReg(1, Cpu.REG_A) })
     op[0x50] = Instr(2, 8, "BIT 2, B", { proc.bitReg(2, Cpu.REG_B) })
     op[0x51] = Instr(2, 8, "BIT 2, C", { proc.bitReg(2, Cpu.REG_C) })
@@ -419,7 +419,7 @@ fun generateExtOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Arra
     op[0x53] = Instr(2, 8, "BIT 2, E", { proc.bitReg(2, Cpu.REG_E) })
     op[0x54] = Instr(2, 8, "BIT 2, H", { proc.bitReg(2, Cpu.REG_H) })
     op[0x55] = Instr(2, 8, "BIT 2, L", { proc.bitReg(2, Cpu.REG_L) })
-    op[0x56] = Instr(2, 12, "BIT 2, (HL)", { proc.bitHL(2); })
+    op[0x56] = Instr(2, 12, "BIT 2, (HL)", { proc.bitHL(2) })
     op[0x57] = Instr(2, 8, "BIT 2, A", { proc.bitReg(2, Cpu.REG_A) })
     op[0x58] = Instr(2, 8, "BIT 3, B", { proc.bitReg(3, Cpu.REG_B) })
     op[0x59] = Instr(2, 8, "BIT 3, C", { proc.bitReg(3, Cpu.REG_C) })
@@ -427,7 +427,7 @@ fun generateExtOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Arra
     op[0x5B] = Instr(2, 8, "BIT 3, E", { proc.bitReg(3, Cpu.REG_E) })
     op[0x5C] = Instr(2, 8, "BIT 3, H", { proc.bitReg(3, Cpu.REG_H) })
     op[0x5D] = Instr(2, 8, "BIT 3, L", { proc.bitReg(3, Cpu.REG_L) })
-    op[0x5E] = Instr(2, 12, "BIT 3, (HL)", { proc.bitHL(3); })
+    op[0x5E] = Instr(2, 12, "BIT 3, (HL)", { proc.bitHL(3) })
     op[0x5F] = Instr(2, 8, "BIT 3, A", { proc.bitReg(3, Cpu.REG_A) })
     op[0x60] = Instr(2, 8, "BIT 4, B", { proc.bitReg(4, Cpu.REG_B) })
     op[0x61] = Instr(2, 8, "BIT 4, C", { proc.bitReg(4, Cpu.REG_C) })
@@ -435,7 +435,7 @@ fun generateExtOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Arra
     op[0x63] = Instr(2, 8, "BIT 4, E", { proc.bitReg(4, Cpu.REG_E) })
     op[0x64] = Instr(2, 8, "BIT 4, H", { proc.bitReg(4, Cpu.REG_H) })
     op[0x65] = Instr(2, 8, "BIT 4, L", { proc.bitReg(4, Cpu.REG_L) })
-    op[0x66] = Instr(2, 12, "BIT 4, (HL)", { proc.bitHL(4); })
+    op[0x66] = Instr(2, 12, "BIT 4, (HL)", { proc.bitHL(4) })
     op[0x67] = Instr(2, 8, "BIT 4, A", { proc.bitReg(4, Cpu.REG_A) })
     op[0x68] = Instr(2, 8, "BIT 5, B", { proc.bitReg(5, Cpu.REG_B) })
     op[0x69] = Instr(2, 8, "BIT 5, C", { proc.bitReg(5, Cpu.REG_C) })
@@ -443,7 +443,7 @@ fun generateExtOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Arra
     op[0x6B] = Instr(2, 8, "BIT 5, E", { proc.bitReg(5, Cpu.REG_E) })
     op[0x6C] = Instr(2, 8, "BIT 5, H", { proc.bitReg(5, Cpu.REG_H) })
     op[0x6D] = Instr(2, 8, "BIT 5, L", { proc.bitReg(5, Cpu.REG_L) })
-    op[0x6E] = Instr(2, 12, "BIT 5, (HL)", { proc.bitHL(5); })
+    op[0x6E] = Instr(2, 12, "BIT 5, (HL)", { proc.bitHL(5) })
     op[0x6F] = Instr(2, 8, "BIT 5, A", { proc.bitReg(5, Cpu.REG_A) })
     op[0x70] = Instr(2, 8, "BIT 6, B", { proc.bitReg(6, Cpu.REG_B) })
     op[0x71] = Instr(2, 8, "BIT 6, C", { proc.bitReg(6, Cpu.REG_C) })
@@ -451,7 +451,7 @@ fun generateExtOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Arra
     op[0x73] = Instr(2, 8, "BIT 6, E", { proc.bitReg(6, Cpu.REG_E) })
     op[0x74] = Instr(2, 8, "BIT 6, H", { proc.bitReg(6, Cpu.REG_H) })
     op[0x75] = Instr(2, 8, "BIT 6, L", { proc.bitReg(6, Cpu.REG_L) })
-    op[0x76] = Instr(2, 12, "BIT 6, (HL)", { proc.bitHL(6); })
+    op[0x76] = Instr(2, 12, "BIT 6, (HL)", { proc.bitHL(6) })
     op[0x77] = Instr(2, 8, "BIT 6, A", { proc.bitReg(6, Cpu.REG_A) })
     op[0x78] = Instr(2, 8, "BIT 7, B", { proc.bitReg(7, Cpu.REG_B) })
     op[0x79] = Instr(2, 8, "BIT 7, C", { proc.bitReg(7, Cpu.REG_C) })
@@ -459,7 +459,7 @@ fun generateExtOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Arra
     op[0x7B] = Instr(2, 8, "BIT 7, E", { proc.bitReg(7, Cpu.REG_E) })
     op[0x7C] = Instr(2, 8, "BIT 7, H", { proc.bitReg(7, Cpu.REG_H) })
     op[0x7D] = Instr(2, 8, "BIT 7, L", { proc.bitReg(7, Cpu.REG_L) })
-    op[0x7E] = Instr(2, 12, "BIT 7, (HL)", { proc.bitHL(7); })
+    op[0x7E] = Instr(2, 12, "BIT 7, (HL)", { proc.bitHL(7) })
     op[0x7F] = Instr(2, 8, "BIT 7, A", { proc.bitReg(7, Cpu.REG_A) })
     op[0x80] = Instr(2, 8, "RES 0, B", { proc.resReg(0, Cpu.REG_B) })
     op[0x81] = Instr(2, 8, "RES 0, C", { proc.resReg(0, Cpu.REG_C) })
