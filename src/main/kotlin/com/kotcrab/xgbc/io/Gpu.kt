@@ -9,6 +9,10 @@ class Gpu(private val emulator: Emulator) {
         val TILE_SIZE = 8
         val TILE_BYTE_SIZE = 16
         val PATTERN_TABLE_0 = 0x8000
+
+        val TIME_MAP_DATA_SIZE = 32 * 32 //32 rows, 32 bytes each
+        val TILE_MAP_DATA_0 = 0x9800
+        val TILE_MAP_DATA_1 = 0x9C00
     }
 
     val vram: ByteArray = ByteArray(0x2000)

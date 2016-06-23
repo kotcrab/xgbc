@@ -6,6 +6,7 @@ import com.kotcrab.xgbc.cpu.Cpu
 import com.kotcrab.xgbc.io.Gpu
 import com.kotcrab.xgbc.io.IO
 import com.kotcrab.xgbc.rom.Rom
+import java.util.*
 
 import com.badlogic.gdx.utils.Array as GdxArray
 
@@ -34,6 +35,7 @@ class Emulator(romFile: FileHandle) {
     /** Interrupt Enable */
     private var ie: Byte = 0
 
+    val interruptHandlers = ArrayList<(Interrupt) -> Unit>()
     var mode: EmulatorMode = EmulatorMode.NORMAL
 
     init {
@@ -194,6 +196,7 @@ class Emulator(romFile: FileHandle) {
 
     fun interrupt(interrupt: Interrupt) {
         write(REG_IF, read(REG_IF).setBit(interrupt.interruptBit))
+        interruptHandlers.forEach { it.invoke(interrupt) }
     }
 }
 

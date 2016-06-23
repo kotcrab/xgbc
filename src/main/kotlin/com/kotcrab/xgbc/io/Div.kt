@@ -6,7 +6,7 @@ import com.kotcrab.xgbc.Emulator
 class Div(private val emulator: Emulator) : IODevice {
     val DIV = 0xFF04
 
-    val cycleUpdate = 256  //16384 khz
+    val cycleUpdate = 256  //16384 hz
     var cycleCounter = 0
 
     override fun register(registrar: (Int) -> Unit) {

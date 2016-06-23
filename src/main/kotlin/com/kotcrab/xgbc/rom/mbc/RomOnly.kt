@@ -1,12 +1,11 @@
 package com.kotcrab.xgbc.rom.mbc
 
-import com.kotcrab.xgbc.EmulatorException
 import com.kotcrab.xgbc.rom.Rom
 
 /** @author Kotcrab */
 class RomOnly(private val rom: Rom) : MBC {
     override fun write(addr: Int, value: Byte) {
-        throw EmulatorException("Illegal ROM write. This cartridge types does not use MBC")
+        //throw EmulatorException("Illegal ROM write. This cartridge types does not use MBC")
     }
 
     override fun read(addr: Int): Byte {
