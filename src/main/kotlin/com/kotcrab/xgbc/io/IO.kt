@@ -11,8 +11,10 @@ class IO(private val emulator: Emulator) {
     val serialPort = SerialPort(emulator)
     val div = Div(emulator)
     val timer = Timer(emulator)
+    val lcd = Lcd(emulator)
+    val joypad = Joypad(emulator)
 
-    val devices = arrayOf(serialPort, timer, div)
+    val devices = arrayOf(serialPort, timer, div, lcd, joypad)
 
     init {
         for (device in devices) {

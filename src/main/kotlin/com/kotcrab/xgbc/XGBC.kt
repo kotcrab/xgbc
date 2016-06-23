@@ -3,6 +3,7 @@ package com.kotcrab.xgbc
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.graphics.GL20
@@ -12,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.ScreenViewport
 import com.kotcrab.vis.ui.VisUI
 import com.kotcrab.vis.ui.widget.VisTable
+import com.kotcrab.xgbc.gdx.GdxJoypad
 import com.kotcrab.xgbc.ui.DebuggerWindow
 import com.kotcrab.xgbc.ui.EmulatorWindow
 import com.kotcrab.xgbc.ui.VRAMWindow
@@ -30,18 +32,20 @@ class XGBC : ApplicationAdapter() {
 
         stage.addActor(root)
 
-        Gdx.input.inputProcessor = stage
-
         //emulator = Emulator(Gdx.files.internal("rom/test/oam_bug_v2.gb"))
         //emulator = Emulator(Gdx.files.internal("rom/test/instr_timing.gb"))
         //emulator = Emulator(Gdx.files.internal("rom/test/mem_timing.gb"))
         //emulator = Emulator(Gdx.files.internal("rom/test/mem/01-read_timing.gb"))
         //emulator = Emulator(Gdx.files.internal("rom/test/mem/02-write_timing.gb"))
         //emulator = Emulator(Gdx.files.internal("rom/test/mem/03-modify_timing.gb"))
-        emulator = Emulator(Gdx.files.internal("rom/test/cpu_instrs.gb"))
-        //emulator = Emulator(Gdx.files.internal("rom/tetris.gbc"))
+        //emulator = Emulator(Gdx.files.internal("rom/test/cpu_instrs.gb"))
+        //emulator = Emulator(Gdx.files.internal("rom/tetrisdx.gbc"))
         //emulator = Emulator(Gdx.files.internal("rom/pokemon_gold.gbc"))
         //emulator = Emulator(Gdx.files.internal("rom/BADAPPLE.gbc"))
+        //emulator = Emulator(Gdx.files.internal("rom/bubble.gbc"))
+        //emulator = Emulator(Gdx.files.internal("rom/tictactoe.gbc"))
+        emulator = Emulator(Gdx.files.internal("rom/tetris.gb"))
+        //emulator = Emulator(Gdx.files.internal("rom/GBTICTAC.GB"))
 
         stage.addActor(EmulatorWindow(emulator))
         stage.addActor(VRAMWindow(emulator))
@@ -65,6 +69,10 @@ class XGBC : ApplicationAdapter() {
             }
         })
 
+        val inputMultiplexer = InputMultiplexer()
+        inputMultiplexer.addProcessor(GdxJoypad(emulator.io.joypad))
+        inputMultiplexer.addProcessor(stage)
+        Gdx.input.inputProcessor = inputMultiplexer
     }
 
     override fun resize(width: Int, height: Int) {
