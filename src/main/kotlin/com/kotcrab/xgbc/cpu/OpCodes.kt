@@ -261,12 +261,12 @@ fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<I
     op[0xE8] = VoidInstr(2, 16, "ADD SP, r8", {
         val value = emu.read(cpu.pc + 1).toInt() //r8 is signed here lol
         val sp = cpu.sp + value
-        cpu.resetFlag(Cpu.FLAG_Z)
-        cpu.resetFlag(Cpu.FLAG_N)
+        cpu.resetFlag(Flag.Z)
+        cpu.resetFlag(Flag.N)
 
         //the only answer https://stackoverflow.com/questions/5159603/gbz80-how-does-ld-hl-spe-affect-h-and-c-flags
-        if ((cpu.sp and 0xF) + (value and 0xF) and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
-        if ((cpu.sp and 0xFF) + (value and 0xFF) and 0x100 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
+        if ((cpu.sp and 0xF) + (value and 0xF) and 0x10 != 0) cpu.setFlag(Flag.H) else cpu.resetFlag(Flag.H)
+        if ((cpu.sp and 0xFF) + (value and 0xFF) and 0x100 != 0) cpu.setFlag(Flag.C) else cpu.resetFlag(Flag.C)
 
         cpu.sp = sp
     })
@@ -292,10 +292,10 @@ fun generateOpCodes(emu: Emulator, cpu: Cpu, proc: OpCodesProcessor, op: Array<I
     op[0xF8] = VoidInstr(2, 12, "LD HL, SP+r8", {
         val value = emu.read(cpu.pc + 1).toInt()
 
-        cpu.resetFlag(Cpu.FLAG_Z)
-        cpu.resetFlag(Cpu.FLAG_N)
-        if ((cpu.sp and 0xF) + (value and 0xF) and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
-        if ((cpu.sp and 0xFF) + (value and 0xFF) and 0x100 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
+        cpu.resetFlag(Flag.Z)
+        cpu.resetFlag(Flag.N)
+        if ((cpu.sp and 0xF) + (value and 0xF) and 0x10 != 0) cpu.setFlag(Flag.H) else cpu.resetFlag(Flag.H)
+        if ((cpu.sp and 0xFF) + (value and 0xFF) and 0x100 != 0) cpu.setFlag(Flag.C) else cpu.resetFlag(Flag.C)
 
         cpu.writeReg(Reg16.HL, cpu.sp + value)
     })

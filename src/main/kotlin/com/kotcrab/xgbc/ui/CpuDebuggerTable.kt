@@ -5,7 +5,7 @@ import com.kotcrab.vis.ui.widget.VisCheckBox
 import com.kotcrab.vis.ui.widget.VisLabel
 import com.kotcrab.vis.ui.widget.VisTable
 import com.kotcrab.xgbc.Emulator
-import com.kotcrab.xgbc.cpu.Cpu
+import com.kotcrab.xgbc.cpu.Flag
 import com.kotcrab.xgbc.cpu.Reg16
 import com.kotcrab.xgbc.toHex
 import com.kotcrab.xgbc.vis.TableBuilder
@@ -69,9 +69,9 @@ class CpuDebuggerTable(private val emulator: Emulator) : VisTable(true) {
         pcLabel.setText(toHex(emulator.cpu.pc))
         spLabel.setText(toHex(emulator.cpu.sp))
 
-        zFlagCheck.isChecked = emulator.cpu.isFlagSet(Cpu.FLAG_Z)
-        nFlagCheck.isChecked = emulator.cpu.isFlagSet(Cpu.FLAG_N)
-        hFlagCheck.isChecked = emulator.cpu.isFlagSet(Cpu.FLAG_H)
-        cFlagCheck.isChecked = emulator.cpu.isFlagSet(Cpu.FLAG_C)
+        zFlagCheck.isChecked = emulator.cpu.isFlagSet(Flag.Z)
+        nFlagCheck.isChecked = emulator.cpu.isFlagSet(Flag.N)
+        hFlagCheck.isChecked = emulator.cpu.isFlagSet(Flag.H)
+        cFlagCheck.isChecked = emulator.cpu.isFlagSet(Flag.C)
     }
 }

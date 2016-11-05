@@ -4,27 +4,6 @@ import com.kotcrab.xgbc.*
 
 /** @author Kotcrab */
 class Cpu(private val emulator: Emulator) {
-    companion object {
-        const val REG_A = 0
-        const val REG_F = 1
-        const val REG_B = 2
-        const val REG_C = 3
-        const val REG_D = 4
-        const val REG_E = 5
-        const val REG_H = 6
-        const val REG_L = 7
-
-        const val REG_AF = 0
-        const val REG_BC = 2
-        const val REG_DE = 4
-        const val REG_HL = 6
-
-        const val FLAG_Z = 7
-        const val FLAG_N = 6
-        const val FLAG_H = 5
-        const val FLAG_C = 4
-    }
-
     var sp: Int = 0 //stack pointer
     var pc: Int = 0 //program counter
     var cycle: Long = 0
@@ -39,7 +18,7 @@ class Cpu(private val emulator: Emulator) {
     val op = arrayOfNulls<Instr>(256)
     val extOp = arrayOfNulls<Instr>(256)
 
-    private lateinit var opProc: OpCodesProcessor
+    private var opProc: OpCodesProcessor
 
     init {
         opProc = OpCodesProcessor(emulator, this)
@@ -86,33 +65,33 @@ class Cpu(private val emulator: Emulator) {
         this.ime = ime
     }
 
-    fun setFlag(flag: Int) {
+    fun setFlag(flag: Flag) {
         var flagReg = readRegInt(Reg.F)
-        flagReg = flagReg or (1 shl flag)
+        flagReg = flagReg or (1 shl flag.bit)
         writeReg(Reg.F, flagReg.toByte())
     }
 
-    fun resetFlag(flag: Int) {
+    fun resetFlag(flag: Flag) {
         var flagReg = readRegInt(Reg.F)
-        flagReg = flagReg and (1 shl flag).inv()
+        flagReg = flagReg and (1 shl flag.bit).inv()
         writeReg(Reg.F, flagReg.toByte())
     }
 
-    fun toggleFlag(flag: Int) {
+    fun toggleFlag(flag: Flag) {
         var flagReg = readRegInt(Reg.F)
-        flagReg = flagReg xor (1 shl flag)
+        flagReg = flagReg xor (1 shl flag.bit)
         writeReg(Reg.F, flagReg.toByte())
     }
 
-    fun setFlagState(flag: Int, flagState: Boolean) {
+    fun setFlagState(flag: Flag, flagState: Boolean) {
         if ((flagState && isFlagSet(flag) == false) || (flagState == false && isFlagSet(flag))) {
             toggleFlag(flag)
         }
     }
 
-    fun isFlagSet(flag: Int): Boolean {
+    fun isFlagSet(flag: Flag): Boolean {
         val flagReg = readRegInt(Reg.F)
-        return flagReg and (1 shl flag) != 0
+        return flagReg and (1 shl flag.bit) != 0
     }
 
     fun tick() {
@@ -207,8 +186,8 @@ enum class Reg16(val highReg: Reg, val lowReg: Reg) {
     HL(Reg.H, Reg.L)
 }
 
-enum class Flag(val index: Int) {
-    Z(1), N(2), H(3), C(4)
+enum class Flag(val bit: Int) {
+    Z(7), N(6), H(5), C(4)
 }
 
 open class Instr(val len: Int,
