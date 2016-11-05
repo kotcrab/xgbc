@@ -10,7 +10,7 @@ class Joypad(private val emulator: Emulator) : IODevice {
     val pressedKeys = EnumSet.noneOf(JoypadKey::class.java)
 
     override fun register(registrar: (Int) -> Unit) {
-        registrar.invoke(P1)
+        registrar(P1)
     }
 
     override fun tick(cyclesElapsed: Int) {

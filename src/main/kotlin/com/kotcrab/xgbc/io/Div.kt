@@ -10,7 +10,7 @@ class Div(private val emulator: Emulator) : IODevice {
     var cycleCounter = 0
 
     override fun register(registrar: (Int) -> Unit) {
-        registrar.invoke(DIV)
+        registrar(DIV)
     }
 
     override fun tick(cyclesElapsed: Int) {

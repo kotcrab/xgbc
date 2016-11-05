@@ -26,18 +26,18 @@ class Lcd(private val emulator: Emulator) : IODevice {
     var cycleCounter = 0
 
     override fun register(registrar: (Int) -> Unit) {
-        registrar.invoke(LCDC)
-        registrar.invoke(STAT)
-        registrar.invoke(SCY)
-        registrar.invoke(SCX)
-        registrar.invoke(LY)
-        registrar.invoke(LYC)
-        registrar.invoke(DMA)
-        registrar.invoke(BGP)
-        registrar.invoke(OBP0)
-        registrar.invoke(OBP1)
-        registrar.invoke(WY)
-        registrar.invoke(WX)
+        registrar(LCDC)
+        registrar(STAT)
+        registrar(SCY)
+        registrar(SCX)
+        registrar(LY)
+        registrar(LYC)
+        registrar(DMA)
+        registrar(BGP)
+        registrar(OBP0)
+        registrar(OBP1)
+        registrar(WY)
+        registrar(WX)
     }
 
     override fun reset() {

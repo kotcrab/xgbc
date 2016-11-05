@@ -21,9 +21,9 @@ class Timer(private val emulator: Emulator) : IODevice {
     var cycleSync = 0
 
     override fun register(registrar: (Int) -> Unit) {
-        registrar.invoke(TIMA)
-        registrar.invoke(TMA)
-        registrar.invoke(TAC)
+        registrar(TIMA)
+        registrar(TMA)
+        registrar(TAC)
     }
 
     override fun tick(cyclesElapsed: Int) {

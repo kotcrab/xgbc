@@ -12,8 +12,8 @@ class SerialPort(private val emulator: Emulator) : IODevice {
     val cycleUpdate = 512 // 8192 khz
 
     override fun register(registrar: (Int) -> Unit) {
-        registrar.invoke(SB)
-        registrar.invoke(SC)
+        registrar(SB)
+        registrar(SC)
     }
 
     override fun tick(cyclesElapsed: Int) {
