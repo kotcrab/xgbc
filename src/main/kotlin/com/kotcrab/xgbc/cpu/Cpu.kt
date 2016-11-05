@@ -47,34 +47,33 @@ class Cpu(private val emulator: Emulator) {
         generateExtOpCodes(emulator, this, opProc, extOp)
     }
 
-    fun readReg(reg: Int): Byte {
-        return regs[reg]
+    fun readReg(reg: Reg): Byte {
+        return regs[reg.index]
     }
 
-    fun readRegInt(reg: Int): Int {
-        return readReg(reg).toUnsignedInt()
-    }
-
-    fun writeReg(reg: Int, value: Byte) {
-        var setValue = value
-        if (reg == REG_F) {
-            //reset four lsb bits
-            setValue = (value.toUnsignedInt() and 0xF0).toByte()
-        }
-        regs[reg] = setValue
-        emulator.debuggerListener.onRegisterWrite(reg, setValue)
-    }
-
-    fun readReg16(reg: Int): Int {
-        val r1 = readRegInt(reg)
-        val r2 = readRegInt(reg + 1)
-
+    fun readReg(reg16: Reg16): Int {
+        val r1 = readRegInt(reg16.highReg)
+        val r2 = readRegInt(reg16.lowReg)
         return ((r1 shl 8) or r2)
     }
 
-    fun writeReg16(reg: Int, value: Int) {
-        writeReg(reg, (value ushr 8).toByte())
-        writeReg(reg + 1, (value).toByte())
+    fun readRegInt(reg: Reg): Int {
+        return readReg(reg).toUnsignedInt()
+    }
+
+    fun writeReg(reg: Reg, value: Byte) {
+        var setValue = value
+        if (reg == Reg.F) {
+            //reset four lsb bits
+            setValue = (value.toUnsignedInt() and 0xF0).toByte()
+        }
+        regs[reg.index] = setValue
+        emulator.debuggerListener.onRegisterWrite(reg, setValue)
+    }
+
+    fun writeReg(reg16: Reg16, value: Int) {
+        writeReg(reg16.highReg, (value ushr 8).toByte())
+        writeReg(reg16.lowReg, (value).toByte())
     }
 
     fun setImeFlag(ime: Boolean) {
@@ -88,21 +87,21 @@ class Cpu(private val emulator: Emulator) {
     }
 
     fun setFlag(flag: Int) {
-        var flagReg = readRegInt(REG_F)
+        var flagReg = readRegInt(Reg.F)
         flagReg = flagReg or (1 shl flag)
-        writeReg(REG_F, flagReg.toByte())
+        writeReg(Reg.F, flagReg.toByte())
     }
 
     fun resetFlag(flag: Int) {
-        var flagReg = readRegInt(REG_F)
+        var flagReg = readRegInt(Reg.F)
         flagReg = flagReg and (1 shl flag).inv()
-        writeReg(REG_F, flagReg.toByte())
+        writeReg(Reg.F, flagReg.toByte())
     }
 
     fun toggleFlag(flag: Int) {
-        var flagReg = readRegInt(REG_F)
+        var flagReg = readRegInt(Reg.F)
         flagReg = flagReg xor (1 shl flag)
-        writeReg(REG_F, flagReg.toByte())
+        writeReg(Reg.F, flagReg.toByte())
     }
 
     fun setFlagState(flag: Int, flagState: Boolean) {
@@ -112,7 +111,7 @@ class Cpu(private val emulator: Emulator) {
     }
 
     fun isFlagSet(flag: Int): Boolean {
-        var flagReg = readRegInt(REG_F)
+        val flagReg = readRegInt(Reg.F)
         return flagReg and (1 shl flag) != 0
     }
 
@@ -126,9 +125,9 @@ class Cpu(private val emulator: Emulator) {
         }
 
         val oldPc = pc
-        var opcode = emulator.readInt(pc)
+        val opcode = emulator.readInt(pc)
 
-        var instr: Instr?
+        val instr: Instr?
         if (opcode == 0xCB) {
             instr = emulator.cpu.extOp[emulator.readInt(pc + 1)]
         } else {
@@ -194,21 +193,38 @@ class Cpu(private val emulator: Emulator) {
     }
 }
 
+enum class Reg(val index: Int) {
+    A(0), F(1),
+    B(2), C(3),
+    D(4), E(5),
+    H(6), L(7)
+}
+
+enum class Reg16(val highReg: Reg, val lowReg: Reg) {
+    AF(Reg.A, Reg.F),
+    BC(Reg.B, Reg.C),
+    DE(Reg.D, Reg.E),
+    HL(Reg.H, Reg.L)
+}
+
+enum class Flag(val index: Int) {
+    Z(1), N(2), H(3), C(4)
+}
+
 open class Instr(val len: Int,
                  val cycles: Int,
-                 val name: String,
+                 val mnemonic: String,
                  val op: () -> Any?) {
 }
 
 class VoidInstr(len: Int,
                 cycles: Int,
-                name: String,
-                op: () -> Unit) : Instr(len, cycles, name, op)
+                mnemonic: String,
+                op: () -> Unit) : Instr(len, cycles, mnemonic, op)
 
 class JmpInstr(len: Int,
                val cyclesIfTaken: Int,
                cycles: Int,
-               name: String,
-               op: () -> Boolean) : Instr(len, cycles, name, op) {
-
+               mnemonic: String,
+               op: () -> Boolean) : Instr(len, cycles, mnemonic, op) {
 }

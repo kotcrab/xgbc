@@ -61,7 +61,7 @@ class OpCodeLine(private val debuggerPopupMenu: DebuggerPopupMenu) : VisTable(fa
             return
         }
 
-        var evaluatedName = instr.name
+        var evaluatedName = instr.mnemonic
         if (addr < 0xFFFF) {
             evaluatedName = evaluatedName.replace("d8", toHex(emulator.read(addr + 1)))
             evaluatedName = evaluatedName.replace("a8", toHex(emulator.read(addr + 1)))
@@ -72,10 +72,10 @@ class OpCodeLine(private val debuggerPopupMenu: DebuggerPopupMenu) : VisTable(fa
             evaluatedName = evaluatedName.replace("d16", toHex(emulator.read16(addr + 1)))
         }
 
-        if (evaluatedName.equals(instr.name))
-            label.setText("${toHex(addr)}: ${instr.name}")
+        if (evaluatedName.equals(instr.mnemonic))
+            label.setText("${toHex(addr)}: ${instr.mnemonic}")
         else
-            label.setText("${toHex(addr)}: $evaluatedName [${instr.name}]")
+            label.setText("${toHex(addr)}: $evaluatedName [${instr.mnemonic}]")
     }
 
     fun setBreakpoint(breakpoint: Boolean) {

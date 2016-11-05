@@ -7,46 +7,46 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     // 8 bit load operations
 
     /** Copies value from cpu's reg2 into reg1. */
-    fun ld8RegToReg(reg1: Int, reg2: Int) {
+    fun ld(reg1: Reg, reg2: Reg) {
         cpu.writeReg(reg1, cpu.readReg(reg2))
     }
 
     /** Loads 8 bit value from memory address pointed by reg16 into reg */
-    fun ld8Reg16AddrToReg(reg: Int, reg16: Int) {
-        cpu.writeReg(reg, emulator.read(cpu.readReg16(reg16)))
+    fun ld8Reg16AddrToReg(reg: Reg, reg16: Reg16) {
+        cpu.writeReg(reg, emulator.read(cpu.readReg(reg16)))
     }
 
     /** Saves 8 bit value from reg into memory address pointed by reg16 */
-    fun ld8RegToReg16Addr(reg16: Int, reg: Int) {
-        emulator.write(cpu.readReg16(reg16), cpu.readReg(reg))
+    fun ld8RegToReg16Addr(reg16: Reg16, reg: Reg) {
+        emulator.write(cpu.readReg(reg16), cpu.readReg(reg))
     }
 
     /** Loads 8 bit value from addr into reg */
-    fun ld8AddrToReg(reg: Int, addr: Int) {
+    fun ld8AddrToReg(reg: Reg, addr: Int) {
         cpu.writeReg(reg, emulator.read(addr))
     }
 
     /** Saves 8 bit value from reg to addr */
-    fun ld8RegToAddr(addr: Int, reg: Int) {
+    fun ld8RegToAddr(addr: Int, reg: Reg) {
         emulator.write(addr, cpu.readReg(reg))
     }
 
     // Immediate 8 bit operations
 
     /** Loads immediate 8 bit value into cpu register. */
-    fun ld8ImmValueToReg(reg: Int) {
+    fun ld8ImmValueToReg(reg: Reg) {
         cpu.writeReg(reg, emulator.read(cpu.pc + 1))
     }
 
     /** Loads 8 bit value from immediate address into reg */
-    fun ld8ImmAddrToReg(reg: Int) {
+    fun ld8ImmAddrToReg(reg: Reg) {
         val fromAddr = emulator.read16(cpu.pc + 1)
         syncTimer(8)
         ld8AddrToReg(reg, fromAddr)
     }
 
     /** Saves 8 bit value from reg into immediate address */
-    fun ld8RegToImmAddr(reg: Int) {
+    fun ld8RegToImmAddr(reg: Reg) {
         val toAddr = emulator.read16(cpu.pc + 1)
         syncTimer(8)
         ld8RegToAddr(toAddr, reg)
@@ -54,20 +54,20 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
 
     // 16 bit load operations
 
-    fun ld16ValueToReg16(reg16: Int, value: Int) {
-        cpu.writeReg16(reg16, value)
+    fun ld16ValueToReg16(reg16: Reg16, value: Int) {
+        cpu.writeReg(reg16, value)
     }
 
     // Immediate 16 bit operations
 
-    fun ld16ImmValueToReg(reg16: Int) {
+    fun ld16ImmValueToReg(reg16: Reg16) {
         ld16ValueToReg16(reg16, emulator.read16(cpu.pc + 1))
     }
 
     // 8 bit ALU
 
     fun add(value: Int) {
-        val regA = cpu.readRegInt(Cpu.REG_A)
+        val regA = cpu.readRegInt(Reg.A)
         val result = regA + value
 
         if (result and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
@@ -75,15 +75,15 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         if ((regA and 0xF) + (value and 0xF) and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
         if ((regA and 0xFF) + (value and 0xFF) and 0x100 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
 
-        cpu.writeReg(Cpu.REG_A, result.toByte())
+        cpu.writeReg(Reg.A, result.toByte())
     }
 
-    fun addReg(reg: Int) {
+    fun addReg(reg: Reg) {
         add(cpu.readRegInt(reg))
     }
 
     fun adc(value: Int) {
-        val regA = cpu.readRegInt(Cpu.REG_A)
+        val regA = cpu.readRegInt(Reg.A)
         val carry = cpu.isFlagSet(Cpu.FLAG_C).toInt()
         val result = regA + value + carry
 
@@ -92,15 +92,15 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         if ((regA and 0xF) + (value and 0xF) + carry and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
         if ((regA and 0xFF) + (value and 0xFF) + carry and 0x100 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
 
-        cpu.writeReg(Cpu.REG_A, result.toByte())
+        cpu.writeReg(Reg.A, result.toByte())
     }
 
-    fun adcReg(reg: Int) {
+    fun adcReg(reg: Reg) {
         adc(cpu.readRegInt(reg))
     }
 
     fun sub(value: Int) {
-        val regA = cpu.readRegInt(Cpu.REG_A)
+        val regA = cpu.readRegInt(Reg.A)
         val result = regA - value
 
         if (result and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
@@ -108,15 +108,15 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         if ((regA and 0xF) - (value and 0xF) and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
         if ((regA and 0xFF) - (value and 0xFF) and 0x100 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
 
-        cpu.writeReg(Cpu.REG_A, result.toByte())
+        cpu.writeReg(Reg.A, result.toByte())
     }
 
-    fun subReg(reg: Int) {
+    fun subReg(reg: Reg) {
         sub(cpu.readRegInt(reg))
     }
 
     fun sbc(value: Int) {
-        val regA = cpu.readRegInt(Cpu.REG_A)
+        val regA = cpu.readRegInt(Reg.A)
         val carry = cpu.isFlagSet(Cpu.FLAG_C).toInt()
         val result = regA - value - carry
 
@@ -125,60 +125,60 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         if ((regA and 0xF) - (value and 0xF) - carry and 0x10 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
         if ((regA and 0xFF) - (value and 0xFF) - carry and 0x100 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
 
-        cpu.writeReg(Cpu.REG_A, result.toByte())
+        cpu.writeReg(Reg.A, result.toByte())
     }
 
-    fun sbcReg(reg: Int) {
+    fun sbcReg(reg: Reg) {
         sbc(cpu.readRegInt(reg))
     }
 
     fun and(value: Int) {
-        val regA = cpu.readRegInt(Cpu.REG_A)
+        val regA = cpu.readRegInt(Reg.A)
         val result = regA and value
         if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
         cpu.resetFlag(Cpu.FLAG_N)
         cpu.setFlag(Cpu.FLAG_H)
         cpu.resetFlag(Cpu.FLAG_C)
 
-        cpu.writeReg(Cpu.REG_A, result.toByte())
+        cpu.writeReg(Reg.A, result.toByte())
     }
 
-    fun andReg(reg: Int) {
+    fun andReg(reg: Reg) {
         and(cpu.readRegInt(reg))
     }
 
     fun or(value: Int) {
-        val regA = cpu.readRegInt(Cpu.REG_A)
+        val regA = cpu.readRegInt(Reg.A)
         val result = regA or value
         if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
         cpu.resetFlag(Cpu.FLAG_N)
         cpu.resetFlag(Cpu.FLAG_H)
         cpu.resetFlag(Cpu.FLAG_C)
 
-        cpu.writeReg(Cpu.REG_A, result.toByte())
+        cpu.writeReg(Reg.A, result.toByte())
     }
 
-    fun orReg(reg: Int) {
+    fun orReg(reg: Reg) {
         or(cpu.readRegInt(reg))
     }
 
     fun xor(value: Int) {
-        val regA = cpu.readRegInt(Cpu.REG_A)
+        val regA = cpu.readRegInt(Reg.A)
         val result = regA xor value
         if (result == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
         cpu.resetFlag(Cpu.FLAG_N)
         cpu.resetFlag(Cpu.FLAG_H)
         cpu.resetFlag(Cpu.FLAG_C)
 
-        cpu.writeReg(Cpu.REG_A, result.toByte())
+        cpu.writeReg(Reg.A, result.toByte())
     }
 
-    fun xorReg(reg: Int) {
+    fun xorReg(reg: Reg) {
         xor(cpu.readRegInt(reg))
     }
 
     fun cp(value: Int) {
-        val regA = cpu.readRegInt(Cpu.REG_A)
+        val regA = cpu.readRegInt(Reg.A)
         val result = regA - value
 
         if (result and 0xFF == 0) cpu.setFlag(Cpu.FLAG_Z) else cpu.resetFlag(Cpu.FLAG_Z)
@@ -187,11 +187,11 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         if (regA < value) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
     }
 
-    fun cpReg(reg: Int) {
+    fun cpReg(reg: Reg) {
         cp(cpu.readRegInt(reg))
     }
 
-    fun inc(reg: Int) {
+    fun inc(reg: Reg) {
         val regValue = cpu.readRegInt(reg)
         val result = regValue + 1
 
@@ -203,7 +203,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     }
 
     fun incHL() {
-        val addr = cpu.readReg16(Cpu.REG_HL)
+        val addr = cpu.readReg(Reg16.HL)
         val value = emulator.readInt(addr)
         val result = value + 1
 
@@ -214,7 +214,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         emulator.write(addr, result.toByte())
     }
 
-    fun dec(reg: Int) {
+    fun dec(reg: Reg) {
         val regValue = cpu.readRegInt(reg)
         val result = regValue - 1
 
@@ -226,7 +226,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     }
 
     fun decHL() {
-        val addr = cpu.readReg16(Cpu.REG_HL)
+        val addr = cpu.readReg(Reg16.HL)
         val value = emulator.readInt(addr)
         val result = value - 1
 
@@ -239,39 +239,39 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
 
     // 16 bit ALU
 
-    fun addHL(reg16: Int) {
-        val regHL = cpu.readReg16(Cpu.REG_HL)
-        val reg = cpu.readReg16(reg16)
+    fun addHL(reg16: Reg16) {
+        val regHL = cpu.readReg(Reg16.HL)
+        val reg = cpu.readReg(reg16)
         val result = regHL + reg
 
         cpu.resetFlag(Cpu.FLAG_N)
         if ((regHL and 0xFFF) + (reg and 0xFFF) and 0x1000 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
         if ((regHL and 0xFFFF) + (reg and 0xFFFF) and 0x10000 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
 
-        cpu.writeReg16(Cpu.REG_HL, result)
+        cpu.writeReg(Reg16.HL, result)
     }
 
     fun addHLSP() {
-        val regHL = cpu.readReg16(Cpu.REG_HL)
+        val regHL = cpu.readReg(Reg16.HL)
         val result = regHL + cpu.sp
 
         cpu.resetFlag(Cpu.FLAG_N)
         if ((regHL and 0xFFF) + (cpu.sp and 0xFFF) and 0x1000 != 0) cpu.setFlag(Cpu.FLAG_H) else cpu.resetFlag(Cpu.FLAG_H)
         if ((regHL and 0xFFFF) + (cpu.sp and 0xFFFF) and 0x10000 != 0) cpu.setFlag(Cpu.FLAG_C) else cpu.resetFlag(Cpu.FLAG_C)
 
-        cpu.writeReg16(Cpu.REG_HL, result)
+        cpu.writeReg(Reg16.HL, result)
     }
 
     /** Decrements reg16 */
-    fun dec16(reg16: Int) {
-        val value = cpu.readReg16(reg16)
-        cpu.writeReg16(reg16, value - 1)
+    fun dec16(reg16: Reg16) {
+        val value = cpu.readReg(reg16)
+        cpu.writeReg(reg16, value - 1)
     }
 
     /** Increments reg16 */
-    fun inc16(reg16: Int) {
-        val value = cpu.readReg16(reg16)
-        cpu.writeReg16(reg16, value + 1)
+    fun inc16(reg16: Reg16) {
+        val value = cpu.readReg(reg16)
+        cpu.writeReg(reg16, value + 1)
     }
 
     // Stack pointer push and pop
@@ -287,13 +287,13 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         return addr
     }
 
-    fun pushReg(reg16: Int) {
+    fun pushReg(reg16: Reg16) {
         cpu.sp = cpu.sp - 2
-        emulator.write16(cpu.sp, cpu.readReg16(reg16))
+        emulator.write16(cpu.sp, cpu.readReg(reg16))
     }
 
-    fun popReg(reg16: Int) {
-        cpu.writeReg16(reg16, emulator.read16(cpu.sp))
+    fun popReg(reg16: Reg16) {
+        cpu.writeReg(reg16, emulator.read16(cpu.sp))
         cpu.sp = cpu.sp + 2
     }
 
@@ -309,12 +309,12 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         return result.toByte()
     }
 
-    fun swapReg(reg: Int) {
+    fun swapReg(reg: Reg) {
         cpu.writeReg(reg, swap(cpu.readReg(reg)))
     }
 
     fun daa() {
-        var regA = cpu.readRegInt(Cpu.REG_A)
+        var regA = cpu.readRegInt(Reg.A)
 
         if (cpu.isFlagSet(Cpu.FLAG_N) == false) {
             if (cpu.isFlagSet(Cpu.FLAG_H) || (regA and 0xF) > 9) regA += 0x06
@@ -334,11 +334,11 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
 
         if (regA == 0) cpu.setFlag(Cpu.FLAG_Z)
 
-        cpu.writeReg(Cpu.REG_A, regA.toByte())
+        cpu.writeReg(Reg.A, regA.toByte())
     }
 
     fun cpl() {
-        cpu.writeReg(Cpu.REG_A, cpu.readRegInt(Cpu.REG_A).inv().toByte())
+        cpu.writeReg(Reg.A, cpu.readRegInt(Reg.A).inv().toByte())
         cpu.setFlag(Cpu.FLAG_N)
         cpu.setFlag(Cpu.FLAG_H)
     }
@@ -363,7 +363,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     }
 
     fun jpHL(): Boolean {
-        cpu.pc = cpu.readReg16(Cpu.REG_HL)
+        cpu.pc = cpu.readReg(Reg16.HL)
         return true
     }
 
@@ -529,22 +529,22 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         return result.toByte()
     }
 
-    fun rlcReg(reg: Int, sefZFlagIfNeeded: Boolean = true) {
+    fun rlcReg(reg: Reg, sefZFlagIfNeeded: Boolean = true) {
         val value = cpu.readReg(reg)
         cpu.writeReg(reg, rlc(value, sefZFlagIfNeeded))
     }
 
-    fun rrcReg(reg: Int, sefZFlagIfNeeded: Boolean = true) {
+    fun rrcReg(reg: Reg, sefZFlagIfNeeded: Boolean = true) {
         val value = cpu.readReg(reg)
         cpu.writeReg(reg, rrc(value, sefZFlagIfNeeded))
     }
 
-    fun rrReg(reg: Int, sefZFlagIfNeeded: Boolean = true) {
+    fun rrReg(reg: Reg, sefZFlagIfNeeded: Boolean = true) {
         val value = cpu.readReg(reg)
         cpu.writeReg(reg, rr(value, sefZFlagIfNeeded))
     }
 
-    fun rlReg(reg: Int, sefZFlagIfNeeded: Boolean = true) {
+    fun rlReg(reg: Reg, sefZFlagIfNeeded: Boolean = true) {
         val value = cpu.readReg(reg)
         cpu.writeReg(reg, rl(value, sefZFlagIfNeeded))
     }
@@ -586,17 +586,17 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         return result.toByte()
     }
 
-    fun slaReg(reg: Int) {
+    fun slaReg(reg: Reg) {
         val value = cpu.readReg(reg)
         cpu.writeReg(reg, sla(value))
     }
 
-    fun srlReg(reg: Int) {
+    fun srlReg(reg: Reg) {
         val value = cpu.readReg(reg)
         cpu.writeReg(reg, srl(value))
     }
 
-    fun sraReg(reg: Int) {
+    fun sraReg(reg: Reg) {
         val value = cpu.readReg(reg)
         cpu.writeReg(reg, sra(value))
     }
@@ -617,22 +617,22 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         return byte.resetBit(bit)
     }
 
-    fun bitReg(bit: Int, reg: Int) {
+    fun bitReg(bit: Int, reg: Reg) {
         bit(bit, cpu.readReg(reg))
     }
 
     fun bitHL(bit: Int) {
-        val addr = cpu.readReg16(Cpu.REG_HL)
+        val addr = cpu.readReg(Reg16.HL)
         syncTimer(4)
         bit(bit, emulator.read(addr))
     }
 
-    fun setReg(bit: Int, reg: Int) {
+    fun setReg(bit: Int, reg: Reg) {
         val value = cpu.readReg(reg)
         cpu.writeReg(reg, set(bit, value))
     }
 
-    fun resReg(bit: Int, reg: Int) {
+    fun resReg(bit: Int, reg: Reg) {
         val value = cpu.readReg(reg)
         cpu.writeReg(reg, res(bit, value))
     }

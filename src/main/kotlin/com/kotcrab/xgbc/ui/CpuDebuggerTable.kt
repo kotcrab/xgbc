@@ -6,6 +6,7 @@ import com.kotcrab.vis.ui.widget.VisLabel
 import com.kotcrab.vis.ui.widget.VisTable
 import com.kotcrab.xgbc.Emulator
 import com.kotcrab.xgbc.cpu.Cpu
+import com.kotcrab.xgbc.cpu.Reg16
 import com.kotcrab.xgbc.toHex
 import com.kotcrab.xgbc.vis.TableBuilder
 
@@ -60,10 +61,10 @@ class CpuDebuggerTable(private val emulator: Emulator) : VisTable(true) {
     override fun draw(batch: Batch?, parentAlpha: Float) {
         super.draw(batch, parentAlpha)
 
-        afLabel.setText(toHex(emulator.cpu.readReg16(Cpu.REG_AF)))
-        bcLabel.setText(toHex(emulator.cpu.readReg16(Cpu.REG_BC)))
-        deLabel.setText(toHex(emulator.cpu.readReg16(Cpu.REG_DE)))
-        hlLabel.setText(toHex(emulator.cpu.readReg16(Cpu.REG_HL)))
+        afLabel.setText(toHex(emulator.cpu.readReg(Reg16.AF)))
+        bcLabel.setText(toHex(emulator.cpu.readReg(Reg16.BC)))
+        deLabel.setText(toHex(emulator.cpu.readReg(Reg16.DE)))
+        hlLabel.setText(toHex(emulator.cpu.readReg(Reg16.HL)))
 
         pcLabel.setText(toHex(emulator.cpu.pc))
         spLabel.setText(toHex(emulator.cpu.sp))

@@ -1,8 +1,10 @@
 package com.kotcrab.xgbc
 
+import com.kotcrab.xgbc.cpu.Reg
+
 /** @author Kotcrab */
 interface DebuggerListener {
-    fun onRegisterWrite(reg: Int, value: Byte) {
+    fun onRegisterWrite(reg: Reg, value: Byte) {
 
     }
 

@@ -3,6 +3,8 @@ package com.kotcrab.xgbc
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.kotcrab.xgbc.cpu.Cpu
+import com.kotcrab.xgbc.cpu.Reg
+import com.kotcrab.xgbc.cpu.Reg16
 import com.kotcrab.xgbc.io.Gpu
 import com.kotcrab.xgbc.io.IO
 import com.kotcrab.xgbc.rom.Rom
@@ -56,10 +58,10 @@ class Emulator(romFile: FileHandle) {
 
         cpu.sp = 0xFFFE
         cpu.pc = 0x0100
-        cpu.writeReg16(Cpu.REG_AF, 0x1180)
-        cpu.writeReg16(Cpu.REG_BC, 0x0000)
-        cpu.writeReg16(Cpu.REG_DE, 0xFF56)
-        cpu.writeReg16(Cpu.REG_HL, 0x000D)
+        cpu.writeReg(Reg16.AF, 0x1180)
+        cpu.writeReg(Reg16.BC, 0x0000)
+        cpu.writeReg(Reg16.DE, 0xFF56)
+        cpu.writeReg(Reg16.HL, 0x000D)
         write(0xFF05, 0x00) //TIMA
         write(0xFF06, 0x00) //TMA
         write(0xFF07, 0x00) //TAC
@@ -187,7 +189,7 @@ class Emulator(romFile: FileHandle) {
                 listener.onMemoryWrite(addr, value)
         }
 
-        override fun onRegisterWrite(reg: Int, value: Byte) {
+        override fun onRegisterWrite(reg: Reg, value: Byte) {
             if (debuggerDelegates.size == 0) return
             for (listener in debuggerDelegates)
                 listener.onRegisterWrite(reg, value)
