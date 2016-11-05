@@ -51,12 +51,13 @@ class Lcd(private val emulator: Emulator) : IODevice {
             when (mode) {
                 Mode.OAM_SEARCH -> {
                     mode = Mode.LCD_TRANSFER
+                    emulator.lcdTransferHandler.invoke()
+                    scanLine++
                 }
                 Mode.LCD_TRANSFER -> {
                     mode = Mode.HBLANK
                 }
                 Mode.HBLANK -> {
-                    scanLine++
                     if (scanLine == 144) {
                         mode = Mode.VBLANK
                     } else {
@@ -98,7 +99,7 @@ class Lcd(private val emulator: Emulator) : IODevice {
                 }
             }
             val statByte = stat.toByte()
-            if (statByte.isBitSet(6) && statByte.isBitSet(2)) emulator.interrupt(Interrupt.LCDC)
+            //if (statByte.isBitSet(6) && statByte.isBitSet(2)) emulator.interrupt(Interrupt.LCDC)
             emulator.io.directWrite(STAT, statByte)
         }
     }
@@ -123,6 +124,10 @@ class Lcd(private val emulator: Emulator) : IODevice {
 
     fun isWindowDisplayEnabled(): Boolean {
         return emulator.read(LCDC).isBitSet(5) == true
+    }
+
+    fun getPatternDataAddr(): Int {
+        return if (emulator.read(LCDC).isBitSet(4)) Gpu.PATTERN_TABLE_1 else Gpu.PATTERN_TABLE_0
     }
 
     fun getWindowTileMapDataAddr(): Int {

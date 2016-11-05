@@ -37,7 +37,7 @@ class VRAMWindow(val emulator: Emulator) : VisWindow("VRAM") {
                 frameUsed = true
                 for (row in 0..PALETTE_WIDTH) {
                     for (column in 0..PALETTE_HEIGHT) {
-                        gdxGpu.drawPattern0TileToPixmap(pixmap, row * Gpu.TILE_SIZE, column * Gpu.TILE_SIZE, column * 0x10 + row)
+                        gdxGpu.drawPatternTileToPixmap(pixmap, row * Gpu.TILE_SIZE, column * Gpu.TILE_SIZE, Gpu.PATTERN_TABLE_0, column * 0x10 + row)
                     }
                 }
 

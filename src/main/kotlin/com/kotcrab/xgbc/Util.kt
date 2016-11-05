@@ -3,12 +3,14 @@ package com.kotcrab.xgbc
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 
-fun Actor.changed(callback: (ChangeListener.ChangeEvent, Actor) -> Any?) {
-    this.addListener(object : ChangeListener() {
+fun Actor.changed(callback: (ChangeListener.ChangeEvent, Actor) -> Any?): ChangeListener {
+    val listener = object : ChangeListener() {
         override fun changed(event: ChangeEvent?, actor: Actor?) {
             callback.invoke(event!!, actor!!)
         }
-    })
+    }
+    this.addListener(listener)
+    return listener
 }
 
 fun toHex(addr: Int) = String.format("%04X", addr)

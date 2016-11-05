@@ -36,6 +36,7 @@ class Emulator(romFile: FileHandle) {
     private var ie: Byte = 0
 
     val interruptHandlers = ArrayList<(Interrupt) -> Unit>()
+    var lcdTransferHandler: () -> Unit = {}
     var mode: EmulatorMode = EmulatorMode.NORMAL
 
     init {

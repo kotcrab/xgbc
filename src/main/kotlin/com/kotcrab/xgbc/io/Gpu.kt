@@ -9,6 +9,7 @@ class Gpu(private val emulator: Emulator) {
         val TILE_SIZE = 8
         val TILE_BYTE_SIZE = 16
         val PATTERN_TABLE_0 = 0x8000
+        val PATTERN_TABLE_1 = 0x8800
 
         val TIME_MAP_DATA_SIZE = 32 * 32 //32 rows, 32 bytes each
         val TILE_MAP_DATA_0 = 0x9800
@@ -21,8 +22,8 @@ class Gpu(private val emulator: Emulator) {
         vram.fill(0)
     }
 
-    fun readTilePatternTable0(tileId: Int, buffer: IntArray): IntArray {
-        val tileStart = PATTERN_TABLE_0 + (tileId * TILE_BYTE_SIZE)
+    fun readTilePatternTable(patternTableAddr: Int, tileId: Int, buffer: IntArray): IntArray {
+        val tileStart = patternTableAddr + (tileId * TILE_BYTE_SIZE)
         return readTile(tileStart, buffer)
     }
 
