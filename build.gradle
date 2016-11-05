@@ -2,7 +2,7 @@ group 'com.kotcrab.xgbc'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.0.2'
+    ext.kotlin_version = '1.0.4'
     repositories {
         mavenCentral()
     }
@@ -27,7 +27,7 @@ ext {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.14'
+    gradleVersion = '3.1'
 }
 
 dependencies {
