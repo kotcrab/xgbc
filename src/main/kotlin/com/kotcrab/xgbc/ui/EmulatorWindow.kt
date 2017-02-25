@@ -34,7 +34,7 @@ class EmulatorWindow(val emulator: Emulator) : VisWindow("Emulator") {
             val tileMapStart = lcd.getBgTileMapDataAddr()
             val patternDataAddr = lcd.getPatternDataAddr()
             for ((index, addr) in (tileMapStart..tileMapStart + Gpu.TIME_MAP_DATA_SIZE).withIndex()) {
-                val tileId = if (patternDataAddr == Gpu.PATTERN_TABLE_0) emulator.read(addr).toUnsignedInt() else emulator.read(addr).toInt()
+                val tileId = if (patternDataAddr == Gpu.PATTERN_TABLE_1) emulator.read(addr).toUnsignedInt() else emulator.read(addr).toInt()
                 val column = index / 32
                 val row = index - column * 32
                 if (column == lcd.scanLine)
