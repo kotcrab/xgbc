@@ -118,7 +118,7 @@ class Lcd(private val emulator: Emulator) : IODevice {
         return emulator.read(LCDC).isBitSet(7) == true
     }
 
-    fun getBgTileMapDataAddr(): Int {
+    fun getWindowTileMapDataAddr(): Int {
         return if (emulator.read(LCDC).isBitSet(6)) Gpu.TILE_MAP_DATA_1 else Gpu.TILE_MAP_DATA_0
     }
 
@@ -130,7 +130,7 @@ class Lcd(private val emulator: Emulator) : IODevice {
         return if (emulator.read(LCDC).isBitSet(4)) Gpu.PATTERN_TABLE_1 else Gpu.PATTERN_TABLE_0
     }
 
-    fun getWindowTileMapDataAddr(): Int {
+    fun getBgTileMapDataAddr(): Int {
         return if (emulator.read(LCDC).isBitSet(3)) Gpu.TILE_MAP_DATA_1 else Gpu.TILE_MAP_DATA_0
     }
 

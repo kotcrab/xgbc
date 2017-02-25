@@ -32,7 +32,7 @@ class EmulatorWindow(val emulator: Emulator) : VisWindow("Emulator") {
         add(img).size(256f, 256f)
         emulator.lcdTransferHandler = {
             val tileMapStart = lcd.getBgTileMapDataAddr()
-            val patternDataAddr = Gpu.PATTERN_TABLE_0
+            val patternDataAddr = lcd.getPatternDataAddr()
             for ((index, addr) in (tileMapStart..tileMapStart + Gpu.TIME_MAP_DATA_SIZE).withIndex()) {
                 val tileId = if (patternDataAddr == Gpu.PATTERN_TABLE_0) emulator.read(addr).toUnsignedInt() else emulator.read(addr).toInt()
                 val column = index / 32
@@ -40,12 +40,13 @@ class EmulatorWindow(val emulator: Emulator) : VisWindow("Emulator") {
                 if (column == lcd.scanLine)
                     gdxGpu.drawPatternTileToPixmap(pixmap, row * Gpu.TILE_SIZE, column * Gpu.TILE_SIZE, patternDataAddr, tileId)
             }
-            texture.draw(pixmap, 0, 0)
         }
+
         pack()
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
         super.draw(batch, parentAlpha)
+        texture.draw(pixmap, 0, 0)
     }
 }

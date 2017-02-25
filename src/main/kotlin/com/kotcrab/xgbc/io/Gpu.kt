@@ -8,8 +8,8 @@ class Gpu(private val emulator: Emulator) {
     companion object {
         val TILE_SIZE = 8
         val TILE_BYTE_SIZE = 16
-        val PATTERN_TABLE_0 = 0x8000
-        val PATTERN_TABLE_1 = 0x8800
+        val PATTERN_TABLE_0 = 0x8800
+        val PATTERN_TABLE_1 = 0x8000
 
         val TIME_MAP_DATA_SIZE = 32 * 32 //32 rows, 32 bytes each
         val TILE_MAP_DATA_0 = 0x9800
