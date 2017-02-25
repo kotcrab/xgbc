@@ -3,8 +3,12 @@
 Game Boy emulator written in Kotlin using libGDX and [VisUI](https://github.com/kotcrab/vis-editor/wiki/VisUI)
 
 #### Status
-* Working cpu emulation (`cpu_instrs` and `instr_timing` passing. `mem_timing`: 'read', 'write' tests pass, some 'modify' tests fail)
+* Working cpu emulation 
+  * `cpu_instrs` and `instr_timing` passing. 
+  * `mem_timing`: `read`, `write` tests pass, some `modify` tests fail
 * Debugger with 'Run to Line' function and breakpoints
+* VRAM viewer and initial GPU emulation (tilemap rendering)
+* MBC1 controller emulation implemented
 
 Test roms:
 ```
@@ -30,5 +34,8 @@ mem_timing
 Failed 1 tests.
 ```
 
+Running Tetris (without sprites support)
+![Tetris Screenshot](http://dl.kotcrab.com/img/d/2017-02-25_2014.png)
+
 VRAM viewer (showing first tile palette) and debugger:  
-![Screenshot](http://dl.kotcrab.com/img/d/2016-04-20_2341.png)
+![VRAM Screenshot](http://dl.kotcrab.com/img/d/2016-04-20_2341.png)
