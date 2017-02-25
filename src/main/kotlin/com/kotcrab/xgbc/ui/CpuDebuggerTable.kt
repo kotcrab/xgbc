@@ -8,7 +8,7 @@ import com.kotcrab.xgbc.Emulator
 import com.kotcrab.xgbc.cpu.Flag
 import com.kotcrab.xgbc.cpu.Reg16
 import com.kotcrab.xgbc.toHex
-import com.kotcrab.xgbc.vis.TableBuilder
+import com.kotcrab.xgbc.ui.TableBuilder
 
 /** @author Kotcrab */
 class CpuDebuggerTable(private val emulator: Emulator) : VisTable(true) {

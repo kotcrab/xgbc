@@ -11,7 +11,7 @@ import com.kotcrab.vis.ui.widget.spinner.IntSpinnerModel
 import com.kotcrab.vis.ui.widget.spinner.Spinner
 import com.kotcrab.xgbc.*
 import com.kotcrab.xgbc.cpu.Instr
-import com.kotcrab.xgbc.vis.TableBuilder
+import com.kotcrab.xgbc.ui.TableBuilder
 
 import com.badlogic.gdx.utils.Array as GdxArray
 

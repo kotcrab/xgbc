@@ -10,7 +10,7 @@ import com.kotcrab.xgbc.Emulator
 import com.kotcrab.xgbc.EmulatorMode
 import com.kotcrab.xgbc.changed
 import com.kotcrab.xgbc.toHex
-import com.kotcrab.xgbc.vis.TableBuilder
+import com.kotcrab.xgbc.ui.TableBuilder
 
 /** @author Kotcrab */
 
