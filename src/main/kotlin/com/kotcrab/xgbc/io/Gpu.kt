@@ -39,8 +39,8 @@ class Gpu(private val emulator: Emulator) {
 
             for (ii in 0..7) {
                 val colorLSB = byte and (1 shl ii) != 0
-                val colorMSB = ((byte2 and (1 shl ii)) shl 1) != 0
-                val colorVal = colorLSB.toInt() or colorMSB.toInt()
+                val colorMSB = byte2 and (1 shl ii) != 0
+                val colorVal = colorLSB.toInt() or (colorMSB.toInt() shl 1)
                 buffer[bufferIdx++] = colorVal
             }
             lineIdx++
