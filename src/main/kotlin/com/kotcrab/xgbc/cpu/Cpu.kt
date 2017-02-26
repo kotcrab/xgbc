@@ -18,12 +18,11 @@ class Cpu(private val emulator: Emulator) {
     val op = arrayOfNulls<Instr>(256)
     val extOp = arrayOfNulls<Instr>(256)
 
-    private var opProc: OpCodesProcessor
+    val opProc = OpCodesProcessor(emulator, this)
 
     init {
-        opProc = OpCodesProcessor(emulator, this)
         generateOpCodes(emulator, this, opProc, op)
-        generateExtOpCodes(emulator, this, opProc, extOp)
+        generateExtOpCodes(opProc, extOp)
     }
 
     fun readReg(reg: Reg): Byte {
@@ -116,7 +115,7 @@ class Cpu(private val emulator: Emulator) {
         if (instr == null) throw EmulatorException("Illegal opcode: ${toHex(opcode.toByte())} at ${toHex(pc)}")
 
         if (instr is JmpInstr) {
-            val result = instr.op.invoke()
+            val result = instr.jmpOp.invoke()
             if (result == false) {
                 pc += instr.len
                 cycle += instr.cycles
@@ -193,17 +192,12 @@ enum class Flag(val bit: Int) {
 open class Instr(val len: Int,
                  val cycles: Int,
                  val mnemonic: String,
-                 val op: () -> Any?) {
-}
-
-class VoidInstr(len: Int,
-                cycles: Int,
-                mnemonic: String,
-                op: () -> Unit) : Instr(len, cycles, mnemonic, op)
+                 val op: () -> Unit,
+                 val internalCycles: Int = 0,
+                 val realCycles: Int = internalCycles + cycles)
 
 class JmpInstr(len: Int,
                val cyclesIfTaken: Int,
                cycles: Int,
                mnemonic: String,
-               op: () -> Boolean) : Instr(len, cycles, mnemonic, op) {
-}
+               val jmpOp: () -> Boolean) : Instr(len, cycles, mnemonic, { jmpOp() })

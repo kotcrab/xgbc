@@ -43,6 +43,7 @@ class EmulatorWindow(val emulator: Emulator) : VisWindow("Emulator") {
         }
 
         pack()
+        setPosition(60f, 60f)
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {

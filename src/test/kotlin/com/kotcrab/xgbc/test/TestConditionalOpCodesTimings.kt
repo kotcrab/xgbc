@@ -43,9 +43,9 @@ class TestConditionalOpCodesTimings {
             if (instrCycles == 0 || instr == null)
                 continue
 
-            var cycles = instr.cycles
+            var cycles = instr.realCycles
             if (instr is JmpInstr) {
-                cycles = instr.cyclesIfTaken
+                cycles = instr.cyclesIfTaken + instr.internalCycles
             }
 
             Assert.assertEquals("Invalid op code conditional timing: OP: ${toHex(i)}, expected $instrCycles MC", cycles, instrCycles * 4)

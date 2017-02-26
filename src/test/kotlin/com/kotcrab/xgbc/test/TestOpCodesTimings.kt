@@ -42,7 +42,7 @@ class TestOpCodesTimings {
             if (instrCycles == 0 || instr == null)
                 continue
 
-            Assert.assertEquals("Invalid op code timing: OP: ${toHex(i)}, expected $instrCycles MC", instr.cycles, instrCycles * 4)
+            Assert.assertEquals("Invalid op code timing: OP: ${toHex(i)}, expected $instrCycles MC", instr.realCycles, instrCycles * 4)
         }
     }
 }

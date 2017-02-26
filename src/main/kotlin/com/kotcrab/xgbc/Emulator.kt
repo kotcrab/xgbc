@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.Array as GdxArray
 class Emulator(romFile: FileHandle) {
     companion object {
         val BASE_CLOCK = 4096 //khz
-        val CLOCK = BASE_CLOCK * 1000
+        val CLOCK = BASE_CLOCK * 1700
         val REG_IF = 0xFF0F
         val REG_IE = 0xFFFF
     }
@@ -96,11 +96,13 @@ class Emulator(romFile: FileHandle) {
     }
 
     fun update(updateBreaker: () -> Boolean = { false }) {
-        val cycles = cpu.cycle + CLOCK * Gdx.graphics.deltaTime
+        val targetCycles = cpu.cycle + CLOCK * Gdx.graphics.deltaTime
+        var manuallySyncedCycles = 0
 
         while (true) {
             step()
-            if (cpu.cycle > cycles) {
+            manuallySyncedCycles += io.timer.getAndClearSyncedCycles()
+            if (cpu.cycle + manuallySyncedCycles > targetCycles) {
                 break
             }
 

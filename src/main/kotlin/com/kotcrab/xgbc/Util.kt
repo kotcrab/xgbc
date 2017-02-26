@@ -13,8 +13,10 @@ fun Actor.changed(callback: (ChangeListener.ChangeEvent, Actor) -> Any?): Change
     return listener
 }
 
-fun toHex(addr: Int) = String.format("%04X", addr)
-fun toHex(addr: Byte) = String.format("%02X", addr)
+fun toHex(value: Int) = String.format("%04X", value)
+fun toHex(value: Byte) = String.format("%02X", value)
+
+fun toBits(value: Byte) = String.format("%8s", Integer.toBinaryString(value.toInt() and 0xFF)).replace(" ", "0")
 
 fun Byte.toUnsignedInt(): Int = (this.toInt() and 0xFF)
 

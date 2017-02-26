@@ -22,14 +22,19 @@ class VRAMWindow(val emulator: Emulator) : VisWindow("VRAM") {
 
     private val gdxGpu = GdxGpu(emulator.gpu)
 
-    private val pixmap = Pixmap(PALETTE_WIDTH * Gpu.TILE_SIZE, PALETTE_HEIGHT * Gpu.TILE_SIZE, Pixmap.Format.RGB888)
-    private val texture = Texture(pixmap)
+    private val pixmap1 = Pixmap(PALETTE_WIDTH * Gpu.TILE_SIZE, PALETTE_HEIGHT * Gpu.TILE_SIZE, Pixmap.Format.RGB888)
+    private val pixmap0 = Pixmap(PALETTE_WIDTH * Gpu.TILE_SIZE, PALETTE_HEIGHT * Gpu.TILE_SIZE, Pixmap.Format.RGB888)
+    private val texture1 = Texture(pixmap1)
+    private val texture0 = Texture(pixmap0)
 
     var frameUsed = false
 
     init {
-        val img = VisImage(TextureRegionDrawable(TextureRegion(texture)))
-        add(img).size(256f, 256f)
+        val img1 = VisImage(TextureRegionDrawable(TextureRegion(texture1)))
+        add(img1).size(256f, 256f)
+        row()
+        val img0 = VisImage(TextureRegionDrawable(TextureRegion(texture0)))
+        add(img0).size(256f, 256f)
         pack()
 
         emulator.interruptHandlers.add { interrupt ->
@@ -37,14 +42,16 @@ class VRAMWindow(val emulator: Emulator) : VisWindow("VRAM") {
                 frameUsed = true
                 for (row in 0..PALETTE_WIDTH) {
                     for (column in 0..PALETTE_HEIGHT) {
-                        gdxGpu.drawPatternTileToPixmap(pixmap, row * Gpu.TILE_SIZE, column * Gpu.TILE_SIZE, Gpu.PATTERN_TABLE_1, column * 0x10 + row)
+                        gdxGpu.drawPatternTileToPixmap(pixmap0, row * Gpu.TILE_SIZE, column * Gpu.TILE_SIZE, Gpu.PATTERN_TABLE_0, column * 0x10 + row)
+                        gdxGpu.drawPatternTileToPixmap(pixmap1, row * Gpu.TILE_SIZE, column * Gpu.TILE_SIZE, Gpu.PATTERN_TABLE_1, column * 0x10 + row)
                     }
                 }
-                texture.draw(pixmap, 0, 0)
+                texture0.draw(pixmap0, 0, 0)
+                texture1.draw(pixmap1, 0, 0)
             }
         }
 
-        setPosition(0f, 0f + width + 30)
+        setPosition(1000f, 30f)
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {

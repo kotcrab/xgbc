@@ -4,11 +4,10 @@ Game Boy emulator written in Kotlin using libGDX and [VisUI](https://github.com/
 
 #### Status
 * Working cpu emulation 
-  * `cpu_instrs` and `instr_timing` passing. 
-  * `mem_timing`: `read`, `write` tests pass, some `modify` tests fail
+  * `cpu_instrs`,  `instr_timing` and `mem_timing` tests are passing. 
 * Debugger with 'Run to Line' function and breakpoints
 * VRAM viewer and initial GPU emulation (tilemap rendering)
-* MBC1 controller emulation implemented
+* MBC1 controller, Serial port, Joypad, Timer, DIV emulation implemented
 
 Test roms:
 ```
@@ -29,9 +28,9 @@ Passed
 ```
 mem_timing
 
-01:ok  02:ok  03:01  
+01:ok  02:ok  03:ok  
 
-Failed 1 tests.
+Passed
 ```
 
 Running Tetris (without sprites support)

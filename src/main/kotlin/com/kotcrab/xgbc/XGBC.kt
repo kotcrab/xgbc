@@ -32,18 +32,17 @@ class XGBC : ApplicationAdapter() {
 
         stage.addActor(root)
 
-        //emulator = Emulator(Gdx.files.internal("rom/test/oam_bug_v2.gb"))
+        emulator = Emulator(Gdx.files.internal("rom/test/cpu_instrs.gb"))
         //emulator = Emulator(Gdx.files.internal("rom/test/instr_timing.gb"))
-        //emulator = Emulator(Gdx.files.internal("rom/test/mem_timing.gb"))
+        //emulator = Emulator(Gdx.files.internal("rom/test/mem_timing_v2.gb"))
         //emulator = Emulator(Gdx.files.internal("rom/test/mem/01-read_timing.gb"))
         //emulator = Emulator(Gdx.files.internal("rom/test/mem/02-write_timing.gb"))
         //emulator = Emulator(Gdx.files.internal("rom/test/mem/03-modify_timing.gb"))
-        emulator = Emulator(Gdx.files.internal("rom/test/cpu_instrs.gb"))
+        //emulator = Emulator(Gdx.files.internal("rom/test/oam_bug_v2.gb"))
         //emulator = Emulator(Gdx.files.internal("rom/tetrisdx.gbc"))
         //emulator = Emulator(Gdx.files.internal("rom/pokemon_gold.gbc"))
         //emulator = Emulator(Gdx.files.internal("rom/BADAPPLE.gbc"))
         //emulator = Emulator(Gdx.files.internal("rom/bubble.gbc"))
-        //emulator = Emulator(Gdx.files.internal("rom/tictactoe.gbc"))
         //emulator = Emulator(Gdx.files.internal("rom/tetris.gb"))
         //emulator = Emulator(Gdx.files.internal("rom/GBTICTAC.GB"))
 
@@ -100,5 +99,6 @@ class XGBC : ApplicationAdapter() {
 fun main(args: Array<String>) {
     val config = Lwjgl3ApplicationConfiguration()
     config.setWindowedMode(1280, 720)
+    config.setTitle("XGBC")
     Lwjgl3Application(XGBC(), config)
 }

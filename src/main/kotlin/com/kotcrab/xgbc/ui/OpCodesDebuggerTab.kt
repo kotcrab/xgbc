@@ -11,8 +11,6 @@ import com.kotcrab.vis.ui.widget.spinner.IntSpinnerModel
 import com.kotcrab.vis.ui.widget.spinner.Spinner
 import com.kotcrab.xgbc.*
 import com.kotcrab.xgbc.cpu.Instr
-import com.kotcrab.xgbc.ui.TableBuilder
-
 import com.badlogic.gdx.utils.Array as GdxArray
 
 /** @author Kotcrab */
@@ -30,7 +28,7 @@ class OpCodesDebuggerTab(val emulator: Emulator) : VisTable(false), DebuggerPopu
     val breakpoints = GdxArray<Int>()
 
     val chunkContainer = VisTable()
-    lateinit var scrollPane: VisScrollPane
+    val scrollPane: VisScrollPane
     val chunkInfoLabel = VisLabel()
     val chunkSelector = Spinner("Fragment", IntSpinnerModel(0, 0, chunks.size - 1))
     private var currentLine: OpCodeLine? = null

@@ -18,7 +18,7 @@ class Timer(private val emulator: Emulator) : IODevice {
 
     var cycleUpdate = clock00
     var cycleCounter = 0
-    var cycleSync = 0
+    var cyclesSynced = 0
 
     override fun register(registrar: (Int) -> Unit) {
         registrar(TIMA)
@@ -28,8 +28,7 @@ class Timer(private val emulator: Emulator) : IODevice {
 
     override fun tick(cyclesElapsed: Int) {
         if (emulator.read(TAC).isBitSet(2)) {
-            cycleCounter += (cyclesElapsed - cycleSync)
-            cycleSync = 0
+            cycleCounter += cyclesElapsed
             var tima = emulator.readInt(TIMA)
             while (cycleCounter >= cycleUpdate) {
                 //println("TAC:" + toHex(emulator.read(TAC)) + " TIMA:" + toHex(emulator.read(TIMA)) + " TMA:" + toHex(emulator.read(TMA)))
@@ -47,10 +46,14 @@ class Timer(private val emulator: Emulator) : IODevice {
     }
 
     fun sync(cycles: Int) {
-        if (emulator.read(TAC).isBitSet(2)) {
-            tick(cycles)
-            cycleSync += cycles
-        }
+        cyclesSynced += cycles
+        tick(cycles)
+    }
+
+    fun getAndClearSyncedCycles(): Int {
+        val cyclesTmp = cyclesSynced
+        cyclesSynced = 0
+        return cyclesTmp
     }
 
     override fun reset() {

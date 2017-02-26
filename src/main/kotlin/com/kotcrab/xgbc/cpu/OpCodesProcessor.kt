@@ -205,6 +205,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     fun incHL() {
         val addr = cpu.readReg(Reg16.HL)
         val value = emulator.readInt(addr)
+        syncTimer(4)
         val result = value + 1
 
         if (result and 0xFF == 0) cpu.setFlag(Flag.Z) else cpu.resetFlag(Flag.Z)
@@ -228,6 +229,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     fun decHL() {
         val addr = cpu.readReg(Reg16.HL)
         val value = emulator.readInt(addr)
+        syncTimer(4)
         val result = value - 1
 
         if (result and 0xFF == 0) cpu.setFlag(Flag.Z) else cpu.resetFlag(Flag.Z)
@@ -637,6 +639,20 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         cpu.writeReg(reg, res(bit, value))
     }
 
+    // Misc
+
+    fun syncTimer(cycles: Int) {
+        emulator.io.timer.sync(cycles)
+    }
+
+    fun syncedHLRegOp(transform: (Byte) -> Byte) {
+        syncTimer(4)
+        val addr = cpu.readReg(Reg16.HL)
+        val value = emulator.read(addr)
+        syncTimer(4)
+        emulator.write(addr, transform(value))
+    }
+
     // Internal util
 
     private fun invokeIfCFlagSet(runnable: () -> Boolean): Boolean {
@@ -669,9 +685,5 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
         } else {
             return false
         }
-    }
-
-    fun syncTimer(cycles: Int) {
-        emulator.io.timer.sync(cycles)
     }
 }
