@@ -57,12 +57,13 @@ class XGBC : ApplicationAdapter() {
 
         stage.addListener(object : InputListener() {
             override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
-                if (keycode == Input.Keys.F1 && debuggerWindow != null) {
-                    (debuggerWindow as DebuggerWindow).remove()
+                if (keycode == Input.Keys.F1) {
                     emulator.reset()
-                    debuggerWindow = DebuggerWindow(emulator)
-                    stage.addActor(debuggerWindow)
-
+                    if(debuggerWindow != null) {
+                        (debuggerWindow as DebuggerWindow).remove()
+                        debuggerWindow = DebuggerWindow(emulator)
+                        stage.addActor(debuggerWindow)
+                    }
                 }
                 return super.keyDown(event, keycode)
             }
