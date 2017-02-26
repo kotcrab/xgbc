@@ -1,12 +1,11 @@
 package com.kotcrab.xgbc.io
 
-import com.badlogic.gdx.utils.IntMap
 import com.kotcrab.xgbc.Emulator
 
 /** @author Kotcrab */
 class IO(private val emulator: Emulator) {
     val ioMem: ByteArray = ByteArray(0x4C)
-    val devicesMap: IntMap<IODevice> = IntMap(0x4C) //TODO direct mapping
+    val devicesMap = arrayOfNulls<IODevice>(0x4C)
 
     val serialPort = SerialPort(emulator)
     val div = Div(emulator)
@@ -18,7 +17,7 @@ class IO(private val emulator: Emulator) {
 
     init {
         for (device in devices) {
-            device.register({ addr -> devicesMap.put(addr - 0xFF00, device) })
+            device.register({ addr -> devicesMap[addr - 0xFF00] = device })
         }
     }
 
@@ -37,7 +36,7 @@ class IO(private val emulator: Emulator) {
 
     fun read(addr: Int): Byte {
         val relAddr = addr - 0xFF00
-        val device = devicesMap.get(relAddr)
+        val device = devicesMap[relAddr]
         device?.onRead(addr)
         return ioMem[relAddr]
     }
@@ -45,7 +44,7 @@ class IO(private val emulator: Emulator) {
     fun write(addr: Int, value: Byte) {
         val relAddr = addr - 0xFF00
         ioMem[relAddr] = value
-        val device = devicesMap.get(relAddr)
+        val device = devicesMap[relAddr]
         device?.onWrite(addr, value)
     }
 
