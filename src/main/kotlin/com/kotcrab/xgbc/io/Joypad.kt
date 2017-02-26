@@ -7,7 +7,7 @@ import java.util.*
 class Joypad(private val emulator: Emulator) : IODevice {
     val P1 = 0xFF00
 
-    val pressedKeys = EnumSet.noneOf(JoypadKey::class.java)
+    val pressedKeys = EnumSet.noneOf(JoypadKey::class.java)!!
 
     override fun register(registrar: (Int) -> Unit) {
         registrar(P1)
@@ -24,13 +24,14 @@ class Joypad(private val emulator: Emulator) : IODevice {
     }
 
     override fun onWrite(addr: Int, value: Byte) {
-        if(addr == P1) updateMemoryData(value)
+        if (addr == P1) updateMemoryData()
     }
 
-    private fun updateMemoryData(p1Value: Byte) {
+    private fun updateMemoryData() {
+        val p1Value = emulator.read(P1)
         var newValue = (p1Value.toUnsignedInt() and 0b00110000 or 0b11001111).toByte()
         for (key in pressedKeys) {
-            if (p1Value.isBitSet(key.outBit)) {
+            if (newValue.isBitSet(key.selectBit) == false) {
                 newValue = newValue.resetBit(key.inBit)
             }
         }
@@ -39,20 +40,20 @@ class Joypad(private val emulator: Emulator) : IODevice {
 
     fun keyPressed(key: JoypadKey) {
         pressedKeys.add(key)
+        updateMemoryData()
+        if (emulator.read(P1).isBitSet(key.selectBit)) {
+            emulator.interrupt(Interrupt.JOYPAD)
+        }
     }
 
     fun keyReleased(key: JoypadKey) {
         val removed = pressedKeys.remove(key)
         if (removed == false) return
-        val p1 = emulator.read(P1)
-        updateMemoryData(p1)
-        if (p1.isBitSet(key.outBit)) {
-            emulator.interrupt(Interrupt.JOYPAD)
-        }
+        updateMemoryData()
     }
 
-    enum class JoypadKey(val outBit: Int, val inBit: Int) {
+    enum class JoypadKey(val selectBit: Int, val inBit: Int) {
         LEFT(4, 1), RIGHT(4, 0), UP(4, 2), DOWN(4, 3),
-        A(5, 0), B(5, 1), START(5, 2), SELECT(5, 3)
+        A(5, 0), B(5, 1), START(5, 3), SELECT(5, 2)
     }
 }
