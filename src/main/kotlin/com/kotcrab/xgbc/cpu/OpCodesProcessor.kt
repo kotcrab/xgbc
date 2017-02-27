@@ -642,7 +642,7 @@ class OpCodesProcessor(private val emulator: Emulator, private val cpu: Cpu) {
     // Misc
 
     fun syncTimer(cycles: Int) {
-        emulator.io.timer.sync(cycles)
+        emulator.io.sync(cycles)
     }
 
     fun syncedHLRegOp(transform: (Byte) -> Byte) {

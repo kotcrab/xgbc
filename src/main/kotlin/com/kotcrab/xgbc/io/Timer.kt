@@ -18,7 +18,6 @@ class Timer(private val emulator: Emulator) : IODevice {
 
     var cycleUpdate = clock00
     var cycleCounter = 0
-    var cyclesSynced = 0
 
     override fun register(registrar: (Int) -> Unit) {
         registrar(TIMA)
@@ -43,17 +42,6 @@ class Timer(private val emulator: Emulator) : IODevice {
 
             emulator.io.directWrite(TIMA, tima.toByte())
         }
-    }
-
-    fun sync(cycles: Int) {
-        cyclesSynced += cycles
-        tick(cycles)
-    }
-
-    fun getAndClearSyncedCycles(): Int {
-        val cyclesTmp = cyclesSynced
-        cyclesSynced = 0
-        return cyclesTmp
     }
 
     override fun reset() {

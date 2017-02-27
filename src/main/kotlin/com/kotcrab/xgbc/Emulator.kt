@@ -1,6 +1,5 @@
 package com.kotcrab.xgbc
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.kotcrab.xgbc.cpu.Cpu
 import com.kotcrab.xgbc.cpu.Reg
@@ -9,14 +8,13 @@ import com.kotcrab.xgbc.io.Gpu
 import com.kotcrab.xgbc.io.IO
 import com.kotcrab.xgbc.rom.Rom
 import java.util.*
-
 import com.badlogic.gdx.utils.Array as GdxArray
 
 /** @author Kotcrab */
 class Emulator(romFile: FileHandle) {
     companion object {
         val BASE_CLOCK = 4096 //khz
-        val CLOCK = BASE_CLOCK * 1700
+        val CLOCK = BASE_CLOCK * 1000 / 60
         val REG_IF = 0xFF0F
         val REG_IE = 0xFFFF
     }
@@ -96,12 +94,12 @@ class Emulator(romFile: FileHandle) {
     }
 
     fun update(updateBreaker: () -> Boolean = { false }) {
-        val targetCycles = cpu.cycle + CLOCK * Gdx.graphics.deltaTime
+        val targetCycles = cpu.cycle + CLOCK
         var manuallySyncedCycles = 0
 
         while (true) {
             step()
-            manuallySyncedCycles += io.timer.getAndClearSyncedCycles()
+            manuallySyncedCycles += io.getAndClearSyncedCycles()
             if (cpu.cycle + manuallySyncedCycles > targetCycles) {
                 break
             }

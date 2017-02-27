@@ -15,6 +15,8 @@ class IO(private val emulator: Emulator) {
 
     val devices = arrayOf(serialPort, timer, div, lcd, joypad)
 
+    var cyclesSynced = 0
+
     init {
         for (device in devices) {
             device.register({ addr -> devicesMap[addr - 0xFF00] = device })
@@ -26,12 +28,24 @@ class IO(private val emulator: Emulator) {
         for (device in devices) {
             device.reset()
         }
+        cyclesSynced = 0
     }
 
     fun tick(cyclesElapsed: Int) {
         for (device in devices) {
             device.tick(cyclesElapsed)
         }
+    }
+
+    fun sync(cycles: Int) {
+        cyclesSynced += cycles
+        tick(cycles)
+    }
+
+    fun getAndClearSyncedCycles(): Int {
+        val cyclesTmp = cyclesSynced
+        cyclesSynced = 0
+        return cyclesTmp
     }
 
     fun read(addr: Int): Byte {
